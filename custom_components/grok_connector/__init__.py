@@ -80,7 +80,7 @@ class Runtime:
                     await self.save()
                 await self.stop_actions()
                 async with self.gateway.lock:
-                    self.gateway.replies.clear()
+                    self.gateway.clear()
                 emit('admin','revoked',grant_count=0)
             finally:
                 self.accepting = self.active
@@ -108,7 +108,7 @@ class Runtime:
                     self.policy, self.gateway.policy = policy, policy
                     self.scripts = scripts
                     adopted = True
-                    self.gateway.replies.clear()
+                    self.gateway.clear()
                     emit('admin','revoked',grant_count=0)
             finally:
                 if not adopted:
@@ -121,7 +121,7 @@ class Runtime:
         async with self.configuration_lock:
             await asyncio.gather(*(script.async_unload() for script in self.scripts.values()))
             async with self.gateway.lock:
-                self.gateway.replies.clear()
+                self.gateway.clear()
 
     def pair(self):
         if not self.active or not self.accepting:

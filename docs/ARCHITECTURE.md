@@ -26,13 +26,19 @@ During replacement/revocation, an authorization barrier rejects new HTTP authori
 
 HA actions that have already occurred cannot be undone by revocation. An independently started script/automation may continue under its own HA lifecycle. Sequence return, condition termination and service completion are not physical-device confirmation. Execution failures produce a generic uncertainty response without exception details; the client should check state or HA traces before any deliberate retry.
 
-Inline action sequences are serialized. JSON-RPC notifications never execute commands. Duplicate action request IDs are cached for 120 seconds (up to 256 results); both string and numeric IDs retain their JSON types. The bounded cache is cleared on policy change, revocation and unload. HTTP task shielding avoids treating a client disconnect as authorization to retry a physical command.
+Inline action sequences are serialized. JSON-RPC notifications never execute commands. Duplicate action request IDs are cached for 120 seconds (up to 256 results), scoped to the OAuth grant and MCP session; both string and numeric IDs retain their JSON types. Different sessions may use the same ID for different actions or deliberately repeat the same action. Reusing an ID for a different action in one session remains an error.
+
+Successful initialization returns a random, cryptographically secure `MCP-Session-Id` header. Sessions are bound to the authenticated OAuth grant, expire after 30 minutes of inactivity and have a hard limit of 128. Expiry, explicit DELETE or eviction drops that session's replies. An unknown, expired or foreign session header returns HTTP 404; possession of a session ID never replaces bearer authentication. Policy change, revocation and unload clear all sessions and replies. Queued actions recheck authorization and session validity before execution.
+
+Session IDs are optional for compatibility with stateless clients. Without a session header there is no reliable retry identity, so requests do not use the replay cache. The server neither invents a grant-wide session nor silently suppresses a legitimate command. Clients must check state before a deliberate retry after an uncertain result; automatic retries of physical commands are inappropriate. HTTP task shielding lets an accepted action finish despite a client disconnect. These bounded, in-memory caches are not an exactly-once execution guarantee across expiry, eviction or restart.
+
+The request-ID scope and session header follow the [MCP base protocol](https://modelcontextprotocol.io/specification/2025-11-25/basic) and [Streamable HTTP session management](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#session-management).
 
 ## Localization and logging
 
 `translations` contains native HA text; `locales` contains MCP and consent text. New locale files automatically populate the MCP language selector. English provides fallback; placeholder parity is tested across both catalogs.
 
-Integration-owned structured logs allow only known fields and categories. They omit credentials, callback URLs, entity/action identifiers, names, sequences and exception text. They use independent random request/flow IDs to correlate OAuth stages and impose a global volume limit. The HA diagnostic download provides counts, version and language only. Other HA components and the HA script engine have their own logging behavior.
+Integration-owned structured logs allow only known fields and categories. They omit credentials, callback URLs, entity/action identifiers, names, sequences and exception text. They use independent random request/flow IDs to correlate OAuth stages and impose a global volume limit. MCP logs include session-present/session-valid flags and a fixed RPC-error category; raw MCP session IDs and client request IDs remain excluded. The HA diagnostic download provides counts, version and language only. Other HA components and the HA script engine have their own logging behavior.
 
 ## Validation limits
 

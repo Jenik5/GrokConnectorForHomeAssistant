@@ -29,6 +29,7 @@ security = importlib.import_module(package.__name__ + ".security")
 diagnostics = importlib.import_module(package.__name__ + ".diagnostics")
 const = importlib.import_module(package.__name__ + ".const")
 gateway = importlib.import_module(package.__name__ + ".gateway")
+policy = importlib.import_module(package.__name__ + ".policy")
 page_module = importlib.import_module(package.__name__ + ".oauth_page")
 i18n = importlib.import_module(package.__name__ + ".i18n")
 catalogs = i18n.load_catalogs()
@@ -37,7 +38,7 @@ catalogs = i18n.load_catalogs()
 class HTTPException(Exception):
     status = 500
 
-    def __init__(self, *, text="", headers=None, **kwargs):
+    def __init__(self, *args, text="", headers=None, **kwargs):
         self.text = text
         self.headers = headers or {}
 
@@ -65,7 +66,8 @@ web = types.SimpleNamespace(Response=Response, HTTPSeeOther=SeeOther, HTTPExcept
 for name, status in (("HTTPForbidden", 403), ("HTTPServiceUnavailable", 503),
                      ("HTTPTooManyRequests", 429), ("HTTPUnauthorized", 401),
                      ("HTTPBadRequest", 400), ("HTTPUnsupportedMediaType", 415),
-                     ("HTTPRequestEntityTooLarge", 413), ("HTTPNotAcceptable", 406)):
+                     ("HTTPRequestEntityTooLarge", 413), ("HTTPNotAcceptable", 406),
+                     ("HTTPNotFound", 404), ("HTTPMethodNotAllowed", 405)):
     setattr(web, name, type(name, (HTTPException,), {"status": status}))
 
 
@@ -117,14 +119,16 @@ class LogPrivacyTests(unittest.TestCase):
             diagnostics.emit("token", "request", request_body=secret, headers=secret,
                              access_token=secret, client_id=secret, flow_id=secret,
                              status=secret, resource_matches=secret, grant_type=secret,
-                             oauth_error=secret, request_id="012345abcdef", resource_supplied=False)
+                             oauth_error=secret, request_id="012345abcdef", resource_supplied=False,
+                             session_id=secret, rpc_id=secret, rpc_error=secret)
         joined = "\n".join(captured.output)
         self.assertNotIn(secret, joined)
         record = json.loads(captured.records[0].getMessage().split("GROK_CONNECTOR_DIAG ", 1)[1])
         self.assertEqual(record["grant_type"], "other")
         self.assertFalse(record["resource_supplied"])
         self.assertEqual(record["request_id"], "012345abcdef")
-        for key in ("request_body", "headers", "access_token", "client_id", "status", "resource_matches", "flow_id"):
+        for key in ("request_body", "headers", "access_token", "client_id", "status", "resource_matches", "flow_id",
+                    "session_id", "rpc_id"):
             self.assertNotIn(key, record)
 
     def test_diagnostics_have_a_hard_global_volume_limit(self):
@@ -133,6 +137,114 @@ class LogPrivacyTests(unittest.TestCase):
                 diagnostics.emit("resource_metadata", "request")
         self.assertEqual(len(captured.records), diagnostics._LIMIT)
 
+
+class MCPSessionTests(unittest.IsolatedAsyncioTestCase):
+    def setUp(self):
+        diagnostics._WINDOW.clear()
+        self.executed = []
+        self.allowed = True
+
+        async def run(identifier):
+            self.executed.append(identifier)
+
+        configured = policy.Policy.from_dict({'actions': [
+            {'id': 'a'*32, 'name': 'On', 'description': 'First test action', 'sequence': [{'variables': {'test': True}}]},
+            {'id': 'b'*32, 'name': 'Off', 'description': 'Second test action', 'sequence': [{'variables': {'test': False}}]}]})
+        self.gateway = gateway.Gateway(lambda _: None, run, configured, catalogs,
+                                       authorized=lambda _: self.allowed)
+        authority = types.SimpleNamespace(base_url='https://diagnostic-test.ui.nabu.casa',
+            authenticate=lambda bearer: {'Bearer first': 'grant', 'Bearer second': 'other'}.get(bearer))
+        runtime = types.SimpleNamespace(authority=authority, gateway=self.gateway, rate_allowed=lambda *args: True)
+        self.hass = types.SimpleNamespace(data={const.DOMAIN: runtime},
+            async_create_task=lambda coro, name: asyncio.create_task(coro))
+        self.view = namespace['MCPView'](self.hass)
+
+    def request(self, message=None, *, session=None, bearer='Bearer first', method='POST'):
+        headers = {'Accept': 'application/json', 'Authorization': bearer}
+        if session is not None:
+            headers['MCP-Session-Id'] = session
+        return Request(method=method, body=json.dumps(message).encode(), headers=headers)
+
+    async def initialize(self):
+        response = await self.view.post(self.request({'jsonrpc': '2.0', 'id': 0,
+            'method': 'initialize', 'params': {'protocolVersion': '2025-11-25'}}))
+        self.assertEqual(response.status, 200)
+        self.assertIn('result', json.loads(response.text))
+        self.assertEqual(response.headers['Cache-Control'], 'no-store')
+        session = response.headers['MCP-Session-Id']
+        self.assertRegex(session, r'^[A-Za-z0-9_-]{43}$')
+        return session
+
+    async def call(self, name='a', *, session=None):
+        return await self.view.post(self.request({'jsonrpc': '2.0', 'id': 2, 'method': 'tools/call',
+            'params': {'name': 'action_'+name*32}}, session=session))
+
+    async def test_new_initialization_does_not_collide_with_previous_action_id(self):
+        first = await self.initialize()
+        await self.call(session=first)
+        second = await self.initialize()
+        response = await self.call('b', session=second)
+        self.assertNotIn('error', json.loads(response.text))
+        third = await self.initialize()
+        await self.call(session=third)
+        self.assertEqual(self.executed, ['a'*32, 'b'*32, 'a'*32])
+        self.assertEqual(len({first, second, third}), 3)
+
+    async def test_duplicate_in_one_session_executes_once_and_collision_is_logged(self):
+        session = await self.initialize()
+        first = await self.call(session=session)
+        second = await self.call(session=session)
+        self.assertEqual(first.text, second.text)
+        with self.assertLogs(diagnostics._LOGGER, level='INFO') as captured:
+            result = await self.call('b', session=session)
+        self.assertEqual(json.loads(result.text)['error']['code'], -32602)
+        self.assertEqual(self.executed, ['a'*32])
+        self.assertTrue(any('"rpc_error":"id_collision"' in line for line in captured.output))
+        self.assertNotIn(session, '\n'.join(captured.output))
+
+    async def test_stateless_client_reused_ids_do_not_suppress_commands(self):
+        await self.initialize()
+        await self.call()
+        await self.initialize()
+        self.assertNotIn('error', json.loads((await self.call('b')).text))
+        await self.initialize()
+        await self.call()
+        self.assertEqual(self.executed, ['a'*32, 'b'*32, 'a'*32])
+        self.assertFalse(self.gateway.replies)
+
+    async def test_unknown_and_foreign_sessions_fail_before_any_action(self):
+        session = await self.initialize()
+        with self.assertRaises(web.HTTPNotFound):
+            await self.call(session='unknown')
+        with self.assertRaises(web.HTTPNotFound):
+            await self.view.post(self.request({'jsonrpc': '2.0', 'id': 2, 'method': 'tools/call',
+                'params': {'name': 'action_'+'a'*32}}, session=session, bearer='Bearer second'))
+        self.assertEqual(self.executed, [])
+
+    async def test_session_never_replaces_bearer_authentication(self):
+        session = await self.initialize()
+        with self.assertRaises(web.HTTPUnauthorized):
+            await self.view.post(self.request({'jsonrpc': '2.0', 'id': 2, 'method': 'ping'},
+                session=session, bearer=''))
+        self.assertEqual(self.executed, [])
+
+    async def test_delete_removes_session_and_cached_reply(self):
+        session = await self.initialize()
+        await self.call(session=session)
+        response = await self.view.delete(self.request(session=session, method='DELETE'))
+        self.assertEqual(response.status, 204)
+        self.assertEqual(self.gateway.replies, {})
+        with self.assertRaises(web.HTTPNotFound):
+            await self.call(session=session)
+        with self.assertRaises(web.HTTPBadRequest):
+            await self.view.delete(self.request(method='DELETE'))
+
+    async def test_notification_and_invalid_initialization_do_not_create_sessions(self):
+        response = await self.view.post(self.request({'jsonrpc': '2.0', 'method': 'notifications/initialized'}))
+        self.assertEqual(response.status, 202)
+        response = await self.view.post(self.request({'jsonrpc': '2.0', 'method': 'initialize', 'id': True}))
+        self.assertNotIn('MCP-Session-Id', response.headers)
+        self.assertEqual(self.gateway.sessions, {})
 
 class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):

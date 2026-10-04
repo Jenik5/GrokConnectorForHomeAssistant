@@ -94,10 +94,11 @@ class GatewayTests(unittest.IsolatedAsyncioTestCase):
         self.gateway = gateway.Gateway(lambda entity: 'on' if entity == 'light.example' else '21.5',
             execute, self.policy, i18n.load_catalogs(), authorized=lambda principal: self.allowed,
             unit_reader=lambda entity: '°C' if entity == 'sensor.example' else None)
+        self.session = self.gateway.open_session('grant')
 
     async def call(self, identifier=1, name='action_' + 'a' * 32, arguments=None):
         return await self.gateway.rpc({'jsonrpc': '2.0', 'id': identifier, 'method': 'tools/call',
-                                      'params': {'name': name, 'arguments': arguments or {}}}, 'grant')
+                                      'params': {'name': name, 'arguments': arguments or {}}}, 'grant', session=self.session)
 
     async def test_only_selected_state_and_named_actions_are_exposed(self):
         tools = self.gateway.tools()
@@ -148,6 +149,69 @@ class GatewayTests(unittest.IsolatedAsyncioTestCase):
         first, second = await asyncio.gather(self.call('parallel'), self.call('parallel'))
         self.assertEqual(first, second)
         self.assertEqual(self.executed, ['a' * 32])
+
+    async def test_new_sessions_can_reuse_ids_for_different_or_same_actions(self):
+        await self.call(2)
+        first_session = self.session
+        self.session = self.gateway.open_session('grant')
+        self.assertNotEqual(self.session, first_session)
+        self.assertFalse((await self.call(2, 'action_' + 'b' * 32))['result']['isError'])
+        self.session = self.gateway.open_session('grant')
+        await self.call(2)
+        self.assertEqual(self.executed, ['a' * 32, 'b' * 32, 'a' * 32])
+
+    async def test_stateless_requests_do_not_share_a_retry_cache(self):
+        message = {'jsonrpc': '2.0', 'id': 2, 'method': 'tools/call',
+                   'params': {'name': 'action_' + 'a' * 32}}
+        await self.gateway.rpc(message, 'grant')
+        message['params']['name'] = 'action_' + 'b' * 32
+        self.assertNotIn('error', await self.gateway.rpc(message, 'grant'))
+        message['params']['name'] = 'action_' + 'a' * 32
+        await self.gateway.rpc(message, 'grant')
+        self.assertEqual(self.executed, ['a' * 32, 'b' * 32, 'a' * 32])
+        self.assertEqual(self.gateway.replies, {})
+
+    async def test_sessions_are_bound_to_the_authorized_principal(self):
+        message = {'jsonrpc': '2.0', 'id': 2, 'method': 'tools/call',
+                   'params': {'name': 'action_' + 'a' * 32}}
+        self.assertFalse(self.gateway.session_active(self.session, 'other-grant'))
+        self.assertIn('error', await self.gateway.rpc(message, 'other-grant', session=self.session))
+        self.assertEqual(self.executed, [])
+        other = self.gateway.open_session('other-grant')
+        await self.gateway.rpc(message, 'other-grant', session=other)
+        await self.call(2)
+        self.assertEqual(self.executed, ['a' * 32, 'a' * 32])
+
+    async def test_closed_session_cannot_execute_a_queued_action(self):
+        await self.call('cached')
+        await self.gateway.lock.acquire()
+        pending = asyncio.create_task(self.call('waiting'))
+        await asyncio.sleep(0)
+        self.gateway.close_session(self.session)
+        self.gateway.lock.release()
+        self.assertEqual((await pending)['error']['message'], 'MCP session expired')
+        self.assertEqual(self.executed, ['a' * 32])
+        self.assertEqual(self.gateway.replies, {})
+
+    async def test_expired_and_evicted_sessions_drop_only_their_own_replies(self):
+        now = 0
+        self.gateway.clock = lambda: now
+        self.gateway.clear()
+        self.session = self.gateway.open_session('grant')
+        await self.call('cached')
+        now = gateway.SESSION_LIFETIME + 1
+        self.assertIn('error', await self.call('cached'))
+        self.assertEqual(self.gateway.replies, {})
+        sessions = [self.gateway.open_session('grant') for _ in range(gateway.MAX_SESSIONS)]
+        self.session = sessions[0]
+        await self.call('evicted')
+        self.session = sessions[-1]
+        await self.call('kept')
+        self.gateway.open_session('grant')
+        self.assertEqual(len(self.gateway.sessions), gateway.MAX_SESSIONS)
+        self.assertFalse(self.gateway.session_active(sessions[0], 'grant'))
+        self.assertTrue(self.gateway.session_active(sessions[-1], 'grant'))
+        self.assertEqual(len(self.gateway.replies), 1)
 
     async def test_uncertain_execution_never_retries_or_exposes_exception_data(self):
         async def failing(identifier):

@@ -126,3 +126,23 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 - Live UI acceptance used Chrome, Czech and HA 2026.9.4. Other browsers, languages
   and viewport sizes remain separate acceptance boundaries; the shared CSS uses
   min(400px, 45vh) to adapt to available height.
+
+## MCP request-ID scope fix 0.1.0b7
+
+- User acceptance of b6 reported a successful light-on command followed by
+  `Request ID already used` for light-off. The gateway keyed action replies by
+  OAuth grant and request ID, although IDs may restart in a new MCP session.
+  Diagnostic requests showed a fresh initialization before separate tool calls.
+- Initialization now returns an authenticated-principal-bound MCP session ID.
+  Reply caching is scoped to that session. Independent sessions and stateless
+  requests can reuse IDs; one session still rejects an ID used for another action.
+- Added regressions for on/off/on with reused IDs across sessions and for
+  stateless clients, concurrent duplicates, foreign/unknown/expired/deleted
+  sessions, bounded eviction, queued actions after session closure and bearer
+  authentication. Session/reply cleanup is checked on policy change, revoke and
+  unload; icon-only changes preserve both.
+- Added fixed session flags and RPC-error categories to bounded diagnostic logs.
+  Session IDs, caller request IDs, credentials and action details remain excluded.
+- Local suite: 76 Python tests passed with simulated actions. CI and live HACS
+  installation are recorded after publication; household commands are not run
+  automatically by these checks.

@@ -70,6 +70,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
             'redirect_uri': 'https://grok.com/oauth/callback', 'resource': auth.resource,
             'code': code, 'code_verifier': verifier})
         self.principal = auth.authenticate('Bearer ' + self.tokens['access_token'])
+        self.session = self.runtime.gateway.open_session(self.principal)
 
     async def test_ha_validation_prepares_the_original_generic_sequence(self):
         self.assertEqual(self.hass.validated, [action()['sequence']])
@@ -94,6 +95,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(self.runtime.principal_active(self.principal))
         self.assertIs(self.runtime.scripts, scripts)
         self.assertEqual(self.runtime.gateway.replies['example'], ('existing', 'reply'))
+        self.assertTrue(self.runtime.gateway.session_active(self.session, self.principal))
         self.assertEqual(self.saved, [])
 
     async def test_policy_change_revokes_access_and_unloads_old_actions(self):
@@ -106,6 +108,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(set(self.runtime.scripts), {'b' * 32})
         self.assertIn(self.client, self.runtime.authority.clients)
         self.assertEqual(self.saved[-1]['grants'], {})
+        self.assertEqual(self.runtime.gateway.sessions, {})
 
     async def test_revoke_stops_actions_and_invalidates_pairing_and_pending_codes(self):
         self.runtime.pair()
@@ -117,11 +120,13 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertGreater(self.runtime.scripts['a' * 32].stopped, 0)
         self.assertFalse(self.runtime.scripts['a' * 32].unloaded)
         self.assertIn(self.client, self.runtime.authority.clients)
+        self.assertEqual(self.runtime.gateway.sessions, {})
 
     async def test_unload_stops_scripts_and_prevents_new_commands(self):
         await self.runtime.stop()
         self.assertFalse(self.runtime.principal_active(self.principal))
         self.assertTrue(self.runtime.scripts['a' * 32].unloaded)
+        self.assertEqual(self.runtime.gateway.sessions, {})
 
     async def test_invalid_new_sequence_does_not_replace_active_policy(self):
         original = self.runtime.policy
