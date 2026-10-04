@@ -1,0 +1,108 @@
+{
+  "title": "Grok Connector",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Grok",
+        "description": "Use the HTTPS address of Nabu Casa remote access. This connector has independent permissions and credentials.",
+        "data": {
+          "public_url": "Nabu Casa HTTPS address",
+          "language": "Language of MCP tools"
+        }
+      },
+      "entities": {
+        "title": "Selected entities",
+        "description": "Choose any entities Grok may read. Add named actions in Configure → Actions. Changed entities or actions revoke existing access and require pairing again.",
+        "data": {
+          "read_entities": "Entities available for reading"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Enter only an HTTPS origin ending in .ui.nabu.casa, without a path or query.",
+      "invalid_selection": "Choose at most 64 entities.",
+      "invalid_action": "Enter a name, an optional description and a valid nonempty Home Assistant action sequence."
+    },
+    "abort": {
+      "already_configured": "The connector is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Grok Connector",
+        "menu_options": {
+          "entities": "Selected entities",
+          "actions": "Actions",
+          "language": "Language of MCP tools",
+          "pair": "Pairing code",
+          "revoke": "Revoke Grok access"
+        }
+      },
+      "entities": {
+        "title": "Selected entities",
+        "description": "Choose any entities Grok may read. Add named actions in Configure → Actions. Changed entities or actions revoke existing access and require pairing again.",
+        "data": {
+          "read_entities": "Entities available for reading"
+        }
+      },
+      "actions": {
+        "title": "Actions",
+        "menu_options": {
+          "add_action": "Add action",
+          "edit_action": "Edit action",
+          "delete_action": "Delete action"
+        }
+      },
+      "edit_action": {
+        "title": "Edit action",
+        "data": {
+          "action_id": "Action"
+        }
+      },
+      "delete_action": {
+        "title": "Delete action",
+        "data": {
+          "action_id": "Action"
+        }
+      },
+      "action": {
+        "title": "Actions",
+        "description": "Describe the action so Grok knows when to use it. Choose HA actions, an automation, a script, conditions or a sequence. Conditions and device safety are your responsibility.",
+        "data": {
+          "name": "Action name",
+          "description": "Description for Grok",
+          "sequence": "Action sequence"
+        }
+      },
+      "confirm_delete": {
+        "title": "Delete action",
+        "description": "Delete action {name}? Saving revokes existing access."
+      },
+      "language": {
+        "title": "Language of MCP tools",
+        "data": {
+          "language": "Language of MCP tools"
+        }
+      },
+      "pair": {
+        "title": "Pairing code",
+        "description": "MCP URL for your custom Grok connector:\n\n{mcp_url}\n\nOne-time pairing code:\n\n**{pairing_secret}**\n\nValid for 10 minutes. Enter it in the authorization window opened by Grok. Creating another code invalidates the previous unused code."
+      },
+      "revoke": {
+        "title": "Revoke Grok access",
+        "description": "Confirm to invalidate all access tokens, refresh tokens and pending pairing for this connector. A new connection needs a new pairing code."
+      }
+    },
+    "error": {
+      "invalid_url": "Enter only an HTTPS origin ending in .ui.nabu.casa, without a path or query.",
+      "invalid_selection": "Choose at most 64 entities.",
+      "invalid_action": "Enter a name, an optional description and a valid nonempty Home Assistant action sequence."
+    },
+    "abort": {
+      "not_loaded": "The connector is not running. Enable it and try again.",
+      "no_actions": "No actions have been configured.",
+      "too_many_actions": "At most 64 actions may be exposed."
+    }
+  }
+}

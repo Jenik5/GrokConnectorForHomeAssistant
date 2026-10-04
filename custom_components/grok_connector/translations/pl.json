@@ -1,0 +1,108 @@
+{
+  "title": "Grok Connector",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Połącz Groka",
+        "description": "Użyj adresu HTTPS zdalnego dostępu Nabu Casa. Ten konektor ma własne uprawnienia i dane uwierzytelniające.",
+        "data": {
+          "public_url": "Adres HTTPS Nabu Casa",
+          "language": "Język narzędzi MCP"
+        }
+      },
+      "entities": {
+        "title": "Wybrane encje",
+        "description": "Wybierz dowolne encje, które Grok może odczytywać. Nazwane akcje dodasz w Konfiguruj → Akcje. Zmiana encji lub akcji unieważnia dostęp i wymaga ponownego parowania.",
+        "data": {
+          "read_entities": "Encje dostępne do odczytu"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Podaj wyłącznie adres HTTPS kończący się na .ui.nabu.casa, bez ścieżki i parametrów.",
+      "invalid_selection": "Wybierz najwyżej 64 encje.",
+      "invalid_action": "Podaj nazwę, opcjonalny opis i prawidłową niepustą sekwencję akcji Home Assistant."
+    },
+    "abort": {
+      "already_configured": "Konektor jest już skonfigurowany."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Grok Connector",
+        "menu_options": {
+          "entities": "Wybrane encje",
+          "actions": "Akcje",
+          "language": "Język narzędzi MCP",
+          "pair": "Kod parowania",
+          "revoke": "Cofnij dostęp Groka"
+        }
+      },
+      "entities": {
+        "title": "Wybrane encje",
+        "description": "Wybierz dowolne encje, które Grok może odczytywać. Nazwane akcje dodasz w Konfiguruj → Akcje. Zmiana encji lub akcji unieważnia dostęp i wymaga ponownego parowania.",
+        "data": {
+          "read_entities": "Encje dostępne do odczytu"
+        }
+      },
+      "actions": {
+        "title": "Akcje",
+        "menu_options": {
+          "add_action": "Dodaj akcję",
+          "edit_action": "Edytuj akcję",
+          "delete_action": "Usuń akcję"
+        }
+      },
+      "edit_action": {
+        "title": "Edytuj akcję",
+        "data": {
+          "action_id": "Akcja"
+        }
+      },
+      "delete_action": {
+        "title": "Usuń akcję",
+        "data": {
+          "action_id": "Akcja"
+        }
+      },
+      "action": {
+        "title": "Akcje",
+        "description": "Opisz akcję, aby Grok wiedział, kiedy jej użyć. Wybierz akcje HA, automatyzację, skrypt, warunki lub sekwencję. Odpowiadasz za warunki i bezpieczeństwo urządzeń.",
+        "data": {
+          "name": "Nazwa akcji",
+          "description": "Opis dla Groka",
+          "sequence": "Sekwencja akcji"
+        }
+      },
+      "confirm_delete": {
+        "title": "Usuń akcję",
+        "description": "Usunąć akcję {name}? Zapis unieważnia dotychczasowy dostęp."
+      },
+      "language": {
+        "title": "Język narzędzi MCP",
+        "data": {
+          "language": "Język narzędzi MCP"
+        }
+      },
+      "pair": {
+        "title": "Kod parowania",
+        "description": "Adres MCP dla własnego konektora Groka:\n\n{mcp_url}\n\nJednorazowy kod parowania:\n\n**{pairing_secret}**\n\nWażny przez 10 minut. Wpisz go w oknie autoryzacji otwartym przez Groka. Utworzenie nowego kodu unieważnia poprzedni niewykorzystany kod."
+      },
+      "revoke": {
+        "title": "Cofnij dostęp Groka",
+        "description": "Potwierdzenie unieważnia wszystkie tokeny dostępu, tokeny odświeżania i trwające parowanie tego konektora. Nowe połączenie wymaga nowego kodu parowania."
+      }
+    },
+    "error": {
+      "invalid_url": "Podaj wyłącznie adres HTTPS kończący się na .ui.nabu.casa, bez ścieżki i parametrów.",
+      "invalid_selection": "Wybierz najwyżej 64 encje.",
+      "invalid_action": "Podaj nazwę, opcjonalny opis i prawidłową niepustą sekwencję akcji Home Assistant."
+    },
+    "abort": {
+      "not_loaded": "Konektor nie działa. Włącz go i spróbuj ponownie.",
+      "no_actions": "Nie skonfigurowano jeszcze żadnych akcji.",
+      "too_many_actions": "Można udostępnić najwyżej 64 akcje."
+    }
+  }
+}

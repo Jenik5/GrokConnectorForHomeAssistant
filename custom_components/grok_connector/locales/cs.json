@@ -1,0 +1,16 @@
+{
+  "language_name": "Čeština",
+  "page_title": "Připojit Groka k Home Assistantu",
+  "callback": "Návratová adresa:",
+  "pair_help": "V Home Assistantu otevřete Nastavení → Zařízení a služby → Grok Connector → Konfigurovat → Párovací kód. Zobrazený jednorázový kód vložte sem. Platí 10 minut.",
+  "pair_label": "Párovací kód",
+  "community": "Nezávislý komunitní konektor.",
+  "invalid_request": "Neplatný požadavek na připojení. Spusťte nové připojení z Groka.",
+  "invalid_pairing": "Kód je neplatný, vypršel nebo již byl použit. Vytvořte nový kód v Home Assistantu.",
+  "invalid_transaction": "Neplatná přihlašovací transakce. Zavřete toto okno a spusťte nové připojení z Groka.",
+  "tool_status": "Přečíst aktuální stav výslovně vybraných entit. Neovládá zařízení.",
+  "permissions": "Přístup je omezen na {read_count} vybraných entit ke čtení a {control_count} pojmenovaných akcí.",
+  "approve": "Povolit vybrané entity a akce",
+  "tool_action": "Spustit akci {name}. {description}",
+  "instructions": "Akce spouštěj jen na výslovný požadavek uživatele. Proveď nastavenou akci bez vymýšlení dalších podmínek. Nepředpokládej úspěšný fyzický účinek. Při nejistém provedení akci automaticky neopakuj. Podle potřeby přečti entities_status."
+}

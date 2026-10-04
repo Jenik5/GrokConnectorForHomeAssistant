@@ -1,0 +1,16 @@
+{
+  "language_name": "Polski",
+  "page_title": "Połącz Groka z Home Assistant",
+  "callback": "Adres powrotu:",
+  "pair_help": "W Home Assistant otwórz Ustawienia → Urządzenia i usługi → Grok Connector → Konfiguruj → Kod parowania. Wpisz tutaj wyświetlony jednorazowy kod. Jest ważny przez 10 minut.",
+  "pair_label": "Kod parowania",
+  "community": "Niezależny konektor społecznościowy.",
+  "invalid_request": "Nieprawidłowe żądanie połączenia. Rozpocznij nowe połączenie w Groku.",
+  "invalid_pairing": "Kod jest nieprawidłowy, wygasł lub został już użyty. Utwórz nowy kod w Home Assistant.",
+  "invalid_transaction": "Nieprawidłowa transakcja autoryzacji. Zamknij to okno i rozpocznij nowe połączenie w Groku.",
+  "tool_status": "Odczytaj aktualny stan jawnie wybranych encji. Nie steruje urządzeniami.",
+  "permissions": "Dostęp jest ograniczony do {read_count} wybranych encji do odczytu i {control_count} nazwanych akcji.",
+  "approve": "Zezwól na wybrane encje i akcje",
+  "tool_action": "Uruchom akcję {name}. {description}",
+  "instructions": "Uruchamiaj akcje tylko na wyraźne żądanie użytkownika. Wykonaj skonfigurowaną akcję bez wymyślania dodatkowych warunków. Nie zakładaj pomyślnego skutku fizycznego. Nigdy nie ponawiaj automatycznie niepewnego wykonania. W razie potrzeby odczytaj entities_status."
+}
