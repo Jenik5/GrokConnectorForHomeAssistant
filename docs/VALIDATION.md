@@ -143,6 +143,18 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
   unload; icon-only changes preserve both.
 - Added fixed session flags and RPC-error categories to bounded diagnostic logs.
   Session IDs, caller request IDs, credentials and action details remain excluded.
-- Local suite: 76 Python tests passed with simulated actions. CI and live HACS
-  installation are recorded after publication; household commands are not run
-  automatically by these checks.
+- Local suite: 76 Python tests, five JavaScript tests, package and JavaScript
+  syntax checks passed with simulated actions.
+- [Validate run](https://github.com/Jenik5/GrokConnectorForHomeAssistant/actions/runs/37231052271)
+  passed HACS, hassfest and Python 3.13/3.14 for release code `31cb625`.
+- Published [0.1.0b7](https://github.com/Jenik5/GrokConnectorForHomeAssistant/releases/tag/0.1.0b7)
+  and installed it through supported HACS WebSocket commands after a verified
+  private backup. `ha core check` and one necessary restart completed successfully.
+- HA reports the integration loaded and HACS installed/available version b7.
+  All 30 installed integration files match the release tag's checksums. Exact
+  config-entry data/options and credential-store bytes match the pre-update
+  checkpoint, including the existing OAuth grant.
+- Nabu Casa resource metadata returns HTTP 200 and unauthenticated MCP remains
+  rejected with HTTP 401. No household action was issued during installation or
+  diagnostics. End-to-end Grok light-on/light-off acceptance is a user retest;
+  Tesla client acceptance remains separate.
