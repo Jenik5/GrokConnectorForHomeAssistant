@@ -19,7 +19,8 @@ def language_selector(catalogs):
 
 class ActionListSelector(selector.ObjectSelector):
     """Native object-list validation with internal, non-editable tool IDs."""
-    selector_type = 'grok_connector_actions'
+    # Keep the form functional when an older page has not loaded our styling.
+    selector_type = 'object'
 
     def __call__(self,value):
         if not isinstance(value,list) or len(value) > 64:

@@ -78,6 +78,8 @@ class OptionsTests(unittest.IsolatedAsyncioTestCase):
     async def test_actions_open_as_named_described_object_list_with_native_sequence_editor(self):
         form = await self.flow.async_step_actions()
         self.assertEqual(form['type'], 'form')
+        # The browser can render this without the integration's extra JS module.
+        self.assertEqual(form['data_schema']['actions'].selector_type, 'object')
         config = form['data_schema']['actions'].config
         self.assertEqual(config['label_field'], 'name')
         self.assertEqual(config['description_field'], 'description')

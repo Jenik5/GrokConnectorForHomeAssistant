@@ -66,3 +66,11 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 - The original integration's source files and persisted credentials remain unchanged. No physical device commands were executed.
 - An older cached HA entry page initially omitted the new frontend module. Reopening the integration page with `?editor=0.1.0b3` loaded the current module; release instructions document refreshing/reopening the browser. No authentication or CSP protections were changed.
 - Native UI visual acceptance was performed in Czech. All five translations pass key/placeholder checks; screenshots in other languages and additional browser/version coverage remain pending.
+
+## Cached action editor correction 0.1.0b4
+
+- The 0.1.0b3 browser check bypassed an older cached HA page using a query parameter. That did not establish reliable loading through the ordinary integration menu; an unregistered custom selector could leave the entire list blank.
+- The flow now always serializes HA's native `object` selector. Existing actions and native Add/Edit/Remove controls do not depend on the presentation module. The regression assertion checks this native selector contract.
+- The presentation module decorates only marked Grok action selectors inside config-flow dialogs. It does not register or replace a custom selector, alter native component prototypes, or own list values/handlers. Closing a dialog disconnects its observers.
+- The static JavaScript URL includes the integration version in its path. A new asset-registration test confirms that different integration versions cannot reuse the same browser-cache key.
+- Local automated suite: 59 tests passed, together with Python package and JavaScript syntax checks. Live installation and browser acceptance are recorded below after validation.
