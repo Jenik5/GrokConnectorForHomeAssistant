@@ -152,4 +152,3 @@ class GatewayTests(unittest.IsolatedAsyncioTestCase):
         for message in ([], {'jsonrpc': '2.0', 'method': 'ping', 'id': True},
                         {'jsonrpc': '2.0', 'method': 'ping', 'id': 1, 'params': []}):
             self.assertIn('error', await self.gateway.rpc(message, 'grant'))
-

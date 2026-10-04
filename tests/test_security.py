@@ -172,4 +172,3 @@ class AuthTests(unittest.TestCase):
             self.auth.approve(transaction, pair)
         self.now += 61
         self.auth.approve(transaction, pair)
-
