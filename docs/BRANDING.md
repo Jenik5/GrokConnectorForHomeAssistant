@@ -4,7 +4,7 @@ The owner's requested draft is a blue house containing the black Grok symbol. It
 
 An original blue-house/chain-link mark is prepared as an alternative and as a provisional local package asset. Both designs are shown on light/dark backgrounds and at small sizes in the local review sheet. Final artwork approval is pending.
 
-The owner chose variant B and requested a black letter G above the chain-link symbol. The updated SVG uses a custom outline for the letter, with no font dependency. Current local review artifacts are named `icon-B-G-review` and show 32, 48, 80 and 96 px previews.
+The owner chose variant B and requested a black letter G above the chain-link symbol. The updated SVG uses a custom outline for the letter, with no font dependency. The G is raised slightly; the chain-link symbol retains its original position. Current local review artifacts are named `icon-B-G-raised-review` and show 32, 48, 80 and 96 px previews.
 
 [xAI's brand guidelines](https://x.ai/legal/brand-guidelines) restrict combining its mark into another mark, altering its logos and using its marks in third-party app/product titles. The working name **Grok Connector** also needs consideration before public branding is finalized. An independently named connector can still describe its interoperability with Grok in documentation.
 
