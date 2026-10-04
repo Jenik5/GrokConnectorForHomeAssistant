@@ -70,7 +70,8 @@ def emit(stage, outcome, *, warning=False, **fields):
             record[key] = category(key, value)
         elif key in {"request_id", "flow_id"} and isinstance(value, str) and re.fullmatch(r"[a-f0-9]{12}", value):
             record[key] = value
-        elif key == "version" and isinstance(value, str) and re.fullmatch(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:b[0-9]{1,3})?", value):
+        elif key == "version" and isinstance(value, str) and re.fullmatch(
+                r"(?:[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:b[0-9]{1,3})?|[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,3})", value):
             record[key] = value
     now = time.monotonic()
     while _WINDOW and _WINDOW[0] <= now - 60:

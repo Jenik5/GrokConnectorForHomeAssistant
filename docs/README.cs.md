@@ -2,7 +2,7 @@
 
 Komunitní MCP konektor pro Home Assistant. Vybereš libovolné entity ke čtení a přidáš pojmenované akce v běžném editoru HA. Konektor nemá zabudované podmínky pro vrata ani jiné zařízení; podmínky si nastavíš v akcích, skriptech nebo automatizacích.
 
-Beta `0.1.0b3` prošla testy, GitHub CI, instalací přes HACS a ověřením nativního nastavení a editoru akcí v HA. Párování a čtení stavů přes Nabu Casa funguje také ve webovém Groku v Chrome. Fyzické ovládání zařízení a klient v Tesle ještě vyžadují praktické ověření. [Podrobný návod a stav](../README.md).
+První stabilní vydání má verzi `2026.10.4.1` a vychází z otestované bety `0.1.0b7`. V beta řadě prošly testy, GitHub CI, instalace přes HACS a ověření nastavení i editoru akcí v HA. Párování a čtení stavů přes Nabu Casa funguje ve webovém Groku v Chrome; uživatel potvrdil také rozsvícení a zhasnutí světla. Klient v Tesle a další akce vyžadují vlastní praktické ověření. Pro stabilní vydání není potřeba zapínat beta verze v HACS. [Podrobný návod a stav](../README.md).
 
 ## Instalace přes HACS
 

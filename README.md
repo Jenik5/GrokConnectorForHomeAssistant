@@ -2,7 +2,7 @@
 
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
-A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current beta version is **0.1.0b7**. This version fixes request-ID collisions between separate Grok MCP sessions, such as turning a light on and then off. Action icons refresh immediately after saving
+A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The first stable release is **2026.10.4.1**, based on the tested 0.1.0b7 connector. It includes the fix for request-ID collisions between separate Grok MCP sessions, such as turning a light on and then off. Action icons refresh immediately after saving
 the action editor. Both configuration lists use a scroll container from the start,
 limited to 400 px or 45% of the viewport height; scrollbars appear only when needed.
 Add and Submit controls stay outside the list.
@@ -22,16 +22,16 @@ Select any entity for reading. Expose commands as named action sequences using H
 
 - Home Assistant **2026.9.4 or newer**, HACS and enabled Nabu Casa remote access.
 - A Grok client/account that offers custom remote MCP connectors with OAuth. Availability in Grok's Tesla interface is a separate client capability; this integration cannot enable it.
-- The first beta passed automated checks, GitHub CI, a live HACS installation, native HA configuration/action editing and OAuth/MCP acceptance over Nabu Casa. Grok web in Chrome successfully paired and read the selected states. Physical device commands and the Tesla client still need deliberate acceptance testing. See [validation evidence](docs/VALIDATION.md).
+- The beta series passed automated checks, GitHub CI, live HACS installation, native HA configuration/action editing and OAuth/MCP acceptance over Nabu Casa. Grok web in Chrome successfully paired and read selected states; the user confirmed light-on and light-off commands after the b7 fix. The first stable release packages that implementation with the requested date-based version. The Tesla client and other device sequences need their own acceptance testing. See [validation evidence](docs/VALIDATION.md).
 
 This is an independent integration, not the official Home Assistant MCP Server or an xAI product. Installing it does not replace another MCP integration. Existing access is not migrated automatically.
 
 ## Install with HACS
 
-Install the published beta through HACS:
+Install the published release through HACS:
 
 1. In HACS, open **Custom repositories** and add `https://github.com/Jenik5/GrokConnectorForHomeAssistant` as an **Integration**.
-2. Download the chosen version. Enable beta versions in HACS if selecting a prerelease.
+2. Download **2026.10.4.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
 3. Restart Home Assistant to load the newly installed Python integration.
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
 5. Enter your Nabu Casa remote-access HTTPS origin, for example `https://your-instance.ui.nabu.casa`, and choose the MCP language.
@@ -86,7 +86,7 @@ The `skip_condition` setting is your choice. HA's trigger action can bypass auto
 
 Put longer workflows and their conditions in existing scripts or automations. The connector serializes its own action sequences; an inline delay or wait delays subsequent connector commands until the sequence returns. The `script.turn_on` example starts the separate HA script and returns; later revocation does not undo already started external scripts or physical effects.
 
-The beta supports up to 64 reading entities and 64 named actions. Each sequence is limited to 100 top-level steps and 64 KiB of JSON configuration.
+The connector supports up to 64 reading entities and 64 named actions. Each sequence is limited to 100 top-level steps and 64 KiB of JSON configuration.
 
 ## Pair Grok
 

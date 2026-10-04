@@ -137,6 +137,19 @@ class LogPrivacyTests(unittest.TestCase):
                 diagnostics.emit("resource_metadata", "request")
         self.assertEqual(len(captured.records), diagnostics._LIMIT)
 
+    def test_release_versions_are_logged_without_accepting_arbitrary_text(self):
+        for version in ('0.1.0b7', '2026.10.4.1', const.VERSION):
+            with self.subTest(version=version), self.assertLogs(diagnostics._LOGGER, level='INFO') as captured:
+                diagnostics.emit('setup', 'loaded', version=version)
+            record = json.loads(captured.records[0].getMessage().split('GROK_CONNECTOR_DIAG ', 1)[1])
+            self.assertEqual(record['version'], version)
+        for version in ('PRIVATE_TOKEN', 'https://private.example/2026.10.4.1',
+                        '2026.10.4.1\nPRIVATE_TOKEN', '2026.10.4.1000', None):
+            with self.subTest(version=version), self.assertLogs(diagnostics._LOGGER, level='INFO') as captured:
+                diagnostics.emit('setup', 'loaded', version=version)
+            record = json.loads(captured.records[0].getMessage().split('GROK_CONNECTOR_DIAG ', 1)[1])
+            self.assertNotIn('version', record)
+
 
 class MCPSessionTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):

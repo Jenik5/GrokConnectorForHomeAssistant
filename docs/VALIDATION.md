@@ -162,3 +162,14 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 - Live Grok requests include a valid MCP session header. Reading selected states
   succeeds with HTTP 200, and Grok explicitly closes sessions with DELETE/204.
   Tesla client acceptance remains separate.
+
+## First stable release 2026.10.4.1
+
+- Promotes the accepted b7 implementation using the owner's requested version
+  `2026.10.4.1`. Both manifest and runtime version constants match.
+- Diagnostic version filtering supports the date-based format; a regression
+  verifies both beta/stable versions and rejects arbitrary text or URLs.
+- English and four translated guides now describe the first stable release,
+  the confirmed light-on/light-off retest and the separate Tesla acceptance limit.
+- Publication uses a stable GitHub release rather than a prerelease. A live HA
+  installation of this stable tag is a separate acceptance step.
