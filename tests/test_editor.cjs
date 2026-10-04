@@ -57,3 +57,34 @@ test("foreign object selectors are not decorated", () => {
     get shadowRoot() {throw new Error("Foreign flow DOM was inspected");}},
     {ours:false,stepId:"actions"});
 });
+
+test("an icon-only native edit refreshes presentation after rendering", async () => {
+  let frame;
+  let renders = 0;
+  const native = {isConnected:true, updateComplete:Promise.resolve()};
+  const state = {dialog:{isConnected:true}};
+  const original = api.decorateActions;
+  api.requestAnimationFrame = (callback) => {frame = callback;};
+  api.decorateActions = (host, supplied) => {
+    assert.equal(host,native);
+    assert.equal(supplied,state);
+    renders++;
+  };
+  try {
+    const pending = api.refreshActionAfterEdit(native,state,{target:native});
+    assert.equal(renders,0);
+    frame();
+    await pending;
+    assert.equal(renders,1);
+    frame = undefined;
+    await api.refreshActionAfterEdit(native,state,{target:{}});
+    assert.equal(frame,undefined);
+    const detached = api.refreshActionAfterEdit(native,state,{target:native});
+    native.isConnected = false;
+    frame();
+    await detached;
+    assert.equal(renders,1);
+  } finally {
+    api.decorateActions = original;
+  }
+});

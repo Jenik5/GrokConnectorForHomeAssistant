@@ -42,17 +42,36 @@ function addButton(button, label) {
   if (icon.path !== PLUS) icon.path = PLUS;
 }
 
+const LIST_SCROLL = `max-height:min(400px,45vh);overflow-y:auto;
+  scrollbar-gutter:stable;overscroll-behavior:contain`;
+
+async function refreshActionAfterEdit(native, state, event) {
+  if (event.target !== native) return;
+  // Property-only Lit updates (such as an icon change) need not mutate the
+  // observed DOM. Wait for the native value propagation and render before the
+  // next paint, then update presentation without touching the list value.
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  await native.updateComplete;
+  if (native.isConnected && state.dialog.isConnected) decorateActions(native, state);
+}
+
 function decorateActions(native, state) {
   const config = native.selector?.object;
   if (!state.ours || state.stepId !== "actions"
       || config?.translation_key !== "grok_actions") return;
   const root = native.shadowRoot;
   if (!root) return;
+  if (!state.actionListeners.has(native)) {
+    const changed = (event) => refreshActionAfterEdit(native, state, event);
+    native.addEventListener("value-changed", changed);
+    state.actionListeners.add(native);
+    state.cleanup.push(() => native.removeEventListener("value-changed", changed));
+  }
   setHeading(state, native.label);
   style(root, "actions", `
     label {display:none!important}
     .items-container {display:flex;flex-direction:column;align-items:flex-start;gap:8px}
-    ha-sortable {width:100%}
+    ha-sortable {display:block;width:100%;${LIST_SCROLL}}
     ha-md-list-item.item {position:relative;background:var(--ha-color-form-background)!important;
       border:0!important;border-radius:var(--ha-border-radius-sm) var(--ha-border-radius-sm) 0 0!important;
       min-height:56px;--md-list-item-one-line-container-height:56px;
@@ -105,7 +124,7 @@ function decorateEntities(host, state) {
     setHeading(state, host.label);
   } else if (host.localName === "ha-entities-picker") {
     style(root, "entities", `label {display:none!important}
-      .list {margin-top:0!important}.entity:first-child {margin-top:0!important}`);
+      .list {margin-top:0!important;${LIST_SCROLL}}.entity:first-child {margin-top:0!important}`);
   } else if (host.localName === "ha-picker-field") {
     style(root, "entity-field", `[slot="headline"] {font-weight:700}
       [slot="supporting-text"] {font-weight:400}`);
@@ -143,7 +162,8 @@ const dialogs = new Map();
 
 function watchDialog(dialog) {
   const state = { dialog, ours:false, options:false, stepId:undefined, hass:undefined,
-    roots:new WeakSet(), pending:new WeakSet(), finished:new WeakSet(), observers:[] };
+    roots:new WeakSet(), pending:new WeakSet(), finished:new WeakSet(),
+    actionListeners:new WeakSet(), cleanup:[], observers:[] };
   dialogs.set(dialog, state);
 
   function decorate(host) {
@@ -210,6 +230,7 @@ async function start() {
     for (const [dialog, state] of dialogs) {
       if (!dialog.isConnected) {
         for (const observer of state.observers) observer.disconnect();
+        for (const cleanup of state.cleanup) cleanup();
         dialogs.delete(dialog);
       }
     }

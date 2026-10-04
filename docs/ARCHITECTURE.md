@@ -51,3 +51,12 @@ The Grok options dialogs use a common filled row appearance, close icons for rem
 Entity/action descriptions are removed from native translations and their field titles become the large dialog heading in all five languages. The scoped module hides the redundant list label and handles cached translation headings without changing form data.
 
 Only confirmed `create_entry` results from Grok options flows automatically invoke HA's public `step-flow-create-entry.finish()` method. This completes the existing native flow and callback without an extra success click. Initial configuration, errors, aborts, chained flows and other integrations keep HA's normal behavior. If the presentation module is absent or that native API changes, HA's default finish screen remains available.
+
+
+The action presentation also listens to the native selector's `value-changed`
+event. It refreshes after native Lit rendering on the next animation frame, so
+icon-only edits appear without reopening the list. List values and native event
+propagation remain unchanged; listeners are disconnected with the flow dialog.
+Both lists have the same permanent overflow container: a maximum height of
+400 px or 45% of the viewport, whichever is smaller. Native Add and Submit
+controls remain outside it. Scrollbars appear only when content overflows.

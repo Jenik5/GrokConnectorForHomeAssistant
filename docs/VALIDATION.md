@@ -88,3 +88,14 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 - New tests cover backward-compatible optional icons, malformed icon rejection, icon-only policy equality/access/script/retry-cache preservation and native picker flow persistence. Native create-entry completion is restricted to successful Grok options flows; error, abort, initial config, foreign and chained flows are retained. A changed native finish API falls back to the default finish screen.
 - All five translations retain key/placeholder parity, include the Icon field and use compact entity/action headings without help paragraphs.
 - Live HACS installation and browser acceptance are recorded after deployment below.
+
+
+## Immediate icon refresh and bounded lists 0.1.0b6
+
+- The previous DOM observer missed icon-only changes because native Lit can
+  update the item's properties without changing any observed text or children.
+  Native value-change events now trigger a presentation refresh after rendering.
+- A regression test covers the icon-only event, ignoring nested events and
+  detached selectors. Entity and action lists share an overflow container
+  limited to min(400px, 45vh), with Add/Submit controls outside it.
+- Local checks, CI and live HACS/browser acceptance are recorded below.
