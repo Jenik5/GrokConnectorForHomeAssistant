@@ -87,7 +87,7 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 - Local checks passed: 64 Python tests, four JavaScript regression tests, package checks and JavaScript syntax.
 - New tests cover backward-compatible optional icons, malformed icon rejection, icon-only policy equality/access/script/retry-cache preservation and native picker flow persistence. Native create-entry completion is restricted to successful Grok options flows; error, abort, initial config, foreign and chained flows are retained. A changed native finish API falls back to the default finish screen.
 - All five translations retain key/placeholder parity, include the Icon field and use compact entity/action headings without help paragraphs.
-- Live HACS installation and browser acceptance are recorded after deployment below.
+- Version 0.1.0b5 was installed through HACS and passed supported native flow acceptance. Browser checks of the inherited presentation and completion behavior are included in the 0.1.0b6 acceptance below.
 
 
 ## Immediate icon refresh and bounded lists 0.1.0b6
@@ -99,3 +99,30 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
   detached selectors. Entity and action lists share an overflow container
   limited to min(400px, 45vh), with Add/Submit controls outside it.
 - Local checks, CI and live HACS/browser acceptance are recorded below.
+
+
+- Local checks passed: 64 Python tests, five JavaScript tests, package checks and
+  JavaScript syntax. [The tag validation run](https://github.com/Jenik5/GrokConnectorForHomeAssistant/actions/runs/37226704902)
+  passed HACS, hassfest and Python 3.13/3.14 for release code `eede0b9`.
+- Published [0.1.0b6](https://github.com/Jenik5/GrokConnectorForHomeAssistant/releases/tag/0.1.0b6)
+  and installed it through HACS after a verified private backup. HA configuration
+  validation and one user-approved restart completed; both integrations load.
+- Chrome's ordinary integration page initially received older HTML from HA's
+  service-worker cache. A second ordinary refresh loaded the versioned b6 module;
+  no cache-busting URL, authentication or CSP changes were used.
+- Edited only the icon of an existing action through HA's native icon picker.
+  Saving the inner editor updated the rendered icon in the still-open action
+  list, with its name, description and sequence unchanged. The draft was discarded.
+- Added temporary items through the native UI without submitting either policy.
+  Eight action rows yielded 520 px of content in a 400 px overflow container;
+  seven entity rows yielded 440 px in the same 400 px limit. Wheel input moved
+  their scroll positions to 120 px and 40 px respectively. Both showed overflow
+  scrollbars, while Add and Submit remained outside the scrolling list.
+- Discarded both temporary drafts. Submitting the original, unchanged entity
+  list closed the options dialog automatically; no Finish click was needed.
+  API read-back matched the exact configuration and stable IDs from the backup.
+  Invalid native sequences remained rejected atomically. The original gateway's
+  source and stored credentials were unchanged; no physical commands were sent.
+- Live UI acceptance used Chrome, Czech and HA 2026.9.4. Other browsers, languages
+  and viewport sizes remain separate acceptance boundaries; the shared CSS uses
+  min(400px, 45vh) to adapt to available height.
