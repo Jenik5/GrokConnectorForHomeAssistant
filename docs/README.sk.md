@@ -2,7 +2,7 @@
 
 Komunitný konektor MCP sprístupní vybrané entity Home Assistantu na čítanie a pomenované sekvencie akcií na vykonanie. Vybrať možno ľubovoľný typ entity. Podmienky určuješ ty v akciách, skriptoch alebo automatizáciách HA.
 
-Beta `0.1.0b1` prešla testami, GitHub CI, inštaláciou cez HACS a overením natívneho nastavenia a editora akcií v HA. Párovanie a čítanie stavov cez Nabu Casa funguje aj vo webovom Groku v Chrome. Fyzické ovládanie zariadení a klient v Tesle ešte vyžadujú praktické overenie. [Podrobný návod a stav](../README.md).
+Beta `0.1.0b3` prešla testami, GitHub CI, inštaláciou cez HACS a overením natívneho nastavenia a editora akcií v HA. Párovanie a čítanie stavov cez Nabu Casa funguje aj vo webovom Groku v Chrome. Fyzické ovládanie zariadení a klient v Tesle ešte vyžadujú praktické overenie. [Podrobný návod a stav](../README.md).
 
 ## Nastavenie cez HACS
 

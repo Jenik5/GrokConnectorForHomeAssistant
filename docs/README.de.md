@@ -2,7 +2,7 @@
 
 Dieser Community-MCP-Connector stellt ausgewählte Home-Assistant-Entitäten zum Lesen und benannte Aktionsfolgen zur Ausführung bereit. Alle Entitätstypen können ausgewählt werden. Bedingungen definierst du selbst in HA-Aktionen, Skripten oder Automationen.
 
-Beta `0.1.0b1` hat Tests, GitHub CI, die HACS-Installation und die native HA-Konfiguration einschließlich Aktionseditor bestanden. OAuth und das Lesen von Zuständen über Nabu Casa funktionieren auch mit Grok im Chrome-Browser. Gerätebefehle und der Tesla-Client müssen noch gezielt praktisch getestet werden. [Vollständige Dokumentation und Status](../README.md).
+Beta `0.1.0b3` hat Tests, GitHub CI, die HACS-Installation und die native HA-Konfiguration einschließlich Aktionseditor bestanden. OAuth und das Lesen von Zuständen über Nabu Casa funktionieren auch mit Grok im Chrome-Browser. Gerätebefehle und der Tesla-Client müssen noch gezielt praktisch getestet werden. [Vollständige Dokumentation und Status](../README.md).
 
 ## Einrichtung über HACS
 

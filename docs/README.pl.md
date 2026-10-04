@@ -2,7 +2,7 @@
 
 Społecznościowy konektor MCP udostępnia wybrane encje Home Assistant do odczytu oraz nazwane sekwencje akcji do wykonania. Można wybrać encje dowolnego typu. Warunki ustalasz samodzielnie w akcjach, skryptach lub automatyzacjach HA.
 
-Beta `0.1.0b1` przeszła testy, GitHub CI, instalację przez HACS i sprawdzenie natywnej konfiguracji HA oraz edytora akcji. OAuth i odczyt stanów przez Nabu Casa działają również w internetowym Groku w Chrome. Polecenia sterujące urządzeniami i klient w Tesli wymagają jeszcze celowych testów praktycznych. [Pełna dokumentacja i stan](../README.md).
+Beta `0.1.0b3` przeszła testy, GitHub CI, instalację przez HACS i sprawdzenie natywnej konfiguracji HA oraz edytora akcji. OAuth i odczyt stanów przez Nabu Casa działają również w internetowym Groku w Chrome. Polecenia sterujące urządzeniami i klient w Tesli wymagają jeszcze celowych testów praktycznych. [Pełna dokumentacja i stan](../README.md).
 
 ## Konfiguracja przez HACS
 

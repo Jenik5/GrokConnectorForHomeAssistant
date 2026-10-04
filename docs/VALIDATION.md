@@ -58,4 +58,11 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 
 - Local automated suite: 58 tests passed; Python package checks and JavaScript syntax check passed.
 - New options-flow checks cover unchanged policy, stable IDs on edits, new IDs, removals, duplicate/unknown/malformed IDs, empty lists, limits and atomic rejection of invalid HA actions.
-- CI and live browser acceptance for this update are pending. The earlier 0.1.0b1 results above remain historical evidence.
+- [Validate run](https://github.com/Jenik5/GrokConnectorForHomeAssistant/actions/runs/37211095079) passed all four jobs for release code `5e44860`: HACS, hassfest and tests on Python 3.13/3.14. JavaScript syntax is also checked in CI.
+- Published [0.1.0b3](https://github.com/Jenik5/GrokConnectorForHomeAssistant/releases/tag/0.1.0b3). Downloaded the release through HACS after a verified private backup; `ha core check` passed and the necessary restart completed. Both integration domains remain loaded.
+- Chrome on HA 2026.9.4 displays the action list directly, with a left icon, bold name, description, remove/edit controls on the right and the localized blue Add action button.
+- The Add action dialog opens the native name, description and HA sequence editor. Removing a row in an unsaved draft updates the list; editing the new first row opens the correct remaining action. Those test changes were discarded.
+- Opened an existing action in the browser, saved it without changes, then submitted the list successfully. Supported API read-back confirmed the original complete configuration, all stable IDs and the existing grant were preserved. Invalid action submission was rejected without changing persisted configuration.
+- The original integration's source files and persisted credentials remain unchanged. No physical device commands were executed.
+- An older cached HA entry page initially omitted the new frontend module. Reopening the integration page with `?editor=0.1.0b3` loaded the current module; release instructions document refreshing/reopening the browser. No authentication or CSP protections were changed.
+- Native UI visual acceptance was performed in Czech. All five translations pass key/placeholder checks; screenshots in other languages and additional browser/version coverage remain pending.
