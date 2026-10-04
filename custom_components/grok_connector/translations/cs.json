@@ -48,36 +48,10 @@
       },
       "actions": {
         "title": "Akce",
-        "menu_options": {
-          "add_action": "Přidat akci",
-          "edit_action": "Upravit akci",
-          "delete_action": "Odebrat akci"
-        }
-      },
-      "edit_action": {
-        "title": "Upravit akci",
+        "description": "Ikonami můžete akci upravit nebo odebrat. Změny se uloží po odeslání seznamu a vyžadují nové párování.",
         "data": {
-          "action_id": "Akce"
+          "actions": "Akce dostupné pro Groka"
         }
-      },
-      "delete_action": {
-        "title": "Odebrat akci",
-        "data": {
-          "action_id": "Akce"
-        }
-      },
-      "action": {
-        "title": "Akce",
-        "description": "Popište akci, aby Grok věděl, kdy ji použít. Vyberte akce HA, automatizaci, skript, podmínky nebo sekvenci. Za podmínky a bezpečnost zařízení odpovídáte vy.",
-        "data": {
-          "name": "Název akce",
-          "description": "Popis pro Groka",
-          "sequence": "Sekvence akcí"
-        }
-      },
-      "confirm_delete": {
-        "title": "Odebrat akci",
-        "description": "Odebrat akci {name}? Uložení zruší dosavadní přístup."
       },
       "language": {
         "title": "Jazyk nástrojů MCP",
@@ -103,6 +77,24 @@
       "not_loaded": "Konektor neběží. Zapněte jej a zkuste to znovu.",
       "no_actions": "Zatím nejsou nastavené žádné akce.",
       "too_many_actions": "Lze vystavit nejvýše 64 akcí."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Název akce"
+        },
+        "description": {
+          "name": "Popis pro Groka"
+        },
+        "sequence": {
+          "name": "Sekvence akcí"
+        }
+      },
+      "options": {
+        "add": "Přidat akci"
+      }
     }
   }
 }

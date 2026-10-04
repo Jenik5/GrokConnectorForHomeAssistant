@@ -143,6 +143,8 @@ class Runtime:
 
 async def async_setup(hass, config):
     from .http import register_views
+    from .frontend import async_register_editor
+    await async_register_editor(hass)
     register_views(hass)
     return True
 

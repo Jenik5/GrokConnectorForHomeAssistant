@@ -1,6 +1,6 @@
 # Validation evidence — 2026-10-04
 
-Development version: `0.1.0b1`.
+Development version: `0.1.0b2`.
 
 ## Confirmed locally
 
@@ -53,3 +53,9 @@ Environment: Home Assistant **2026.9.4**, HACS **2.0.5**, published integration 
 - Tesla client capability and behavior remain unverified; Grok web success does not establish Tesla support.
 
 See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
+
+## Action list update 0.1.0b2
+
+- Local automated suite: 58 tests passed; Python package checks and JavaScript syntax check passed.
+- New options-flow checks cover unchanged policy, stable IDs on edits, new IDs, removals, duplicate/unknown/malformed IDs, empty lists, limits and atomic rejection of invalid HA actions.
+- CI and live browser acceptance for this update are pending. The earlier 0.1.0b1 results above remain historical evidence.

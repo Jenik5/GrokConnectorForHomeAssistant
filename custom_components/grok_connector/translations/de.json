@@ -48,36 +48,10 @@
       },
       "actions": {
         "title": "Aktionen",
-        "menu_options": {
-          "add_action": "Aktion hinzufügen",
-          "edit_action": "Aktion bearbeiten",
-          "delete_action": "Aktion entfernen"
-        }
-      },
-      "edit_action": {
-        "title": "Aktion bearbeiten",
+        "description": "Mit den Symbolen können Sie Aktionen bearbeiten oder entfernen. Änderungen werden beim Absenden der Liste gespeichert und erfordern eine erneute Kopplung.",
         "data": {
-          "action_id": "Aktion"
+          "actions": "Für Grok verfügbare Aktionen"
         }
-      },
-      "delete_action": {
-        "title": "Aktion entfernen",
-        "data": {
-          "action_id": "Aktion"
-        }
-      },
-      "action": {
-        "title": "Aktionen",
-        "description": "Beschreiben Sie die Aktion, damit Grok sie passend verwendet. Wählen Sie HA-Aktionen, eine Automatisierung, ein Skript, Bedingungen oder eine Sequenz. Bedingungen und Gerätesicherheit liegen in Ihrer Verantwortung.",
-        "data": {
-          "name": "Aktionsname",
-          "description": "Beschreibung für Grok",
-          "sequence": "Aktionssequenz"
-        }
-      },
-      "confirm_delete": {
-        "title": "Aktion entfernen",
-        "description": "Aktion {name} entfernen? Das Speichern widerruft den bisherigen Zugriff."
       },
       "language": {
         "title": "Sprache der MCP-Werkzeuge",
@@ -103,6 +77,24 @@
       "not_loaded": "Der Connector läuft nicht. Aktivieren Sie ihn und versuchen Sie es erneut.",
       "no_actions": "Es sind noch keine Aktionen eingerichtet.",
       "too_many_actions": "Es können höchstens 64 Aktionen freigegeben werden."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Aktionsname"
+        },
+        "description": {
+          "name": "Beschreibung für Grok"
+        },
+        "sequence": {
+          "name": "Aktionssequenz"
+        }
+      },
+      "options": {
+        "add": "Aktion hinzufügen"
+      }
     }
   }
 }

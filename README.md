@@ -2,7 +2,7 @@
 
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
-A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current beta version is **0.1.0b1**.
+A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current beta version is **0.1.0b2**.
 
 Select any entity for reading. Expose commands as named action sequences using Home Assistant's own action editor: turn on a light, run a script, trigger an automation, activate a scene, or build a sequence with conditions. The connector does not contain device-specific rules. Conditions belong in your configured actions, scripts or automations.
 
@@ -26,7 +26,7 @@ Install the published beta through HACS:
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
 5. Enter your Nabu Casa remote-access HTTPS origin, for example `https://your-instance.ui.nabu.casa`, and choose the MCP language.
 6. Select entities whose states Grok may read. Any entity domain is allowed; the list can be empty for an actions-only connector.
-7. Open **Configure → Actions → Add action** to expose commands.
+7. Open **Configure → Actions** to see configured commands. Each row shows its name and description, with edit and remove icons. Use **Add action** below the list to add a command; submit the list to save your changes.
 
 HACS manages this repository as a custom repository; inclusion in the HACS default catalog is not required. See the [HACS installation documentation](https://www.hacs.xyz/docs/faq/custom_repositories/).
 

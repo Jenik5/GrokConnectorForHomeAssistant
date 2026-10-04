@@ -44,8 +44,8 @@ class Selector:
 
 
 selectors = types.SimpleNamespace(**{name: Selector for name in
-    ['EntitySelector', 'ActionSelector', 'SelectSelector']},
-    **{name: lambda **kwargs: kwargs for name in ['EntitySelectorConfig', 'SelectSelectorConfig']})
+    ['EntitySelector', 'ActionSelector', 'SelectSelector', 'TextSelector', 'ObjectSelector']},
+    **{name: lambda **kwargs: kwargs for name in ['EntitySelectorConfig', 'SelectSelectorConfig', 'ObjectSelectorConfig']})
 source = ROOT / 'config_flow.py'
 tree = ast.parse(source.read_text(encoding='utf-8'))
 tree.body = [node for node in tree.body if not isinstance(node, (ast.Import, ast.ImportFrom))]
@@ -75,31 +75,52 @@ class OptionsTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result['data']['read_entities'], ['climate.example', 'lock.example'])
         self.assertEqual(result['data']['actions'], [action()])
 
-    async def test_action_editor_validates_but_persists_raw_administrator_sequence(self):
-        form = await self.flow.async_step_add_action()
-        self.assertIsInstance(form['data_schema']['sequence'], Selector)
+    async def test_actions_open_as_named_described_object_list_with_native_sequence_editor(self):
+        form = await self.flow.async_step_actions()
+        self.assertEqual(form['type'], 'form')
+        config = form['data_schema']['actions'].config
+        self.assertEqual(config['label_field'], 'name')
+        self.assertEqual(config['description_field'], 'description')
+        self.assertTrue(config['multiple'])
+        self.assertNotIn('id', config['fields'])
+        self.assertIsInstance(config['fields']['sequence']['selector'], Selector)
+
+    async def test_unchanged_list_retains_policy_and_stable_tool_ids(self):
+        result = await self.flow.async_step_actions({'actions': [action()]})
+        self.assertEqual(result['data']['actions'], [action()])
+        self.assertEqual(policy.Policy.from_dict(result['data']), policy.Policy.from_dict(self.flow.config_entry.data))
+
+    async def test_list_add_edit_and_delete_validate_but_persist_raw_sequences(self):
+        existing = {**action(), 'name': 'Updated name'}
         sequence = [{'action': 'script.turn_on', 'target': {'entity_id': 'script.example'}}]
-        result = await self.flow.async_step_action({'name': 'Run script', 'description': 'Example', 'sequence': sequence})
+        new = {'name': 'Run script', 'description': 'Example', 'sequence': sequence}
+        result = await self.flow.async_step_actions({'actions': [existing, new]})
         self.assertEqual(result['type'], 'create_entry')
-        self.assertEqual(self.flow.hass.validated, [sequence])
-        self.assertEqual(result['data']['actions'][-1]['sequence'], sequence)
+        self.assertEqual(result['data']['actions'][0]['id'], action()['id'])
+        self.assertNotEqual(result['data']['actions'][1]['id'], action()['id'])
+        self.assertEqual(result['data']['actions'][1]['sequence'], sequence)
+        self.assertEqual(self.flow.hass.validated, [existing['sequence'], sequence])
+        result = await self.flow.async_step_actions({'actions': [result['data']['actions'][1]]})
+        self.assertEqual(len(result['data']['actions']), 1)
         self.assertEqual(self.flow.config_entry.data['actions'], [action()])
 
-    async def test_invalid_device_action_returns_localized_form_error(self):
-        await self.flow.async_step_add_action()
-        result = await self.flow.async_step_action({'name': 'Invalid', 'sequence': [{'invalid': True}]})
+    async def test_invalid_action_leaves_draft_unchanged(self):
+        invalid = {'name': 'Invalid', 'sequence': [{'invalid': True}]}
+        result = await self.flow.async_step_actions({'actions': [action(), invalid]})
         self.assertEqual(result['errors'], {'base': 'invalid_action'})
         self.assertEqual(self.flow._draft['actions'], [action()])
 
-    async def test_edit_retains_stable_tool_id_and_delete_requires_confirmation(self):
-        await self.flow.async_step_edit_action({'action_id': 'a' * 32})
-        result = await self.flow.async_step_action({'name': 'New description', 'sequence': action()['sequence']})
-        self.assertEqual(len(result['data']['actions']), 1)
-        self.assertEqual(result['data']['actions'][0]['id'], 'a' * 32)
-        result = await self.flow.async_step_delete_action({'action_id': 'a' * 32})
-        self.assertEqual(result['step_id'], 'confirm_delete')
-        self.assertEqual(len(self.flow._draft['actions']), 1)
-        result = await self.flow.async_step_confirm_delete({})
+    async def test_duplicate_unknown_or_malformed_ids_are_rejected(self):
+        for items in ([action(), action()], [{**action(), 'id': 'b' * 32}], [{**action(), 'id': []}]):
+            with self.subTest(items=items):
+                result = await self.flow.async_step_actions({'actions': items})
+                self.assertEqual(result['errors'], {'base': 'invalid_action'})
+                self.assertEqual(self.flow._draft['actions'], [action()])
+
+    async def test_empty_list_is_saved_and_limit_is_enforced(self):
+        result = await self.flow.async_step_actions({'actions': [action()] * 65})
+        self.assertEqual(result['errors'], {'base': 'invalid_action'})
+        result = await self.flow.async_step_actions({'actions': []})
         self.assertEqual(result['data']['actions'], [])
 
     def test_additional_languages_do_not_require_a_python_selector_change(self):

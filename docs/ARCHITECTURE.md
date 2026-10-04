@@ -37,3 +37,9 @@ Integration-owned structured logs allow only known fields and categories. They o
 ## Validation limits
 
 Local tests exercise the actual OAuth/policy/gateway modules and shipped HTTP/runtime/flow logic with framework adapters. They do not replace tests against a real HA instance, the native action editor, Nabu Casa, or Grok's current clients. HACS validation checks packaging/distribution; it does not certify authorization security or device behavior.
+
+## Action list editor
+
+The options flow presents actions as one editable list. Names, descriptions and sequences use HA object and action selectors. A bundled, integration-scoped frontend adapter gives that list the entity-picker appearance and localized Add action label. It decorates only its own nested object selector, without changing global HA components or themes. The adapter depends on HA frontend element structure, so browser acceptance is required when raising the supported HA version.
+
+IDs remain outside editable form fields and are retained by HA object dialogs. The backend checks existing IDs, unique IDs, limits, policy and native script validation before saving the whole list atomically. Opening, canceling or submitting an unchanged list preserves credentials. A real policy change retains the existing revocation behavior.

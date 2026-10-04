@@ -48,36 +48,10 @@
       },
       "actions": {
         "title": "Akcie",
-        "menu_options": {
-          "add_action": "Pridať akciu",
-          "edit_action": "Upraviť akciu",
-          "delete_action": "Odobrať akciu"
-        }
-      },
-      "edit_action": {
-        "title": "Upraviť akciu",
+        "description": "Ikonami môžete akciu upraviť alebo odobrať. Zmeny sa uložia po odoslaní zoznamu a vyžadujú nové párovanie.",
         "data": {
-          "action_id": "Akcia"
+          "actions": "Akcie dostupné pre Groka"
         }
-      },
-      "delete_action": {
-        "title": "Odobrať akciu",
-        "data": {
-          "action_id": "Akcia"
-        }
-      },
-      "action": {
-        "title": "Akcie",
-        "description": "Popíšte akciu, aby Grok vedel, kedy ju použiť. Vyberte akcie HA, automatizáciu, skript, podmienky alebo sekvenciu. Za podmienky a bezpečnosť zariadení zodpovedáte vy.",
-        "data": {
-          "name": "Názov akcie",
-          "description": "Popis pre Groka",
-          "sequence": "Sekvencia akcií"
-        }
-      },
-      "confirm_delete": {
-        "title": "Odobrať akciu",
-        "description": "Odobrať akciu {name}? Uloženie zruší doterajší prístup."
       },
       "language": {
         "title": "Jazyk nástrojov MCP",
@@ -103,6 +77,24 @@
       "not_loaded": "Konektor nebeží. Zapnite ho a skúste to znova.",
       "no_actions": "Zatiaľ nie sú nastavené žiadne akcie.",
       "too_many_actions": "Možno vystaviť najviac 64 akcií."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Názov akcie"
+        },
+        "description": {
+          "name": "Popis pre Groka"
+        },
+        "sequence": {
+          "name": "Sekvencia akcií"
+        }
+      },
+      "options": {
+        "add": "Pridať akciu"
+      }
     }
   }
 }
