@@ -28,6 +28,8 @@ Install the published beta through HACS:
 6. Select entities whose states Grok may read. Any entity domain is allowed; the list can be empty for an actions-only connector.
 7. Open **Configure → Actions** to see configured commands. Each row shows its name and description, with edit and remove icons. Use **Add action** below the list to add a command; submit the list to save your changes.
 
+After an update, close an already-open configuration dialog and refresh the HA page (force refresh if necessary). A cached page can temporarily show the native list with its default appearance, but Add/Edit/Remove do not depend on the presentation module. No special URL or new pairing is needed for this editor update.
+
 HACS manages this repository as a custom repository; inclusion in the HACS default catalog is not required. See the [HACS installation documentation](https://www.hacs.xyz/docs/faq/custom_repositories/).
 
 ## Choose actions
