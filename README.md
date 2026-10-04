@@ -1,5 +1,11 @@
 # Grok Connector for Home Assistant
 
+[![CI](https://github.com/Jenik5/GrokConnectorForHomeAssistant/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/Jenik5/GrokConnectorForHomeAssistant/actions/workflows/validate.yml)
+[![Latest release](https://img.shields.io/github/v/release/Jenik5/GrokConnectorForHomeAssistant?sort=date)](https://github.com/Jenik5/GrokConnectorForHomeAssistant/releases/latest)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5)](https://www.hacs.xyz/docs/faq/custom_repositories/)
+[![Home Assistant 2026.9.4 or newer](https://img.shields.io/badge/Home%20Assistant-2026.9.4%2B-41BDF5?logo=homeassistant&logoColor=white)](#requirements-and-current-status)
+[![MIT License](https://img.shields.io/github/license/Jenik5/GrokConnectorForHomeAssistant)](LICENSE)
+
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
 A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The first stable release is **2026.10.4.1**, based on the tested 0.1.0b7 connector. It includes the fix for request-ID collisions between separate Grok MCP sessions, such as turning a light on and then off. Action icons refresh immediately after saving
