@@ -44,8 +44,8 @@ class Selector:
 
 
 selectors = types.SimpleNamespace(**{name: Selector for name in
-    ['EntitySelector', 'ActionSelector', 'SelectSelector', 'TextSelector', 'ObjectSelector']},
-    **{name: lambda **kwargs: kwargs for name in ['EntitySelectorConfig', 'SelectSelectorConfig', 'ObjectSelectorConfig']})
+    ['EntitySelector', 'ActionSelector', 'SelectSelector', 'TextSelector', 'ObjectSelector', 'IconSelector']},
+    **{name: lambda **kwargs: kwargs for name in ['EntitySelectorConfig', 'SelectSelectorConfig', 'ObjectSelectorConfig', 'IconSelectorConfig']})
 source = ROOT / 'config_flow.py'
 tree = ast.parse(source.read_text(encoding='utf-8'))
 tree.body = [node for node in tree.body if not isinstance(node, (ast.Import, ast.ImportFrom))]
@@ -86,6 +86,18 @@ class OptionsTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(config['multiple'])
         self.assertNotIn('id', config['fields'])
         self.assertIsInstance(config['fields']['sequence']['selector'], Selector)
+
+    async def test_icon_uses_native_picker_and_keeps_id_sequence_and_policy(self):
+        form = await self.flow.async_step_actions()
+        field = form['data_schema']['actions'].config['fields']['icon']
+        self.assertNotIn('required', field)
+        self.assertEqual(field['selector'].config, {'placeholder': 'mdi:play'})
+        chosen = {**action(), 'icon': 'mdi:garage'}
+        saved = await self.flow.async_step_actions({'actions': [chosen]})
+        self.assertEqual(saved['data']['actions'], [chosen])
+        self.assertEqual(policy.Policy.from_dict(saved['data']), policy.Policy.from_dict(self.flow.config_entry.data))
+        saved = await self.flow.async_step_actions({'actions': [{**chosen, 'icon': ''}]})
+        self.assertEqual(saved['data']['actions'], [action()])
 
     async def test_unchanged_list_retains_policy_and_stable_tool_ids(self):
         result = await self.flow.async_step_actions({'actions': [action()]})

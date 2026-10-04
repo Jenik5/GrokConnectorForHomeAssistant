@@ -58,6 +58,27 @@ class PolicyTests(unittest.TestCase):
             policy.Policy.from_dict({'actions': [action(), action()]})
 
 
+    def test_optional_icons_round_trip_without_migrating_existing_actions(self):
+        original = action()
+        self.assertEqual(policy.Action.from_dict(original).as_dict(), original)
+        chosen = {**original, 'icon': 'mdi:garage'}
+        self.assertEqual(policy.Action.from_dict(chosen).as_dict(), chosen)
+        self.assertEqual(policy.Action.from_dict({**original, 'icon': ''}).as_dict(), original)
+
+    def test_icons_cannot_introduce_markup_urls_or_malformed_values(self):
+        for icon in (False, 0, [], {}, 'garage', 'https://example/icon.svg',
+                     'mdi:<script>', 'mdi:garage' + 'x' * 160):
+            with self.subTest(icon=icon), self.assertRaises(policy.PolicyError):
+                policy.Action.from_dict({**action(), 'icon': icon})
+
+    def test_icon_changes_do_not_change_permissions_but_sequence_changes_do(self):
+        before = policy.Policy.from_dict({'actions': [action()]})
+        after = policy.Policy.from_dict({'actions': [{**action(), 'icon': 'custom:example-icon'}]})
+        self.assertEqual(before, after)
+        changed = policy.Policy.from_dict({'actions': [action(sequence=[{'action': 'script.turn_on'}])]})
+        self.assertNotEqual(before, changed)
+
+
 class GatewayTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.executed = []

@@ -11,8 +11,7 @@
         }
       },
       "entities": {
-        "title": "Wybrane encje",
-        "description": "Wybierz dowolne encje, które Grok może odczytywać. Nazwane akcje dodasz w Konfiguruj → Akcje. Zmiana encji lub akcji unieważnia dostęp i wymaga ponownego parowania.",
+        "title": "Encje dostępne do odczytu",
         "data": {
           "read_entities": "Encje dostępne do odczytu"
         }
@@ -40,15 +39,13 @@
         }
       },
       "entities": {
-        "title": "Wybrane encje",
-        "description": "Wybierz dowolne encje, które Grok może odczytywać. Nazwane akcje dodasz w Konfiguruj → Akcje. Zmiana encji lub akcji unieważnia dostęp i wymaga ponownego parowania.",
+        "title": "Encje dostępne do odczytu",
         "data": {
           "read_entities": "Encje dostępne do odczytu"
         }
       },
       "actions": {
-        "title": "Akcje",
-        "description": "Ikony pozwalają edytować lub usunąć akcję. Zmiany są zapisywane po przesłaniu listy i wymagają ponownego parowania.",
+        "title": "Akcje dostępne dla Groka",
         "data": {
           "actions": "Akcje dostępne dla Groka"
         }
@@ -90,6 +87,9 @@
         },
         "sequence": {
           "name": "Sekwencja akcji"
+        },
+        "icon": {
+          "name": "Ikona"
         }
       },
       "options": {

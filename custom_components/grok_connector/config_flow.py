@@ -29,7 +29,8 @@ class ActionListSelector(selector.ObjectSelector):
             raise vol.Invalid('invalid_action')
         # HA's form retains extra data on an edited object. IDs are not fields
         # users can edit; validate all visible fields through the native selector.
-        super().__call__([{key:item[key] for key in item if key != 'id'} for item in value])
+        super().__call__([{key:item[key] for key in item if key != 'id'
+                          and not (key == 'icon' and item[key] in (None,''))} for item in value])
         return value
 
 class EntitySteps:
@@ -99,7 +100,7 @@ class GrokOptionsFlow(EntitySteps,config_entries.OptionsFlow):
                 known_ids = {item['id'] for item in self._draft.get('actions',[])}
                 actions = []
                 for item in shown:
-                    if not isinstance(item,dict) or set(item) - {'id','name','description','sequence'}:
+                    if not isinstance(item,dict) or set(item) - {'id','name','description','sequence','icon'}:
                         raise PolicyError('invalid_action')
                     if 'id' in item and (not isinstance(item['id'],str) or item['id'] not in known_ids):
                         raise PolicyError('invalid_action')
@@ -120,6 +121,7 @@ class GrokOptionsFlow(EntitySteps,config_entries.OptionsFlow):
                 multiple=True,label_field='name',description_field='description',translation_key='grok_actions',
                 fields={
                     'name':{'required':True,'selector':selector.TextSelector()},
+                    'icon':{'selector':selector.IconSelector(selector.IconSelectorConfig(placeholder='mdi:play'))},
                     'description':{'selector':selector.TextSelector()},
                     'sequence':{'required':True,'selector':selector.ActionSelector()},
                 })),

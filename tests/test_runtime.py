@@ -86,6 +86,16 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.runtime.gateway.language, 'cs')
         self.assertEqual(self.saved, [])
 
+    async def test_icon_change_preserves_access_scripts_and_retry_cache(self):
+        scripts = self.runtime.scripts
+        self.runtime.gateway.replies['example'] = ('existing', 'reply')
+        self.entry.options = {**self.entry.data, 'actions': [{**action(), 'icon': 'mdi:garage'}]}
+        await self.runtime.apply_options(self.entry)
+        self.assertTrue(self.runtime.principal_active(self.principal))
+        self.assertIs(self.runtime.scripts, scripts)
+        self.assertEqual(self.runtime.gateway.replies['example'], ('existing', 'reply'))
+        self.assertEqual(self.saved, [])
+
     async def test_policy_change_revokes_access_and_unloads_old_actions(self):
         old_script = self.runtime.scripts['a' * 32]
         self.entry.options = {**self.entry.data, 'read_entities': ['sensor.example'],

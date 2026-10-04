@@ -81,3 +81,10 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 - The first ordinary refresh still received older HTML from HA's service-worker cache. A subsequent ordinary refresh loaded the versioned 0.1.0b4 module. No query parameter was used in this acceptance run. Native editing remained available throughout; an old page may temporarily retain the default appearance until it is refreshed.
 - Through the normal Configure → Actions menu, Chrome displayed the styled list with icons, bold names, descriptions, remove then edit buttons and the localized blue Add action button. Editing opened the correct existing action and its native sequence; Add opened the native empty form. Browser test dialogs were canceled without saving changes.
 - Supported options-flow acceptance rejected an invalid sequence atomically, accepted an unchanged list and preserved the exact configuration, four stable action IDs and existing Grok grant. Both integrations loaded; the original integration's source and stored credentials were unchanged. No physical device commands were executed.
+
+## Unified configuration dialogs 0.1.0b5
+
+- Local checks passed: 64 Python tests, four JavaScript regression tests, package checks and JavaScript syntax.
+- New tests cover backward-compatible optional icons, malformed icon rejection, icon-only policy equality/access/script/retry-cache preservation and native picker flow persistence. Native create-entry completion is restricted to successful Grok options flows; error, abort, initial config, foreign and chained flows are retained. A changed native finish API falls back to the default finish screen.
+- All five translations retain key/placeholder parity, include the Icon field and use compact entity/action headings without help paragraphs.
+- Live HACS installation and browser acceptance are recorded after deployment below.

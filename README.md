@@ -2,7 +2,7 @@
 
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
-A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current beta version is **0.1.0b4**.
+A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current beta version is **0.1.0b5**.
 
 Select any entity for reading. Expose commands as named action sequences using Home Assistant's own action editor: turn on a light, run a script, trigger an automation, activate a scene, or build a sequence with conditions. The connector does not contain device-specific rules. Conditions belong in your configured actions, scripts or automations.
 
@@ -26,7 +26,7 @@ Install the published beta through HACS:
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
 5. Enter your Nabu Casa remote-access HTTPS origin, for example `https://your-instance.ui.nabu.casa`, and choose the MCP language.
 6. Select entities whose states Grok may read. Any entity domain is allowed; the list can be empty for an actions-only connector.
-7. Open **Configure → Actions** to see configured commands. Each row shows its name and description, with edit and remove icons. Use **Add action** below the list to add a command; submit the list to save your changes.
+7. Open **Configure → Actions** to see configured commands. Each row shows its name and description, with edit and remove icons. Use **Add action** below the list to add a command; submit the list to save your changes. Successful options saves close the dialog automatically; validation problems remain visible.
 
 After an update, close an already-open configuration dialog and refresh the HA page (force refresh if necessary). A cached page can temporarily show the native list with its default appearance, but Add/Edit/Remove do not depend on the presentation module. No special URL or new pairing is needed for this editor update.
 
@@ -34,7 +34,7 @@ HACS manages this repository as a custom repository; inclusion in the HACS defau
 
 ## Choose actions
 
-Each action has a **name**, a **description for Grok** and an HA **action sequence**. The visual editor supports service actions, device actions, scripts, automations, scenes, conditions and sequences. The configuration is validated by HA before it becomes an MCP tool.
+Each action has a **name**, an optional **icon**, a **description for Grok** and an HA **action sequence**. Choose the icon through HA's native icon picker; actions without an icon use the play symbol. The visual editor supports service actions, device actions, scripts, automations, scenes, conditions and sequences. The configuration is validated by HA before it becomes an MCP tool.
 
 | Setting | What Grok gets |
 | --- | --- |
@@ -92,7 +92,7 @@ The beta supports up to 64 reading entities and 64 named actions. Each sequence 
 
 A separate HA user or HA long-lived access token is not needed: this server issues its own restricted credentials. Keep the pairing code private. Creating a new code invalidates the previous unused code.
 
-Changing the reading list or any action, including its name/description, **revokes existing connector access**. Create a new pairing code and reconnect Grok. Changing only the language preserves access. **Configure → Revoke Grok access** invalidates access/refresh tokens and pending authorization; approved OAuth client metadata remains available for reauthorization.
+Changing the reading list or any action, including its name/description or sequence, **revokes existing connector access**. Create a new pairing code and reconnect Grok. Changing only the language or an action icon preserves access. **Configure → Revoke Grok access** invalidates access/refresh tokens and pending authorization; approved OAuth client metadata remains available for reauthorization.
 
 ## Languages
 

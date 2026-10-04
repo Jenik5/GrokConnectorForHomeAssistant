@@ -20,7 +20,7 @@ Each grant lasts at most 30 days, with short access tokens and refresh rotation.
 
 ## Changes and action lifecycle
 
-Configuration changes and explicit revocation are serialized. HA validates a proposed policy before replacing the active one. A policy change revokes access and pending authorization before stopping/unloading old inline sequences and replacing the tools. A language-only update preserves credentials and Script objects. Unloading the integration prevents new runs and unloads its Script instances.
+Configuration changes and explicit revocation are serialized. HA validates a proposed policy before replacing the active one. A policy change revokes access and pending authorization before stopping/unloading old inline sequences and replacing the tools. Language-only or icon-only updates preserve credentials and Script objects. Optional action icons are stored as presentation data, excluded from permission equality and never sent as MCP action arguments. Unloading the integration prevents new runs and unloads its Script instances.
 
 During replacement/revocation, an authorization barrier rejects new HTTP authorization/token requests and pairing-code creation. This prevents consent created against old permissions from acquiring the new policy during awaited persistence or Script cleanup.
 
@@ -43,3 +43,11 @@ Local tests exercise the actual OAuth/policy/gateway modules and shipped HTTP/ru
 The options flow presents actions as one editable list. Names, descriptions and sequences use HA object and action selectors. The serialized selector type is always HA's native `object`: list display, Add/Edit/Remove and the sequence editor work even when an older page has not loaded the extra JavaScript module. A versioned, integration-scoped presentation module gives tagged Grok action lists the entity-picker appearance and localized Add action label. It observes config-flow forms and decorates only selectors with the Grok marker, without replacing global HA components, prototypes, values or event handlers. Dialog observers are disconnected when the dialog closes. The adapter depends on HA frontend element structure, so browser acceptance is required when raising the supported HA version.
 
 IDs remain outside editable form fields and are retained by HA object dialogs. The backend checks existing IDs, unique IDs, limits, policy and native script validation before saving the whole list atomically. Opening, canceling or submitting an unchanged list preserves credentials. A real policy change retains the existing revocation behavior.
+
+## Configuration presentation
+
+The Grok options dialogs use a common filled row appearance, close icons for removing selections and matching Add buttons with a plus icon. Entities retain HA's native entity picker and its registry-derived icon/context. Actions retain native object dialogs and gain an optional native icon selector; absent icons default to `mdi:play`. Native list operations and values are not replaced.
+
+Entity/action descriptions are removed from native translations and their field titles become the large dialog heading in all five languages. The scoped module hides the redundant list label and handles cached translation headings without changing form data.
+
+Only confirmed `create_entry` results from Grok options flows automatically invoke HA's public `step-flow-create-entry.finish()` method. This completes the existing native flow and callback without an extra success click. Initial configuration, errors, aborts, chained flows and other integrations keep HA's normal behavior. If the presentation module is absent or that native API changes, HA's default finish screen remains available.

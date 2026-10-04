@@ -11,8 +11,7 @@
         }
       },
       "entities": {
-        "title": "Selected entities",
-        "description": "Choose any entities Grok may read. Add named actions in Configure → Actions. Changed entities or actions revoke existing access and require pairing again.",
+        "title": "Entities available for reading",
         "data": {
           "read_entities": "Entities available for reading"
         }
@@ -40,15 +39,13 @@
         }
       },
       "entities": {
-        "title": "Selected entities",
-        "description": "Choose any entities Grok may read. Add named actions in Configure → Actions. Changed entities or actions revoke existing access and require pairing again.",
+        "title": "Entities available for reading",
         "data": {
           "read_entities": "Entities available for reading"
         }
       },
       "actions": {
-        "title": "Actions",
-        "description": "Edit or remove an action using the icons. Changes apply after submitting this list and require pairing again.",
+        "title": "Actions available to Grok",
         "data": {
           "actions": "Actions available to Grok"
         }
@@ -90,6 +87,9 @@
         },
         "sequence": {
           "name": "Action sequence"
+        },
+        "icon": {
+          "name": "Icon"
         }
       },
       "options": {

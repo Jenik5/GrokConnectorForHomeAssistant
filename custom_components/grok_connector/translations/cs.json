@@ -11,8 +11,7 @@
         }
       },
       "entities": {
-        "title": "Vybrané entity",
-        "description": "Vyberte libovolné entity, které smí Grok číst. Pojmenované akce přidáte v Konfigurovat → Akce. Změna entit nebo akcí zruší dosavadní přístup a vyžaduje nové párování.",
+        "title": "Entity dostupné ke čtení",
         "data": {
           "read_entities": "Entity dostupné ke čtení"
         }
@@ -40,15 +39,13 @@
         }
       },
       "entities": {
-        "title": "Vybrané entity",
-        "description": "Vyberte libovolné entity, které smí Grok číst. Pojmenované akce přidáte v Konfigurovat → Akce. Změna entit nebo akcí zruší dosavadní přístup a vyžaduje nové párování.",
+        "title": "Entity dostupné ke čtení",
         "data": {
           "read_entities": "Entity dostupné ke čtení"
         }
       },
       "actions": {
-        "title": "Akce",
-        "description": "Ikonami můžete akci upravit nebo odebrat. Změny se uloží po odeslání seznamu a vyžadují nové párování.",
+        "title": "Akce dostupné pro Groka",
         "data": {
           "actions": "Akce dostupné pro Groka"
         }
@@ -90,6 +87,9 @@
         },
         "sequence": {
           "name": "Sekvence akcí"
+        },
+        "icon": {
+          "name": "Ikona"
         }
       },
       "options": {

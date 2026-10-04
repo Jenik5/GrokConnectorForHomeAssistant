@@ -11,8 +11,7 @@
         }
       },
       "entities": {
-        "title": "Ausgewählte Entitäten",
-        "description": "Wählen Sie beliebige Entitäten aus, die Grok lesen darf. Benannte Aktionen fügen Sie unter Konfigurieren → Aktionen hinzu. Geänderte Entitäten oder Aktionen widerrufen den Zugriff und erfordern eine neue Kopplung.",
+        "title": "Zum Lesen freigegebene Entitäten",
         "data": {
           "read_entities": "Zum Lesen freigegebene Entitäten"
         }
@@ -40,15 +39,13 @@
         }
       },
       "entities": {
-        "title": "Ausgewählte Entitäten",
-        "description": "Wählen Sie beliebige Entitäten aus, die Grok lesen darf. Benannte Aktionen fügen Sie unter Konfigurieren → Aktionen hinzu. Geänderte Entitäten oder Aktionen widerrufen den Zugriff und erfordern eine neue Kopplung.",
+        "title": "Zum Lesen freigegebene Entitäten",
         "data": {
           "read_entities": "Zum Lesen freigegebene Entitäten"
         }
       },
       "actions": {
-        "title": "Aktionen",
-        "description": "Mit den Symbolen können Sie Aktionen bearbeiten oder entfernen. Änderungen werden beim Absenden der Liste gespeichert und erfordern eine erneute Kopplung.",
+        "title": "Für Grok verfügbare Aktionen",
         "data": {
           "actions": "Für Grok verfügbare Aktionen"
         }
@@ -90,6 +87,9 @@
         },
         "sequence": {
           "name": "Aktionssequenz"
+        },
+        "icon": {
+          "name": "Symbol"
         }
       },
       "options": {
