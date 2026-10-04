@@ -156,5 +156,9 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
   checkpoint, including the existing OAuth grant.
 - Nabu Casa resource metadata returns HTTP 200 and unauthenticated MCP remains
   rejected with HTTP 401. No household action was issued during installation or
-  diagnostics. End-to-end Grok light-on/light-off acceptance is a user retest;
+  diagnostics. After the update, the user confirmed that both light-on and
+  light-off work from Grok. This is user-reported physical acceptance; the agent
+  did not issue either device command.
+- Live Grok requests include a valid MCP session header. Reading selected states
+  succeeds with HTTP 200, and Grok explicitly closes sessions with DELETE/204.
   Tesla client acceptance remains separate.
