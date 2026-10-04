@@ -2,7 +2,7 @@
 
 ## First publication
 
-1. Complete local tests and package checks. Review the working icon/name with the repository owner before the first public release. The current original chain-link icon is a local provisional asset; the composite Grok-mark design is excluded from Git.
+1. Complete local tests and package checks. The owner approved the original house/G/chain-link icon for the first public beta. The composite Grok-mark design is excluded from Git.
 2. Publish the reviewed source to the owner's empty GitHub repository and set the published main branch as the default. Set a descriptive repository summary, enable issues and add `home-assistant`, `hacs`, `integration`, `mcp` topics. Do not include house-specific identifiers, URLs, tokens or pairing codes.
 3. Let the tests, hassfest and HACS workflows finish. Resolve failures before a beta is offered for installation.
 4. Create a GitHub prerelease with a version matching `manifest.json` and `const.py`, initially `0.1.0b1`. HACS can also install a default branch, but a release gives a stable reference for debugging.

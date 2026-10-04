@@ -2,7 +2,7 @@
 
 Komunitný konektor MCP sprístupní vybrané entity Home Assistantu na čítanie a pomenované sekvencie akcií na vykonanie. Vybrať možno ľubovoľný typ entity. Podmienky určuješ ty v akciách, skriptoch alebo automatizáciách HA.
 
-Prvá vývojová verzia `0.1.0b1` má lokálne testy. Inštaláciu cez HACS a pripojenie novej integrácie ku Groku treba ešte overiť na skutočnom HA. Ikona aj verejný názov sú návrhy. [Podrobný návod a stav](../README.md).
+Prvá beta verzia `0.1.0b1` má lokálne testy. Inštaláciu cez HACS a pripojenie novej integrácie ku Groku treba ešte overiť na skutočnom HA. [Podrobný návod a stav](../README.md).
 
 ## Nastavenie po zverejnení
 

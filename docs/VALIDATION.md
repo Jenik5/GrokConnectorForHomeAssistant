@@ -24,7 +24,7 @@ HA's 2026.9.4 source was consulted for `Script.async_run`, `Script.async_unload`
 
 ## Pending
 
-- Final artwork/public identity approval and publication to GitHub.
+- Publication to GitHub (the original house/G/link artwork was approved on 2026-10-04).
 - GitHub tests on Linux/Python 3.13 and 3.14, hassfest and HACS repository validation. Workflow definitions exist; no CI result is claimed.
 - First HACS installation and necessary restart of the real HA instance.
 - Native HA configuration/action editor validation, device actions and conditions on that instance.

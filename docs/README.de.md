@@ -2,7 +2,7 @@
 
 Dieser Community-MCP-Connector stellt ausgewählte Home-Assistant-Entitäten zum Lesen und benannte Aktionsfolgen zur Ausführung bereit. Alle Entitätstypen können ausgewählt werden. Bedingungen definierst du selbst in HA-Aktionen, Skripten oder Automationen.
 
-Die erste Entwicklungsversion `0.1.0b1` wurde lokal getestet. Die Installation über HACS und die Verbindung dieser neuen Integration mit Grok müssen noch auf einer echten HA-Instanz geprüft werden. Symbol und öffentlicher Produktname sind Entwürfe. [Vollständige Dokumentation und Status](../README.md).
+Die erste Betaversion `0.1.0b1` wurde lokal getestet. Die Installation über HACS und die Verbindung dieser neuen Integration mit Grok müssen noch auf einer echten HA-Instanz geprüft werden. [Vollständige Dokumentation und Status](../README.md).
 
 ## Einrichtung nach Veröffentlichung
 

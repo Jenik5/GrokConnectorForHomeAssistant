@@ -2,7 +2,7 @@
 
 Społecznościowy konektor MCP udostępnia wybrane encje Home Assistant do odczytu oraz nazwane sekwencje akcji do wykonania. Można wybrać encje dowolnego typu. Warunki ustalasz samodzielnie w akcjach, skryptach lub automatyzacjach HA.
 
-Pierwsza wersja rozwojowa `0.1.0b1` ma lokalne testy. Instalacja przez HACS i połączenie nowej integracji z Grokiem wymagają jeszcze sprawdzenia na rzeczywistym HA. Ikona i publiczna nazwa są projektami. [Pełna dokumentacja i stan](../README.md).
+Pierwsza wersja beta `0.1.0b1` ma lokalne testy. Instalacja przez HACS i połączenie nowej integracji z Grokiem wymagają jeszcze sprawdzenia na rzeczywistym HA. [Pełna dokumentacja i stan](../README.md).
 
 ## Konfiguracja po publikacji
 

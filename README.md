@@ -2,7 +2,7 @@
 
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
-A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current development version is **0.1.0b1**. The icon and public product name are still under review.
+A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current beta version is **0.1.0b1**.
 
 Select any entity for reading. Expose commands as named action sequences using Home Assistant's own action editor: turn on a light, run a script, trigger an automation, activate a scene, or build a sequence with conditions. The connector does not contain device-specific rules. Conditions belong in your configured actions, scripts or automations.
 

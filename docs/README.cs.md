@@ -2,7 +2,7 @@
 
 Komunitní MCP konektor pro Home Assistant. Vybereš libovolné entity ke čtení a přidáš pojmenované akce v běžném editoru HA. Konektor nemá zabudované podmínky pro vrata ani jiné zařízení; podmínky si nastavíš v akcích, skriptech nebo automatizacích.
 
-První vývojová verze `0.1.0b1` má lokální testy. Instalace nové integrace přes HACS a propojení s Grokem ještě vyžadují ověření na skutečném HA. Ikona i veřejná identita jsou zatím návrhem. [Podrobný návod a stav](../README.md).
+První beta verze `0.1.0b1` má lokální testy. Instalace nové integrace přes HACS a propojení s Grokem ještě vyžadují ověření na skutečném HA. [Podrobný návod a stav](../README.md).
 
 ## Instalace po zveřejnění
 

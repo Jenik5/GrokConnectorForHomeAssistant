@@ -1,11 +1,7 @@
-# Working artwork and public identity
+# Artwork
 
-The owner's requested draft is a blue house containing the black Grok symbol. It is available only in local, Git-ignored review artifacts. It is not a distributable integration asset.
+The approved icon is an original blue house with a black letter G above a chain-link symbol. The SVG uses a custom outline for the letter with no font dependency. The letter is raised slightly to separate it from the connection symbol.
 
-An original blue-house/chain-link mark is prepared as an alternative and as a provisional local package asset. Both designs are shown on light/dark backgrounds and at small sizes in the local review sheet. Final artwork approval is pending.
+The shipped assets provide transparent 256 px icons and 512 px high-resolution variants for light and dark backgrounds. The source is `custom_components/grok_connector/brand/icon.svg`.
 
-The owner chose variant B and requested a black letter G above the chain-link symbol. The updated SVG uses a custom outline for the letter, with no font dependency. The G is raised slightly; the chain-link symbol retains its original position. Current local review artifacts are named `icon-B-G-raised-review` and show 32, 48, 80 and 96 px previews.
-
-[xAI's brand guidelines](https://x.ai/legal/brand-guidelines) restrict combining its mark into another mark, altering its logos and using its marks in third-party app/product titles. The working name **Grok Connector** also needs consideration before public branding is finalized. An independently named connector can still describe its interoperability with Grok in documentation.
-
-This file records an unresolved design decision. It does not assert trademark clearance. The original SVG/PNG artwork does not include an xAI path or downloaded logo. Third-party trademarks are not covered by this repository's MIT license.
+The icon does not include an xAI path or downloaded logo. Earlier composite designs remain in local Git-ignored review artifacts and are excluded from distribution. Grok and Home Assistant names refer to interoperability; this is a community integration and no endorsement or affiliation is implied. Third-party trademarks are not covered by this repository's MIT license.
