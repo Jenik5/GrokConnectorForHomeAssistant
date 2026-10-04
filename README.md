@@ -12,13 +12,13 @@ Select any entity for reading. Expose commands as named action sequences using H
 
 - Home Assistant **2026.9.4 or newer**, HACS and enabled Nabu Casa remote access.
 - A Grok client/account that offers custom remote MCP connectors with OAuth. Availability in Grok's Tesla interface is a separate client capability; this integration cannot enable it.
-- The first beta has local automated checks. Installation through HACS, the native HA action editor and end-to-end authorization of this new integration still need a live acceptance run. See [validation evidence](docs/VALIDATION.md).
+- The first beta passed automated checks, GitHub CI, a live HACS installation, native HA configuration/action editing and OAuth/MCP acceptance over Nabu Casa. Grok web in Chrome successfully paired and read the selected states. Physical device commands and the Tesla client still need deliberate acceptance testing. See [validation evidence](docs/VALIDATION.md).
 
 This is an independent integration, not the official Home Assistant MCP Server or an xAI product. Installing it does not replace another MCP integration. Existing access is not migrated automatically.
 
 ## Install with HACS
 
-After the reviewed version is published:
+Install the published beta through HACS:
 
 1. In HACS, open **Custom repositories** and add `https://github.com/Jenik5/GrokConnectorForHomeAssistant` as an **Integration**.
 2. Download the chosen version. Enable beta versions in HACS if selecting a prerelease.

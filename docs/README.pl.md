@@ -2,9 +2,9 @@
 
 Społecznościowy konektor MCP udostępnia wybrane encje Home Assistant do odczytu oraz nazwane sekwencje akcji do wykonania. Można wybrać encje dowolnego typu. Warunki ustalasz samodzielnie w akcjach, skryptach lub automatyzacjach HA.
 
-Pierwsza wersja beta `0.1.0b1` ma lokalne testy. Instalacja przez HACS i połączenie nowej integracji z Grokiem wymagają jeszcze sprawdzenia na rzeczywistym HA. [Pełna dokumentacja i stan](../README.md).
+Beta `0.1.0b1` przeszła testy, GitHub CI, instalację przez HACS i sprawdzenie natywnej konfiguracji HA oraz edytora akcji. OAuth i odczyt stanów przez Nabu Casa działają również w internetowym Groku w Chrome. Polecenia sterujące urządzeniami i klient w Tesli wymagają jeszcze celowych testów praktycznych. [Pełna dokumentacja i stan](../README.md).
 
-## Konfiguracja po publikacji
+## Konfiguracja przez HACS
 
 Wymagane są HA 2026.9.4+, HACS i włączony dostęp zdalny Nabu Casa. Dodaj `https://github.com/Jenik5/GrokConnectorForHomeAssistant` w HACS jako własne repozytorium typu **Integracja**, pobierz wersję i uruchom HA ponownie. Dodaj **Grok Connector** w **Ustawienia → Urządzenia i usługi**.
 
