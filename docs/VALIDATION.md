@@ -1,6 +1,6 @@
 # Validation evidence — 2026-10-04
 
-Development version: `0.1.0b2`.
+Development version: `0.1.0b3`.
 
 ## Confirmed locally
 
@@ -54,7 +54,7 @@ Environment: Home Assistant **2026.9.4**, HACS **2.0.5**, published integration 
 
 See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
 
-## Action list update 0.1.0b2
+## Action list update 0.1.0b3
 
 - Local automated suite: 58 tests passed; Python package checks and JavaScript syntax check passed.
 - New options-flow checks cover unchanged policy, stable IDs on edits, new IDs, removals, duplicate/unknown/malformed IDs, empty lists, limits and atomic rejection of invalid HA actions.

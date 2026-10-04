@@ -76,13 +76,21 @@ class GrokActionList extends HTMLElement {
         .description {color:var(--secondary-text-color);font-weight:400}
         .handle {color:var(--secondary-text-color)}
         ha-icon-button {color:var(--secondary-text-color)}
-        ha-icon-button:nth-of-type(2) {order:-1}
         ha-button {--ha-button-height:32px}
       `;
       root.append(style);
     }
     for (const icon of root.querySelectorAll(".handle")) icon.path = PLAY;
     for (const button of root.querySelectorAll("ha-icon-button")) button.disabled = !!this.disabled;
+    for (const row of root.querySelectorAll("ha-md-list-item")) {
+      const buttons = [...row.querySelectorAll("ha-icon-button")];
+      const edit = buttons.find((button) => button.item !== undefined);
+      const remove = buttons.find((button) => button !== edit);
+      if (edit && remove && (edit.compareDocumentPosition(remove) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+        // Keep both native event handlers and DOM nodes, in the requested order.
+        row.insertBefore(remove, edit);
+      }
+    }
     const button = root.querySelector(".items-container > ha-button");
     if (!button) return;
     button.disabled = !!this.disabled;
