@@ -11,8 +11,7 @@
         }
       },
       "entities": {
-        "title": "Vybrané entity",
-        "description": "Vyberte libovolné entity, které smí Grok číst. Pojmenované akce přidáte v Konfigurovat → Akce. Změna entit nebo akcí zruší dosavadní přístup a vyžaduje nové párování.",
+        "title": "Entity dostupné ke čtení",
         "data": {
           "read_entities": "Entity dostupné ke čtení"
         }
@@ -40,44 +39,16 @@
         }
       },
       "entities": {
-        "title": "Vybrané entity",
-        "description": "Vyberte libovolné entity, které smí Grok číst. Pojmenované akce přidáte v Konfigurovat → Akce. Změna entit nebo akcí zruší dosavadní přístup a vyžaduje nové párování.",
+        "title": "Entity dostupné ke čtení",
         "data": {
           "read_entities": "Entity dostupné ke čtení"
         }
       },
       "actions": {
-        "title": "Akce",
-        "menu_options": {
-          "add_action": "Přidat akci",
-          "edit_action": "Upravit akci",
-          "delete_action": "Odebrat akci"
-        }
-      },
-      "edit_action": {
-        "title": "Upravit akci",
+        "title": "Akce dostupné pro Groka",
         "data": {
-          "action_id": "Akce"
+          "actions": "Akce dostupné pro Groka"
         }
-      },
-      "delete_action": {
-        "title": "Odebrat akci",
-        "data": {
-          "action_id": "Akce"
-        }
-      },
-      "action": {
-        "title": "Akce",
-        "description": "Popište akci, aby Grok věděl, kdy ji použít. Vyberte akce HA, automatizaci, skript, podmínky nebo sekvenci. Za podmínky a bezpečnost zařízení odpovídáte vy.",
-        "data": {
-          "name": "Název akce",
-          "description": "Popis pro Groka",
-          "sequence": "Sekvence akcí"
-        }
-      },
-      "confirm_delete": {
-        "title": "Odebrat akci",
-        "description": "Odebrat akci {name}? Uložení zruší dosavadní přístup."
       },
       "language": {
         "title": "Jazyk nástrojů MCP",
@@ -103,6 +74,27 @@
       "not_loaded": "Konektor neběží. Zapněte jej a zkuste to znovu.",
       "no_actions": "Zatím nejsou nastavené žádné akce.",
       "too_many_actions": "Lze vystavit nejvýše 64 akcí."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Název akce"
+        },
+        "description": {
+          "name": "Popis pro Groka"
+        },
+        "sequence": {
+          "name": "Sekvence akcí"
+        },
+        "icon": {
+          "name": "Ikona"
+        }
+      },
+      "options": {
+        "add": "Přidat akci"
+      }
     }
   }
 }

@@ -2,9 +2,9 @@
 
 Dieser Community-MCP-Connector stellt ausgewählte Home-Assistant-Entitäten zum Lesen und benannte Aktionsfolgen zur Ausführung bereit. Alle Entitätstypen können ausgewählt werden. Bedingungen definierst du selbst in HA-Aktionen, Skripten oder Automationen.
 
-Die erste Betaversion `0.1.0b1` wurde lokal getestet. Die Installation über HACS und die Verbindung dieser neuen Integration mit Grok müssen noch auf einer echten HA-Instanz geprüft werden. [Vollständige Dokumentation und Status](../README.md).
+Die erste stabile Version `2026.10.4.1` basiert auf der getesteten Beta `0.1.0b7`. Die Betaversionen haben Tests, GitHub CI, HACS-Installation und die native HA-Konfiguration einschließlich Aktionseditor bestanden. OAuth und das Lesen von Zuständen über Nabu Casa funktionieren mit Grok im Chrome-Browser; der Benutzer hat auch das Ein- und Ausschalten eines Lichts bestätigt. Der Tesla-Client und weitere Aktionen benötigen eigene Praxistests. Für stabile Versionen muss die Beta-Option in HACS nicht aktiviert sein. [Vollständige Dokumentation und Status](../README.md).
 
-## Einrichtung nach Veröffentlichung
+## Einrichtung über HACS
 
 Voraussetzungen: HA 2026.9.4+, HACS und aktivierter Nabu-Casa-Fernzugriff. Füge in HACS `https://github.com/Jenik5/GrokConnectorForHomeAssistant` als benutzerdefiniertes Repository vom Typ **Integration** hinzu. Lade die Version herunter, starte HA neu und füge **Grok Connector** unter **Einstellungen → Geräte & Dienste** hinzu.
 

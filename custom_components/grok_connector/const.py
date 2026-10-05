@@ -1,6 +1,6 @@
 """Independent paths and bounds of the community connector."""
 DOMAIN = 'grok_connector'
-VERSION = '0.1.0b1'
+VERSION = '2026.10.4.1'
 MCP_PATH = '/api/grok_connector/mcp'
 OAUTH_PATH = '/api/grok_connector/oauth'
 RESOURCE_METADATA_PATH = '/.well-known/oauth-protected-resource' + MCP_PATH

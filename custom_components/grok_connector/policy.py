@@ -1,5 +1,5 @@
 """Explicitly selected entities and administrator-authored HA actions."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 import re
 from .const import MAX_ENTITIES
@@ -21,10 +21,18 @@ class Action:
     name: str
     description: str
     sequence_json: str
+    icon: str | None = field(default=None,compare=False)
 
     @classmethod
     def from_dict(cls,data):
-        if not isinstance(data,dict) or set(data) != {'id','name','description','sequence'}:
+        required = {'id','name','description','sequence'}
+        if not isinstance(data,dict) or not required <= set(data) or set(data) - required - {'icon'}:
+            raise PolicyError('invalid_action')
+        icon = data.get('icon')
+        if icon == '':
+            icon = None
+        if icon is not None and (not isinstance(icon,str) or len(icon) > 160
+                or not re.fullmatch(r'[a-z][a-z0-9_]*:[a-z0-9][a-z0-9_-]*',icon)):
             raise PolicyError('invalid_action')
         identifier,name,description,sequence = (data[key] for key in ('id','name','description','sequence'))
         if (not isinstance(identifier,str) or not re.fullmatch(r'[a-f0-9]{32}',identifier)
@@ -40,14 +48,17 @@ class Action:
             raise PolicyError('invalid_action') from None
         if len(encoded.encode('utf-8')) > 65536:
             raise PolicyError('invalid_action')
-        return cls(identifier,name.strip(),description,encoded)
+        return cls(identifier,name.strip(),description,encoded,icon)
 
     @property
     def sequence(self):
         return json.loads(self.sequence_json)
 
     def as_dict(self):
-        return {'id':self.id,'name':self.name,'description':self.description,'sequence':self.sequence}
+        data = {'id':self.id,'name':self.name,'description':self.description,'sequence':self.sequence}
+        if self.icon is not None:
+            data['icon'] = self.icon
+        return data
 
 @dataclass(frozen=True)
 class Policy:

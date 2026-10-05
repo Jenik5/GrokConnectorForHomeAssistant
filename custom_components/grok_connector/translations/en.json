@@ -11,8 +11,7 @@
         }
       },
       "entities": {
-        "title": "Selected entities",
-        "description": "Choose any entities Grok may read. Add named actions in Configure → Actions. Changed entities or actions revoke existing access and require pairing again.",
+        "title": "Entities available for reading",
         "data": {
           "read_entities": "Entities available for reading"
         }
@@ -40,44 +39,16 @@
         }
       },
       "entities": {
-        "title": "Selected entities",
-        "description": "Choose any entities Grok may read. Add named actions in Configure → Actions. Changed entities or actions revoke existing access and require pairing again.",
+        "title": "Entities available for reading",
         "data": {
           "read_entities": "Entities available for reading"
         }
       },
       "actions": {
-        "title": "Actions",
-        "menu_options": {
-          "add_action": "Add action",
-          "edit_action": "Edit action",
-          "delete_action": "Delete action"
-        }
-      },
-      "edit_action": {
-        "title": "Edit action",
+        "title": "Actions available to Grok",
         "data": {
-          "action_id": "Action"
+          "actions": "Actions available to Grok"
         }
-      },
-      "delete_action": {
-        "title": "Delete action",
-        "data": {
-          "action_id": "Action"
-        }
-      },
-      "action": {
-        "title": "Actions",
-        "description": "Describe the action so Grok knows when to use it. Choose HA actions, an automation, a script, conditions or a sequence. Conditions and device safety are your responsibility.",
-        "data": {
-          "name": "Action name",
-          "description": "Description for Grok",
-          "sequence": "Action sequence"
-        }
-      },
-      "confirm_delete": {
-        "title": "Delete action",
-        "description": "Delete action {name}? Saving revokes existing access."
       },
       "language": {
         "title": "Language of MCP tools",
@@ -103,6 +74,27 @@
       "not_loaded": "The connector is not running. Enable it and try again.",
       "no_actions": "No actions have been configured.",
       "too_many_actions": "At most 64 actions may be exposed."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Action name"
+        },
+        "description": {
+          "name": "Description for Grok"
+        },
+        "sequence": {
+          "name": "Action sequence"
+        },
+        "icon": {
+          "name": "Icon"
+        }
+      },
+      "options": {
+        "add": "Add action"
+      }
     }
   }
 }
