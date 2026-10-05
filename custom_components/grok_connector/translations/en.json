@@ -4,9 +4,9 @@
     "step": {
       "user": {
         "title": "Connect Grok",
-        "description": "Use the HTTPS address of Nabu Casa remote access. This connector has independent permissions and credentials.",
+        "description": "Use the public HTTPS address of your Home Assistant (Nabu Casa remote access or your own domain, optionally with a port). This connector has independent permissions and credentials.",
         "data": {
-          "public_url": "Nabu Casa HTTPS address",
+          "public_url": "Public HTTPS address",
           "language": "Language of MCP tools"
         }
       },
@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "invalid_url": "Enter only an HTTPS origin ending in .ui.nabu.casa, without a path or query.",
+      "invalid_url": "Enter only an HTTPS origin with a hostname and optional port, without credentials, a path, query or fragment.",
       "invalid_selection": "Choose at most 64 entities.",
       "invalid_action": "Enter a name, an optional description and a valid nonempty Home Assistant action sequence."
     },
@@ -66,7 +66,7 @@
       }
     },
     "error": {
-      "invalid_url": "Enter only an HTTPS origin ending in .ui.nabu.casa, without a path or query.",
+      "invalid_url": "Enter only an HTTPS origin with a hostname and optional port, without credentials, a path, query or fragment.",
       "invalid_selection": "Choose at most 64 entities.",
       "invalid_action": "Enter a name, an optional description and a valid nonempty Home Assistant action sequence."
     },

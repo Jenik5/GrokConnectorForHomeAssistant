@@ -4,9 +4,9 @@
     "step": {
       "user": {
         "title": "Grok verbinden",
-        "description": "Verwenden Sie die HTTPS-Adresse des Nabu-Casa-Fernzugriffs. Dieser Connector hat eigene Berechtigungen und Zugangsdaten.",
+        "description": "Verwenden Sie die öffentliche HTTPS-Adresse Ihres Home Assistant (Nabu-Casa-Fernzugriff oder eigene Domain, optional mit Port). Dieser Connector hat eigene Berechtigungen und Zugangsdaten.",
         "data": {
-          "public_url": "HTTPS-Adresse von Nabu Casa",
+          "public_url": "Öffentliche HTTPS-Adresse",
           "language": "Sprache der MCP-Werkzeuge"
         }
       },
@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit der Endung .ui.nabu.casa ein, ohne Pfad oder Parameter.",
+      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit Hostname und optionalem Port ein, ohne Zugangsdaten, Pfad, Parameter oder Fragment.",
       "invalid_selection": "Wählen Sie höchstens 64 Entitäten aus.",
       "invalid_action": "Geben Sie einen Namen, eine optionale Beschreibung und eine gültige, nicht leere Home-Assistant-Aktionssequenz ein."
     },
@@ -66,7 +66,7 @@
       }
     },
     "error": {
-      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit der Endung .ui.nabu.casa ein, ohne Pfad oder Parameter.",
+      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit Hostname und optionalem Port ein, ohne Zugangsdaten, Pfad, Parameter oder Fragment.",
       "invalid_selection": "Wählen Sie höchstens 64 Entitäten aus.",
       "invalid_action": "Geben Sie einen Namen, eine optionale Beschreibung und eine gültige, nicht leere Home-Assistant-Aktionssequenz ein."
     },

@@ -12,7 +12,7 @@ The reading list is a data-disclosure boundary, not an action-target boundary. A
 
 ## OAuth boundary
 
-`security.py` owns an independent authority; it never accepts or forwards HA credentials. Resource/issuer URLs are bound to the configured Nabu Casa HTTPS origin. Temporary registrations, authorization transactions and pairing secrets expire. Approved client metadata and hashed grants are stored with HA's supported Store API.
+`security.py` owns an independent authority; it never accepts or forwards HA credentials. Resource/issuer URLs are bound to the administrator-configured public HTTPS origin, including any nonstandard port. Both Nabu Casa and custom DNS hostnames are accepted. URL syntax validation rejects ambiguous authorities and browser IPv4 representations; it performs no DNS lookup or outbound request. Public reachability and valid TLS are the operator's responsibility. Temporary registrations, authorization transactions and pairing secrets expire. Approved client metadata and hashed grants are stored with HA's supported Store API. See the [custom-origin security assessment](SECURITY-ASSESSMENT-2026-10-05.md).
 
 The browser form uses per-transaction Secure/HttpOnly/SameSite=Lax cookies, same-origin referrer metadata, HTML escaping and script-free CSP. `form-action` includes only the verified registered callback origin because Chrome applies this policy to the OAuth redirect as well. Authorization POST rejects a missing or mismatching transaction cookie and a foreign Origin. The server permits native/server clients that omit Origin; possession of the cookie and the single-use pairing secret is still required.
 

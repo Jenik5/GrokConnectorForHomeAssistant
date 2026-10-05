@@ -6,9 +6,11 @@ Pierwsza stabilna wersja `2026.10.4.1` opiera się na przetestowanej becie `0.1.
 
 ## Konfiguracja przez HACS
 
-Wymagane są HA 2026.9.4+, HACS i włączony dostęp zdalny Nabu Casa. Dodaj `https://github.com/Jenik5/GrokConnectorForHomeAssistant` w HACS jako własne repozytorium typu **Integracja**, pobierz wersję i uruchom HA ponownie. Dodaj **Grok Connector** w **Ustawienia → Urządzenia i usługi**.
+Wymagane są HA 2026.9.4+, HACS i publiczny dostęp HTTPS przez Nabu Casa lub własną domenę z ważnym certyfikatem TLS. Dodaj `https://github.com/Jenik5/GrokConnectorForHomeAssistant` w HACS jako własne repozytorium typu **Integracja**, pobierz wersję i uruchom HA ponownie. Dodaj **Grok Connector** w **Ustawienia → Urządzenia i usługi**.
 
-Podaj adres HTTPS Nabu Casa bez ścieżki, wybierz język narzędzi MCP i encje do odczytu. W **Konfiguruj → Akcje** dodaj nazwę, opis dla Groka i sekwencję w edytorze HA. Wybranie encji do odczytu nie pozwala samo w sobie na jej sterowanie.
+Podaj publiczny adres HTTPS bez ścieżki, np. `https://twoja-instancja.ui.nabu.casa` lub `https://ha.example.org:8125`, i wybierz język narzędzi MCP. Własne domeny są obsługiwane od wersji `2026.10.5.1`; starsze wydanie `2026.10.4.1` pozostaje ograniczone do Nabu Casa. Adres musi być dostępny dla Groka i mieć ważny certyfikat. Port jest częścią uprawnień; zmiana adresu wymaga ponownego parowania. [Własny adres i reverse proxy](../README.md#using-your-own-public-address).
+
+Wybierz encje do odczytu. W **Konfiguruj → Akcje** dodaj nazwę, opis dla Groka i sekwencję w edytorze HA. Wybranie encji do odczytu nie pozwala samo w sobie na jej sterowanie.
 
 ## Przykłady akcji
 

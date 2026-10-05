@@ -6,9 +6,11 @@ Die erste stabile Version `2026.10.4.1` basiert auf der getesteten Beta `0.1.0b7
 
 ## Einrichtung über HACS
 
-Voraussetzungen: HA 2026.9.4+, HACS und aktivierter Nabu-Casa-Fernzugriff. Füge in HACS `https://github.com/Jenik5/GrokConnectorForHomeAssistant` als benutzerdefiniertes Repository vom Typ **Integration** hinzu. Lade die Version herunter, starte HA neu und füge **Grok Connector** unter **Einstellungen → Geräte & Dienste** hinzu.
+Voraussetzungen: HA 2026.9.4+, HACS und öffentlicher HTTPS-Zugriff über Nabu Casa oder eine eigene Domain mit gültigem TLS-Zertifikat. Füge in HACS `https://github.com/Jenik5/GrokConnectorForHomeAssistant` als benutzerdefiniertes Repository vom Typ **Integration** hinzu. Lade die Version herunter, starte HA neu und füge **Grok Connector** unter **Einstellungen → Geräte & Dienste** hinzu.
 
-Gib die Nabu-Casa-HTTPS-Adresse ohne Pfad ein und wähle die Sprache der MCP-Werkzeuge. Wähle die lesbaren Entitäten. Unter **Konfigurieren → Aktionen** kannst du einen Namen, eine Beschreibung für Grok und eine Aktionsfolge mit dem HA-Editor anlegen. Leseberechtigung allein erlaubt keine Steuerung.
+Gib die öffentliche HTTPS-Adresse ohne Pfad ein, z. B. `https://deine-instanz.ui.nabu.casa` oder `https://ha.example.org:8125`, und wähle die Sprache der MCP-Werkzeuge. Eigene Domains werden ab Version `2026.10.5.1` unterstützt; die ältere Veröffentlichung `2026.10.4.1` bleibt auf Nabu Casa beschränkt. Die Adresse muss für Grok erreichbar sein und ein gültiges Zertifikat haben. Der Port gehört zur Berechtigung; eine geänderte Adresse erfordert neue Kopplung. [Eigene Adresse und Reverse Proxy](../README.md#using-your-own-public-address).
+
+Wähle die lesbaren Entitäten. Unter **Konfigurieren → Aktionen** kannst du einen Namen, eine Beschreibung für Grok und eine Aktionsfolge mit dem HA-Editor anlegen. Leseberechtigung allein erlaubt keine Steuerung.
 
 ## Aktionen
 
