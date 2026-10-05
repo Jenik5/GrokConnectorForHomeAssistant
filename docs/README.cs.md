@@ -21,6 +21,8 @@ Označ entity ke čtení; jejich typ není omezen. V **Konfigurovat → Akce →
 
 Grok může vyvolat připravenou sekvenci, nemůže jí podstrčit jiný cíl ani parametry. Podmínky a rozsah sekvence určuješ ty. Konektor zveřejní stav, název, ID a případnou jednotku vybraných entit; ostatní atributy neposílá.
 
+Od verze `2026.10.5.2` mají nástroje akcí čitelné názvy: například `Otevřít bránu` se nabídne jako `otevrit_branu`. Shodné a rezervované názvy se bezpečně odliší příponou. Původní identifikátory zůstávají funkční; aktualizace sama nevyžaduje nové párování. Klient může zobrazovat staré názvy do obnovení seznamu nástrojů. Přejmenování akce dál vyžaduje nové párování.
+
 ## Připojení Groka
 
 V **Konfigurovat → Párovací kód** se zobrazí přesná adresa a jednorázový kód platný 10 minut. Adresa má tvar `https://tvoje-instance.ui.nabu.casa/api/grok_connector/mcp`. V Groku vytvoř vlastní MCP konektor a kód zadej v jeho přihlašovacím okně.

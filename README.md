@@ -37,7 +37,7 @@ This is an independent integration, not the official Home Assistant MCP Server o
 Install the published release through HACS:
 
 1. In HACS, open **Custom repositories** and add `https://github.com/Jenik5/GrokConnectorForHomeAssistant` as an **Integration**.
-2. Download **2026.10.5.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
+2. Download **2026.10.5.2** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
 3. Restart Home Assistant to load the newly installed Python integration.
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
 5. Enter your public HTTPS origin, for example `https://your-instance.ui.nabu.casa` or `https://ha.example.org:8125`, and choose the MCP language. Enter only the origin, without credentials, a path, query or fragment.
@@ -51,6 +51,8 @@ HACS manages this repository as a custom repository; inclusion in the HACS defau
 ## Choose actions
 
 Each action has a **name**, an optional **icon**, a **description for Grok** and an HA **action sequence**. Choose the icon through HA's native icon picker; actions without an icon use the play symbol. The visual editor supports service actions, device actions, scripts, automations, scenes, conditions and sequences. The configuration is validated by HA before it becomes an MCP tool.
+
+From **2026.10.5.2**, action tool names are readable ASCII forms of the configured name: `Otevřít bránu` becomes `otevrit_branu`. Diacritics are normalized and the base name is limited to 48 characters. Empty, duplicate or reserved names gain a short ID suffix and, when needed, a counter. Names are unique across the status tool, every action and legacy aliases. The original title and description are retained. Legacy `action_<id>` calls remain accepted for cached clients; an alias change during a retry returns the same cached result within the existing session. Cached tool lists may display old names until refreshed. Updating alone preserves pairing; renaming a configured action continues to revoke access.
 
 | Setting | What Grok gets |
 | --- | --- |

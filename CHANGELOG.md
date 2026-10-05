@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026.10.5.2 — 2026-10-05
+
+- Expose action tools with readable ASCII names derived from their configured names, such as `otevrit_branu`, while retaining their original titles and descriptions.
+- Keep legacy `action_<id>` calls compatible with cached client tool lists.
+- Prevent collisions with the status tool, legacy identifiers, literal names and generated suffixes; every configured action remains available.
+- Bind retry results to the stable action ID, so switching between readable and legacy aliases cannot execute the same request twice.
+- Keep fixed empty tool arguments, OAuth permissions and private diagnostic categories unchanged.
+
+Updating with the same configured origin and permissions preserves configuration and OAuth grants. Clients with cached tool lists may display old names until their tool list is refreshed. Renaming a configured action still revokes access and requires new pairing. This release passed 89 Python tests, 5 JavaScript tests and package checks; live client/display behavior needs separate acceptance testing.
+
 ## 2026.10.5.1 — 2026-10-05
 
 - Support public HTTPS addresses beyond Nabu Casa: your own domain or reverse proxy, including nonstandard ports.
