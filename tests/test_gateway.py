@@ -103,13 +103,25 @@ class GatewayTests(unittest.IsolatedAsyncioTestCase):
     async def test_only_selected_state_and_named_actions_are_exposed(self):
         tools = self.gateway.tools()
         self.assertEqual({tool['name'] for tool in tools},
-                         {'entities_status', 'action_' + 'a' * 32, 'action_' + 'b' * 32})
+                         {'entities_status', 'turn_on_the_light', 'run_automation'})
         self.assertEqual(tools[1]['title'], 'Turn on the light')
         self.assertFalse(tools[1]['inputSchema']['additionalProperties'])
         result = json.loads((await self.call(name='entities_status'))['result']['content'][0]['text'])
         self.assertEqual({entry['entity_id'] for entry in result['entities']}, set(self.policy.readable))
         self.assertEqual(next(item for item in result['entities'] if item['entity_id'] == 'sensor.example')['unit'], '°C')
         self.assertFalse(self.executed)
+
+    async def test_readable_tool_name_runs_action_and_old_id_name_still_works(self):
+        await self.call(1, 'turn_on_the_light')
+        await self.call(2, 'action_' + 'a' * 32)
+        self.assertEqual(self.executed, ['a' * 32, 'a' * 32])
+
+    def test_tool_slug_strips_diacritics_and_clashes_get_id_suffix(self):
+        self.assertEqual(gateway.tool_slug('Otevřít bránu!'), 'otevrit_branu')
+        self.policy = policy.Policy.from_dict({'read_entities': [], 'actions': [
+            action('a' * 32, 'Brána'), action('b' * 32, 'Brana'), action('c' * 32, '???')]})
+        self.gateway.policy = self.policy
+        self.assertEqual(list(self.gateway.action_tools()), ['brana', 'brana_bbbbbb', 'action_cccccc'])
 
     async def test_light_already_on_does_not_block_direct_or_repeated_action(self):
         first, second = await self.call(1), await self.call(2)

@@ -2,8 +2,10 @@
 import asyncio
 import copy
 import json
+import re
 import secrets
 import time
+import unicodedata
 from .const import VERSION
 from .i18n import text
 
@@ -11,6 +13,10 @@ PROTOCOLS = ('2024-11-05','2025-03-26','2025-06-18','2025-11-25')
 EMPTY_INPUT = {'type':'object','properties':{},'additionalProperties':False}
 SESSION_LIFETIME = 1800
 MAX_SESSIONS = 128
+
+def tool_slug(name):
+    ascii_name = unicodedata.normalize('NFKD',name).encode('ascii','ignore').decode()
+    return re.sub(r'[^a-z0-9]+','_',ascii_name.lower()).strip('_')[:48]
 
 def content(data,error=False):
     return {'content':[{'type':'text','text':json.dumps(data,ensure_ascii=False)}],'isError':error}
@@ -71,12 +77,23 @@ class Gateway:
             entities.append(item)
         return {'entities':entities}
 
+    def action_tools(self):
+        """Tool name -> action; readable slug of the action name, id suffix on clash."""
+        names,result = {'entities_status'},{}
+        for action in self.policy.actions:
+            name = tool_slug(action.name)
+            if not name or name in names:
+                name = (name or 'action')+'_'+action.id[:6]
+            names.add(name)
+            result[name] = action
+        return result
+
     def tools(self):
         tools = [{'name':'entities_status','description':text(self.catalogs,self.language,'tool_status'),
                   'inputSchema':copy.deepcopy(EMPTY_INPUT),
                   'annotations':{'readOnlyHint':True,'destructiveHint':False,'idempotentHint':True,'openWorldHint':False}}]
-        for action in self.policy.actions:
-            tools.append({'name':'action_'+action.id,
+        for name,action in self.action_tools().items():
+            tools.append({'name':name,
                 'title':action.name,
                 'description':text(self.catalogs,self.language,'tool_action').format(name=action.name,description=action.description),
                 'inputSchema':copy.deepcopy(EMPTY_INPUT),
@@ -121,6 +138,7 @@ class Gateway:
                     if session is not None and not self.session_active(session,principal):
                         return self.error(request_id,-32000,'MCP session expired')
                     actions = {'action_'+action.id:action for action in self.policy.actions}
+                    actions.update(self.action_tools())
                     if name not in actions:
                         return self.error(request_id,-32602,'Action not permitted')
                     now = self.clock()

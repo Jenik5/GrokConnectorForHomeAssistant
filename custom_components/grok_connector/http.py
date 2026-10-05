@@ -207,7 +207,8 @@ class MCPView(GatewayView):
             self.diagnostic(request, "mcp", "request", bearer_valid=True,
                             rpc_method=category("rpc_method", message.get("method")),
                             tool=category("tool", "configured_action" if isinstance(params, dict)
-                                and isinstance(params.get("name"), str) and re.fullmatch(r"action_[a-f0-9]{32}", params["name"])
+                                and isinstance(params.get("name"), str) and (params["name"] in self.runtime.gateway.action_tools()
+                                    or re.fullmatch(r"action_[a-f0-9]{32}", params["name"]))
                                 else params.get("name") if isinstance(params, dict) else None))
         task = self.hass.async_create_task(self.runtime.gateway.rpc(message, principal, session=session), "Grok connector request")
         response = await asyncio.shield(task)
