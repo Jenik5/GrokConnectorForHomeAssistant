@@ -47,11 +47,16 @@ class AuthTests(unittest.TestCase):
                         "code_verifier": self.verifier}
         return self.auth.token(token_params), client, token_params
 
-    def test_only_nabu_https_origin(self):
+    def test_https_origin_with_optional_port(self):
         for value in ("http://test-house.ui.nabu.casa", BASE + "/path", BASE + "?token=abc",
-                      "https://evil.example", "https://user@test-house.ui.nabu.casa", BASE + ":8443"):
+                      "https://localhost", "https://192.168.1.1", "https://user@test-house.ui.nabu.casa",
+                      BASE + ":99999", BASE + ":abc", "https://-bad.example.org"):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 security.public_base(value)
+        for value, expected in ((BASE, BASE), (BASE + ":443", BASE), (BASE + "/", BASE),
+                                ("https://rpi4.mirecek.org:8125", "https://rpi4.mirecek.org:8125")):
+            with self.subTest(value=value):
+                self.assertEqual(security.public_base(value), expected)
 
     def test_redirect_allowlist_and_exact_match(self):
         for uri in ("https://grok.com.evil.example/cb", "https://evil-grok.com/cb",

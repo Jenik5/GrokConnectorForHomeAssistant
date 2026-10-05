@@ -27,13 +27,20 @@ def digest(value):
 
 
 def public_base(value):
+    # Any HTTPS origin with a DNS hostname and an optional port; IP literals are rejected.
     parsed = urlsplit(value)
     if (parsed.scheme != "https" or not parsed.hostname
-            or not re.fullmatch(r"[a-z0-9-]+\.ui\.nabu\.casa", parsed.hostname)
-            or parsed.port not in (None, 443) or parsed.username or parsed.password
+            or not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+",
+                                parsed.hostname)
+            or len(parsed.hostname) > 253 or re.fullmatch(r"[0-9.]+", parsed.hostname)
+            or parsed.username or parsed.password
             or parsed.path not in ("", "/") or parsed.query or parsed.fragment):
-        raise ValueError("A Nabu Casa HTTPS origin is required")
-    return "https://" + parsed.hostname
+        raise ValueError("An HTTPS origin with a DNS hostname is required")
+    try:
+        port = parsed.port
+    except ValueError:
+        raise ValueError("Invalid port") from None
+    return "https://" + parsed.hostname + (f":{port}" if port not in (None, 443) else "")
 
 
 def allowed_callback(value):

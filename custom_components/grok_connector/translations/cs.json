@@ -4,9 +4,9 @@
     "step": {
       "user": {
         "title": "Připojit Groka",
-        "description": "Použijte HTTPS adresu vzdáleného přístupu Nabu Casa. Tento konektor má vlastní oprávnění a přihlašovací údaje.",
+        "description": "Použijte veřejnou HTTPS adresu svého Home Assistantu (vzdálený přístup Nabu Casa nebo vlastní doména, případně s portem). Tento konektor má vlastní oprávnění a přihlašovací údaje.",
         "data": {
-          "public_url": "HTTPS adresa Nabu Casa",
+          "public_url": "Veřejná HTTPS adresa",
           "language": "Jazyk nástrojů MCP"
         }
       },
@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "invalid_url": "Zadejte samotnou HTTPS adresu končící .ui.nabu.casa, bez cesty a parametrů.",
+      "invalid_url": "Zadejte HTTPS adresu s názvem hostitele a volitelným portem (např. https://example.org:8125), bez cesty a parametrů.",
       "invalid_selection": "Vyberte nejvýše 64 entit.",
       "invalid_action": "Zadejte název, volitelný popis a platnou neprázdnou sekvenci akcí Home Assistantu."
     },
@@ -66,7 +66,7 @@
       }
     },
     "error": {
-      "invalid_url": "Zadejte samotnou HTTPS adresu končící .ui.nabu.casa, bez cesty a parametrů.",
+      "invalid_url": "Zadejte HTTPS adresu s názvem hostitele a volitelným portem (např. https://example.org:8125), bez cesty a parametrů.",
       "invalid_selection": "Vyberte nejvýše 64 entit.",
       "invalid_action": "Zadejte název, volitelný popis a platnou neprázdnou sekvenci akcí Home Assistantu."
     },
