@@ -183,9 +183,19 @@ class MCPView(GatewayView):
         self.rate("mcp:" + principal, 60)
         return principal
 
+    def session(self, request, principal):
+        session = request.headers.get("MCP-Session-Id")
+        valid = session is not None and self.runtime.gateway.session_active(session, principal)
+        self.diagnostic(request, "mcp", "request", session_present=session is not None,
+                        session_valid=valid)
+        if session is not None and not valid:
+            raise web.HTTPNotFound(text="MCP session expired", headers=NO_CACHE)
+        return session
+
     @traced("mcp")
     async def post(self, request):
         principal = self.authorize(request)
+        session = self.session(request, principal)
         if "application/json" not in request.headers.get("Accept", ""):
             raise web.HTTPNotAcceptable(text="Client must accept application/json")
         protocol = request.headers.get("MCP-Protocol-Version")
@@ -199,21 +209,40 @@ class MCPView(GatewayView):
                             tool=category("tool", "configured_action" if isinstance(params, dict)
                                 and isinstance(params.get("name"), str) and re.fullmatch(r"action_[a-f0-9]{32}", params["name"])
                                 else params.get("name") if isinstance(params, dict) else None))
-        task = self.hass.async_create_task(self.runtime.gateway.rpc(message, principal), "Grok connector request")
+        task = self.hass.async_create_task(self.runtime.gateway.rpc(message, principal, session=session), "Grok connector request")
         response = await asyncio.shield(task)
         if response is None:
             return web.Response(status=202, headers=NO_CACHE)
-        return web.json_response(response, headers=NO_CACHE)
+        headers = dict(NO_CACHE)
+        if isinstance(message, dict) and message.get("method") == "initialize" and "result" in response:
+            # Each initialization establishes its own request-ID namespace. Keep
+            # stateless clients compatible when they omit the optional header.
+            if not self.runtime.gateway.authorized(principal):
+                raise web.HTTPUnauthorized(headers=NO_CACHE)
+            session = self.runtime.gateway.open_session(principal)
+            headers["MCP-Session-Id"] = session
+            self.diagnostic(request, "mcp", "session_created", session_present=True, session_valid=True)
+        error = response.get("error", {})
+        if error:
+            self.diagnostic(request, "mcp", "rpc_rejected", warning=True,
+                            rpc_error="id_collision" if error.get("message") == "Request ID already used for another action"
+                            else "session_expired" if error.get("message") == "MCP session expired" else "other")
+        return web.json_response(response, headers=headers)
 
     @traced("mcp")
     async def get(self, request):
-        self.authorize(request)
+        principal = self.authorize(request)
+        self.session(request, principal)
         raise web.HTTPMethodNotAllowed("GET", ["POST"], headers=NO_CACHE)
 
     @traced("mcp")
     async def delete(self, request):
-        self.authorize(request)
-        raise web.HTTPMethodNotAllowed("DELETE", ["POST"], headers=NO_CACHE)
+        principal = self.authorize(request)
+        session = self.session(request, principal)
+        if session is None:
+            raise web.HTTPBadRequest(text="MCP-Session-Id required", headers=NO_CACHE)
+        self.runtime.gateway.close_session(session)
+        return web.Response(status=204, headers=NO_CACHE)
 
 
 class ResourceMetadataView(GatewayView):

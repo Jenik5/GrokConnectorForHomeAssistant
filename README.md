@@ -1,8 +1,24 @@
 # Grok Connector for Home Assistant
 
+[![CI](https://github.com/Jenik5/GrokConnectorForHomeAssistant/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/Jenik5/GrokConnectorForHomeAssistant/actions/workflows/validate.yml)
+[![Latest release](https://img.shields.io/github/v/release/Jenik5/GrokConnectorForHomeAssistant?sort=date)](https://github.com/Jenik5/GrokConnectorForHomeAssistant/releases/latest)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5)](https://www.hacs.xyz/docs/faq/custom_repositories/)
+[![Home Assistant 2026.9.4 or newer](https://img.shields.io/badge/Home%20Assistant-2026.9.4%2B-41BDF5?logo=homeassistant&logoColor=white)](#requirements-and-current-status)
+[![MIT License](https://img.shields.io/github/license/Jenik5/GrokConnectorForHomeAssistant)](LICENSE)
+
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
-A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The current beta version is **0.1.0b1**.
+A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The first stable release is **2026.10.4.1**, based on the tested 0.1.0b7 connector. It includes the fix for request-ID collisions between separate Grok MCP sessions, such as turning a light on and then off. Action icons refresh immediately after saving
+the action editor. Both configuration lists use a scroll container from the start,
+limited to 400 px or 45% of the viewport height; scrollbars appear only when needed.
+Add and Submit controls stay outside the list.
+
+MCP initialization now returns an `MCP-Session-Id` header. Within that session,
+duplicate action requests return the cached reply instead of running twice.
+Clients omitting the session header remain compatible, but their independent
+requests cannot be deduplicated. Check state before deliberately retrying an
+action after an uncertain response. Updating preserves configuration and OAuth
+grants; no new pairing is required solely for this fix.
 
 Select any entity for reading. Expose commands as named action sequences using Home Assistant's own action editor: turn on a light, run a script, trigger an automation, activate a scene, or build a sequence with conditions. The connector does not contain device-specific rules. Conditions belong in your configured actions, scripts or automations.
 
@@ -12,27 +28,29 @@ Select any entity for reading. Expose commands as named action sequences using H
 
 - Home Assistant **2026.9.4 or newer**, HACS and enabled Nabu Casa remote access.
 - A Grok client/account that offers custom remote MCP connectors with OAuth. Availability in Grok's Tesla interface is a separate client capability; this integration cannot enable it.
-- The first beta has local automated checks. Installation through HACS, the native HA action editor and end-to-end authorization of this new integration still need a live acceptance run. See [validation evidence](docs/VALIDATION.md).
+- The beta series passed automated checks, GitHub CI, live HACS installation, native HA configuration/action editing and OAuth/MCP acceptance over Nabu Casa. Grok web in Chrome successfully paired and read selected states; the user confirmed light-on and light-off commands after the b7 fix. The first stable release packages that implementation with the requested date-based version. The Tesla client and other device sequences need their own acceptance testing. See [validation evidence](docs/VALIDATION.md).
 
 This is an independent integration, not the official Home Assistant MCP Server or an xAI product. Installing it does not replace another MCP integration. Existing access is not migrated automatically.
 
 ## Install with HACS
 
-After the reviewed version is published:
+Install the published release through HACS:
 
 1. In HACS, open **Custom repositories** and add `https://github.com/Jenik5/GrokConnectorForHomeAssistant` as an **Integration**.
-2. Download the chosen version. Enable beta versions in HACS if selecting a prerelease.
+2. Download **2026.10.4.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
 3. Restart Home Assistant to load the newly installed Python integration.
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
 5. Enter your Nabu Casa remote-access HTTPS origin, for example `https://your-instance.ui.nabu.casa`, and choose the MCP language.
 6. Select entities whose states Grok may read. Any entity domain is allowed; the list can be empty for an actions-only connector.
-7. Open **Configure → Actions → Add action** to expose commands.
+7. Open **Configure → Actions** to see configured commands. Each row shows its name and description, with edit and remove icons. Use **Add action** below the list to add a command; submit the list to save your changes. Successful options saves close the dialog automatically; validation problems remain visible.
+
+After an update, close an already-open configuration dialog and refresh the HA page (force refresh if necessary). A cached page can temporarily show the native list with its default appearance, but Add/Edit/Remove do not depend on the presentation module. No special URL or new pairing is needed for this editor update.
 
 HACS manages this repository as a custom repository; inclusion in the HACS default catalog is not required. See the [HACS installation documentation](https://www.hacs.xyz/docs/faq/custom_repositories/).
 
 ## Choose actions
 
-Each action has a **name**, a **description for Grok** and an HA **action sequence**. The visual editor supports service actions, device actions, scripts, automations, scenes, conditions and sequences. The configuration is validated by HA before it becomes an MCP tool.
+Each action has a **name**, an optional **icon**, a **description for Grok** and an HA **action sequence**. Choose the icon through HA's native icon picker; actions without an icon use the play symbol. The visual editor supports service actions, device actions, scripts, automations, scenes, conditions and sequences. The configuration is validated by HA before it becomes an MCP tool.
 
 | Setting | What Grok gets |
 | --- | --- |
@@ -74,7 +92,7 @@ The `skip_condition` setting is your choice. HA's trigger action can bypass auto
 
 Put longer workflows and their conditions in existing scripts or automations. The connector serializes its own action sequences; an inline delay or wait delays subsequent connector commands until the sequence returns. The `script.turn_on` example starts the separate HA script and returns; later revocation does not undo already started external scripts or physical effects.
 
-The beta supports up to 64 reading entities and 64 named actions. Each sequence is limited to 100 top-level steps and 64 KiB of JSON configuration.
+The connector supports up to 64 reading entities and 64 named actions. Each sequence is limited to 100 top-level steps and 64 KiB of JSON configuration.
 
 ## Pair Grok
 
@@ -90,7 +108,7 @@ The beta supports up to 64 reading entities and 64 named actions. Each sequence 
 
 A separate HA user or HA long-lived access token is not needed: this server issues its own restricted credentials. Keep the pairing code private. Creating a new code invalidates the previous unused code.
 
-Changing the reading list or any action, including its name/description, **revokes existing connector access**. Create a new pairing code and reconnect Grok. Changing only the language preserves access. **Configure → Revoke Grok access** invalidates access/refresh tokens and pending authorization; approved OAuth client metadata remains available for reauthorization.
+Changing the reading list or any action, including its name/description or sequence, **revokes existing connector access**. Create a new pairing code and reconnect Grok. Changing only the language or an action icon preserves access. **Configure → Revoke Grok access** invalidates access/refresh tokens and pending authorization; approved OAuth client metadata remains available for reauthorization.
 
 ## Languages
 

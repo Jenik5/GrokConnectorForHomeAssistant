@@ -11,8 +11,7 @@
         }
       },
       "entities": {
-        "title": "Wybrane encje",
-        "description": "Wybierz dowolne encje, które Grok może odczytywać. Nazwane akcje dodasz w Konfiguruj → Akcje. Zmiana encji lub akcji unieważnia dostęp i wymaga ponownego parowania.",
+        "title": "Encje dostępne do odczytu",
         "data": {
           "read_entities": "Encje dostępne do odczytu"
         }
@@ -40,44 +39,16 @@
         }
       },
       "entities": {
-        "title": "Wybrane encje",
-        "description": "Wybierz dowolne encje, które Grok może odczytywać. Nazwane akcje dodasz w Konfiguruj → Akcje. Zmiana encji lub akcji unieważnia dostęp i wymaga ponownego parowania.",
+        "title": "Encje dostępne do odczytu",
         "data": {
           "read_entities": "Encje dostępne do odczytu"
         }
       },
       "actions": {
-        "title": "Akcje",
-        "menu_options": {
-          "add_action": "Dodaj akcję",
-          "edit_action": "Edytuj akcję",
-          "delete_action": "Usuń akcję"
-        }
-      },
-      "edit_action": {
-        "title": "Edytuj akcję",
+        "title": "Akcje dostępne dla Groka",
         "data": {
-          "action_id": "Akcja"
+          "actions": "Akcje dostępne dla Groka"
         }
-      },
-      "delete_action": {
-        "title": "Usuń akcję",
-        "data": {
-          "action_id": "Akcja"
-        }
-      },
-      "action": {
-        "title": "Akcje",
-        "description": "Opisz akcję, aby Grok wiedział, kiedy jej użyć. Wybierz akcje HA, automatyzację, skrypt, warunki lub sekwencję. Odpowiadasz za warunki i bezpieczeństwo urządzeń.",
-        "data": {
-          "name": "Nazwa akcji",
-          "description": "Opis dla Groka",
-          "sequence": "Sekwencja akcji"
-        }
-      },
-      "confirm_delete": {
-        "title": "Usuń akcję",
-        "description": "Usunąć akcję {name}? Zapis unieważnia dotychczasowy dostęp."
       },
       "language": {
         "title": "Język narzędzi MCP",
@@ -103,6 +74,27 @@
       "not_loaded": "Konektor nie działa. Włącz go i spróbuj ponownie.",
       "no_actions": "Nie skonfigurowano jeszcze żadnych akcji.",
       "too_many_actions": "Można udostępnić najwyżej 64 akcje."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Nazwa akcji"
+        },
+        "description": {
+          "name": "Opis dla Groka"
+        },
+        "sequence": {
+          "name": "Sekwencja akcji"
+        },
+        "icon": {
+          "name": "Ikona"
+        }
+      },
+      "options": {
+        "add": "Dodaj akcję"
+      }
     }
   }
 }

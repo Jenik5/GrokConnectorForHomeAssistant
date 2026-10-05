@@ -17,6 +17,22 @@ def language_selector(catalogs):
         {'value':language,'label':catalogs[language]['language_name']}
         for language in ['en',*sorted(set(catalogs)-{'en'})]]))
 
+class ActionListSelector(selector.ObjectSelector):
+    """Native object-list validation with internal, non-editable tool IDs."""
+    # Keep the form functional when an older page has not loaded our styling.
+    selector_type = 'object'
+
+    def __call__(self,value):
+        if not isinstance(value,list) or len(value) > 64:
+            raise vol.Invalid('invalid_action')
+        if any(not isinstance(item,dict) for item in value):
+            raise vol.Invalid('invalid_action')
+        # HA's form retains extra data on an edited object. IDs are not fields
+        # users can edit; validate all visible fields through the native selector.
+        super().__call__([{key:item[key] for key in item if key != 'id'
+                          and not (key == 'icon' and item[key] in (None,''))} for item in value])
+        return value
+
 class EntitySteps:
     async def async_step_entities(self,user_input=None):
         errors = {}
@@ -74,51 +90,41 @@ class GrokOptionsFlow(EntitySteps,config_entries.OptionsFlow):
         self._draft = copy.deepcopy(dict(self.config_entry.options or self.config_entry.data))
         return self.async_show_menu(step_id='init',menu_options=['entities','actions','language','pair','revoke'])
     async def async_step_actions(self,user_input=None):
-        return self.async_show_menu(step_id='actions',menu_options=['add_action','edit_action','delete_action'])
-    async def async_step_add_action(self,user_input=None):
-        if len(self._draft.get('actions',[])) >= 64:
-            return self.async_abort(reason='too_many_actions')
-        self._action_id = uuid.uuid4().hex
-        return await self.async_step_action()
-    async def _select_action(self,step_id,user_input=None):
-        actions = self._draft.get('actions',[])
-        if not actions:
-            return self.async_abort(reason='no_actions')
-        if user_input is not None and user_input.get('action_id') in {action['id'] for action in actions}:
-            self._action_id = user_input['action_id']
-            return await (self.async_step_action() if step_id == 'edit_action' else self.async_step_confirm_delete())
-        return self.async_show_form(step_id=step_id,data_schema=vol.Schema({
-            vol.Required('action_id'):selector.SelectSelector(selector.SelectSelectorConfig(
-                options=[{'value':action['id'],'label':action['name']} for action in actions])),
-        }))
-    async def async_step_edit_action(self,user_input=None):
-        return await self._select_action('edit_action',user_input)
-    async def async_step_delete_action(self,user_input=None):
-        return await self._select_action('delete_action',user_input)
-    async def async_step_confirm_delete(self,user_input=None):
-        if user_input is not None:
-            self._draft['actions'] = [action for action in self._draft['actions'] if action['id'] != self._action_id]
-            return self.async_create_entry(title='',data=copy.deepcopy(self._draft))
-        name = next(action['name'] for action in self._draft['actions'] if action['id'] == self._action_id)
-        return self.async_show_form(step_id='confirm_delete',data_schema=vol.Schema({}),description_placeholders={'name':name})
-    async def async_step_action(self,user_input=None):
-        existing = next((action for action in self._draft.get('actions',[]) if action['id'] == self._action_id),{})
         errors = {}
+        shown = self._draft.get('actions',[])
         if user_input is not None:
+            shown = user_input.get('actions',[])
             try:
-                action = Action.from_dict({'id':self._action_id,'name':user_input.get('name'),
-                    'description':user_input.get('description',''),'sequence':user_input.get('sequence')})
-                await async_validate_actions_config(self.hass,cv.SCRIPT_SCHEMA(action.sequence))
+                if not isinstance(shown,list) or len(shown) > 64:
+                    raise PolicyError('invalid_action')
+                known_ids = {item['id'] for item in self._draft.get('actions',[])}
+                actions = []
+                for item in shown:
+                    if not isinstance(item,dict) or set(item) - {'id','name','description','sequence','icon'}:
+                        raise PolicyError('invalid_action')
+                    if 'id' in item and (not isinstance(item['id'],str) or item['id'] not in known_ids):
+                        raise PolicyError('invalid_action')
+                    action = Action.from_dict({**item,'id':item.get('id',uuid.uuid4().hex),
+                                               'description':item.get('description','')})
+                    actions.append(action.as_dict())
+                candidate = {**self._draft,'actions':actions}
+                policy = Policy.from_dict(candidate)
+                for action in policy.actions:
+                    await async_validate_actions_config(self.hass,cv.SCRIPT_SCHEMA(action.sequence))
             except (PolicyError,vol.Invalid):
                 errors['base'] = 'invalid_action'
             else:
-                self._draft['actions'] = [item for item in self._draft.get('actions',[]) if item['id'] != action.id]
-                self._draft['actions'].append(action.as_dict())
-                return self.async_create_entry(title='',data=copy.deepcopy(self._draft))
-        return self.async_show_form(step_id='action',errors=errors,data_schema=vol.Schema({
-            vol.Required('name',default=existing.get('name','')):str,
-            vol.Optional('description',default=existing.get('description','')):str,
-            vol.Required('sequence',default=existing.get('sequence',[])):selector.ActionSelector(),
+                self._draft = candidate
+                return self.async_create_entry(title='',data=copy.deepcopy(candidate))
+        return self.async_show_form(step_id='actions',errors=errors,data_schema=vol.Schema({
+            vol.Required('actions',default=shown):ActionListSelector(selector.ObjectSelectorConfig(
+                multiple=True,label_field='name',description_field='description',translation_key='grok_actions',
+                fields={
+                    'name':{'required':True,'selector':selector.TextSelector()},
+                    'icon':{'selector':selector.IconSelector(selector.IconSelectorConfig(placeholder='mdi:play'))},
+                    'description':{'selector':selector.TextSelector()},
+                    'sequence':{'required':True,'selector':selector.ActionSelector()},
+                })),
         }))
     async def async_step_language(self,user_input=None):
         runtime = self.hass.data.get(DOMAIN)

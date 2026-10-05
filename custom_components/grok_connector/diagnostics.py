@@ -19,7 +19,8 @@ _OUTCOMES = {"request", "response", "rejected", "failed", "cancelled", "loaded",
              "pair_created", "revoked", "origin_denied", "rate_limited",
              "registered", "invalid_registration", "form_created", "invalid_authorization",
              "cookie_missing", "cookie_mismatch", "transaction_missing", "pairing_rejected",
-             "redirect_issued", "token_rejected", "token_issued", "bearer_rejected"}
+             "redirect_issued", "token_rejected", "token_issued", "bearer_rejected",
+             "session_created", "rpc_rejected"}
 _FLAGS = {"origin_allowed", "host_matches", "cookie_header", "cookie_present", "cookie_matches",
           "transaction_present", "transaction_known", "transaction_live", "pairing_present",
           "pairing_live", "pairing_matches", "pair_code_supplied", "client_known", "client_live",
@@ -27,7 +28,8 @@ _FLAGS = {"origin_allowed", "host_matches", "cookie_header", "cookie_present", "
           "state_valid", "pkce_s256", "challenge_valid", "scope_matches", "response_type_code",
           "authorization_present", "bearer_valid", "code_present", "code_known", "code_live",
           "verifier_valid", "code_client_matches", "code_redirect_matches", "pkce_matches",
-          "refresh_present", "client_secret_supplied", "accepts_json", "protocol_supported"}
+          "refresh_present", "client_secret_supplied", "accepts_json", "protocol_supported",
+          "session_present", "session_valid"}
 _COUNTS = {"status", "pending_count", "clients_count", "grant_count", "failed_pairings",
            "cookie_name_count", "redirect_count"}
 _CATEGORIES = {
@@ -46,6 +48,7 @@ _CATEGORIES = {
                     "invalid_target", "invalid_grant", "temporarily_unavailable", "unsupported_grant_type", "other"},
     "error_class": {"HTTPException", "OAuthError", "ValueError", "other"},
     "content_type": {"json", "form", "other"},
+    "rpc_error": {"id_collision", "session_expired", "other"},
 }
 
 
@@ -67,7 +70,8 @@ def emit(stage, outcome, *, warning=False, **fields):
             record[key] = category(key, value)
         elif key in {"request_id", "flow_id"} and isinstance(value, str) and re.fullmatch(r"[a-f0-9]{12}", value):
             record[key] = value
-        elif key == "version" and isinstance(value, str) and re.fullmatch(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:b[0-9]{1,3})?", value):
+        elif key == "version" and isinstance(value, str) and re.fullmatch(
+                r"(?:[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:b[0-9]{1,3})?|[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,3})", value):
             record[key] = value
     now = time.monotonic()
     while _WINDOW and _WINDOW[0] <= now - 60:

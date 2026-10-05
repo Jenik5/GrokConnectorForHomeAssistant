@@ -30,3 +30,17 @@ Select test actions and entity IDs deliberately. This procedure should not run a
 ## Later releases
 
 Update both version constants, run local checks, publish reviewed changes, wait for CI, then create the matching release. HACS performs upgrades. Changing or removing the configured origin requires reconfiguration/new authorization; credentials are never migrated from another integration.
+
+## Stable versions
+
+The first stable release is `2026.10.4.1`, promoted from the accepted b7
+implementation. Stable version numbers use `YYYY.M.D.N`, where the last number
+is the release sequence for that date. Use the owner's requested version, keep
+`manifest.json` and `const.py` identical and verify the version also appears in
+diagnostic output.
+
+Publish stable releases with `draft: false` and `prerelease: false`, mark the
+release as Latest, and verify that its tag points to the exact commit whose CI
+passed. HACS installs stable releases without enabling beta versions. Keep older
+beta releases available as historical artifacts. Release publication and a live
+HA upgrade are separate steps; versioning alone does not require new pairing.

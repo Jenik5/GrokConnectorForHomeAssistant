@@ -2,9 +2,9 @@
 
 Komunitný konektor MCP sprístupní vybrané entity Home Assistantu na čítanie a pomenované sekvencie akcií na vykonanie. Vybrať možno ľubovoľný typ entity. Podmienky určuješ ty v akciách, skriptoch alebo automatizáciách HA.
 
-Prvá beta verzia `0.1.0b1` má lokálne testy. Inštaláciu cez HACS a pripojenie novej integrácie ku Groku treba ešte overiť na skutočnom HA. [Podrobný návod a stav](../README.md).
+Prvé stabilné vydanie má verziu `2026.10.4.1` a vychádza z otestovanej bety `0.1.0b7`. V beta verziách prešli testy, GitHub CI, inštalácia cez HACS a overenie nastavenia aj editora akcií v HA. Párovanie a čítanie stavov cez Nabu Casa funguje vo webovom Groku v Chrome; používateľ potvrdil tiež rozsvietenie a zhasnutie svetla. Klient v Tesle a ďalšie akcie vyžadujú vlastné praktické overenie. Stabilné vydanie nevyžaduje zapnutie beta verzií v HACS. [Podrobný návod a stav](../README.md).
 
-## Nastavenie po zverejnení
+## Nastavenie cez HACS
 
 Potrebuješ HA 2026.9.4+, HACS a zapnutý vzdialený prístup Nabu Casa. V HACS pridaj `https://github.com/Jenik5/GrokConnectorForHomeAssistant` ako vlastný repozitár typu **Integrácia**, stiahni verziu a reštartuj HA. Pridaj **Grok Connector** v **Nastavenia → Zariadenia a služby**.
 
