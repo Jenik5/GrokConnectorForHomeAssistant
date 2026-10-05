@@ -21,6 +21,8 @@ Vyber entity na čítanie. V **Konfigurovať → Akcie** pridaj názov, opis pre
 
 Grok môže vyvolať pripravený nástroj bez dodatočných cieľov alebo parametrov. Zoznam na čítanie obmedzuje zdieľané údaje; rozsah nakonfigurovanej akcie určuje jej sekvencia.
 
+Od verzie `2026.10.5.2` majú nástroje akcií čitateľné názvy: napríklad `Otvoriť bránu` sa ponúkne ako `otvorit_branu`. Zhodné a rezervované názvy sa bezpečne odlíšia príponou. Pôvodné identifikátory zostávajú funkčné; samotná aktualizácia nevyžaduje nové párovanie. Klient môže zobrazovať staré názvy do obnovenia zoznamu nástrojov. Premenovanie akcie naďalej vyžaduje nové párovanie.
+
 ## Pripojenie Groka
 
 **Konfigurovať → Párovací kód** ukáže presnú adresu MCP a jednorazový kód platný desať minút. Adresa má tvar `https://tvoja-instancia.ui.nabu.casa/api/grok_connector/mcp`. V Groku vytvor vlastný konektor MCP a kód zadaj v jeho autorizačnom okne.

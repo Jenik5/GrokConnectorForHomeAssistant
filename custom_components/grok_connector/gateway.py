@@ -78,12 +78,18 @@ class Gateway:
         return {'entities':entities}
 
     def action_tools(self):
-        """Tool name -> action; readable slug of the action name, id suffix on clash."""
-        names,result = {'entities_status'},{}
-        for action in self.policy.actions:
-            name = tool_slug(action.name)
-            if not name or name in names:
-                name = (name or 'action')+'_'+action.id[:6]
+        """Readable names never shadow a status tool, literal slug or legacy alias."""
+        slugs = [tool_slug(action.name) for action in self.policy.actions]
+        literal_names = set(slugs)
+        names = {'entities_status', *('action_'+action.id for action in self.policy.actions)}
+        result = {}
+        for action,name in zip(self.policy.actions,slugs):
+            if not name or name in names or re.fullmatch(r'action_[a-f0-9]{32}',name):
+                stem = (name or 'action')+'_'+action.id[:6]
+                name,index = stem,2
+                while (name in names or name in literal_names
+                       or re.fullmatch(r'action_[a-f0-9]{32}',name)):
+                    name,index = stem+'_'+str(index),index+1
             names.add(name)
             result[name] = action
         return result
@@ -141,6 +147,7 @@ class Gateway:
                     actions.update(self.action_tools())
                     if name not in actions:
                         return self.error(request_id,-32602,'Action not permitted')
+                    action_id = actions[name].id
                     now = self.clock()
                     self.replies = {key:value for key,value in self.replies.items() if value[0] > now}
                     # JSON-RPC IDs identify requests within an MCP session, not
@@ -149,12 +156,12 @@ class Gateway:
                     key = (principal,session,type(request_id),request_id)
                     if session is not None and key in self.replies:
                         _,previous,cached = self.replies[key]
-                        if previous != name:
+                        if previous != action_id:
                             return self.error(request_id,-32602,'Request ID already used for another action')
                         result = copy.deepcopy(cached)
                     else:
                         try:
-                            await self.action_runner(actions[name].id)
+                            await self.action_runner(action_id)
                         except Exception:
                             result = content({'error':'action_execution_uncertain',
                                 'instruction':'Do not retry automatically. Check the state and HA trace.'},True)
@@ -163,7 +170,8 @@ class Gateway:
                         if session is not None and session in self.sessions:
                             if len(self.replies) >= 256:
                                 self.replies.pop(next(iter(self.replies)))
-                            self.replies[key] = (self.clock()+120,name,copy.deepcopy(result))
+                            # Both the readable name and legacy alias identify this action.
+                            self.replies[key] = (self.clock()+120,action_id,copy.deepcopy(result))
         else:
             return self.error(request_id,-32601,'Method not found')
         return {'jsonrpc':'2.0','id':request_id,'result':result}

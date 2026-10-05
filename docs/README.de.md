@@ -21,6 +21,8 @@ Wähle die lesbaren Entitäten. Unter **Konfigurieren → Aktionen** kannst du e
 
 Grok darf nur die vorbereiteten Werkzeuge ohne zusätzliche Ziele oder Parameter aufrufen. Die lesbare Entitätenliste begrenzt die Datenweitergabe, nicht die Reichweite einer von dir konfigurierten Aktionsfolge.
 
+Ab Version `2026.10.5.2` erhalten Aktionswerkzeuge lesbare Namen: `Garagentor öffnen` wird beispielsweise zu `garagentor_offnen`. Gleiche und reservierte Namen werden durch einen eindeutigen Zusatz unterschieden. Alte Kennungen bleiben gültig; das Update allein erfordert keine neue Kopplung. Ein Client kann alte Namen anzeigen, bis seine Werkzeugliste aktualisiert wird. Das Umbenennen einer Aktion erfordert weiterhin neue Kopplung.
+
 ## Grok verbinden
 
 **Konfigurieren → Kopplungscode** zeigt die genaue MCP-Adresse und einen einmaligen Code, gültig für zehn Minuten. Die Adresse lautet `https://deine-instanz.ui.nabu.casa/api/grok_connector/mcp`. Erstelle in Grok einen benutzerdefinierten MCP-Connector und gib den Code in dessen Autorisierungsfenster ein.

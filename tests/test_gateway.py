@@ -123,6 +123,78 @@ class GatewayTests(unittest.IsolatedAsyncioTestCase):
         self.gateway.policy = self.policy
         self.assertEqual(list(self.gateway.action_tools()), ['brana', 'brana_bbbbbb', 'action_cccccc'])
 
+    async def test_readable_names_cannot_shadow_legacy_action_identifiers(self):
+        configured = [action('a' * 32, 'First action'),
+                      action('b' * 32, 'action_' + 'a' * 32),
+                      action('c' * 32, 'action_' + 'd' * 32)]
+        self.gateway.policy = policy.Policy.from_dict({'actions': configured})
+        for index, item in enumerate(configured):
+            response = await self.call(index, 'action_' + item['id'])
+            self.assertNotIn('error', response)
+        self.assertEqual(self.executed, [item['id'] for item in configured])
+        self.assertIn('error', await self.call(10, 'action_' + 'd' * 32))
+        tools = self.gateway.action_tools()
+        self.assertEqual(len(tools), len(configured))
+        for index, (name, item) in enumerate(tools.items(), 20):
+            await self.call(index, name)
+            self.assertEqual(self.executed[-1], item.id)
+
+    async def test_suffix_collisions_preserve_every_action_and_literal_slug(self):
+        configured = [action('a' * 32, 'Brána'), action('b' * 32, 'Brana'),
+                      action('bbbbbb' + 'c' * 26, 'Brana'), action('d' * 32, 'Brana_bbbbbb')]
+        self.gateway.policy = policy.Policy.from_dict({'actions': configured})
+        tools = self.gateway.action_tools()
+        self.assertEqual(len(tools), len(configured))
+        self.assertEqual({item.id for item in tools.values()}, {item['id'] for item in configured})
+        self.assertEqual(tools['brana_bbbbbb'].id, 'd' * 32)
+        self.assertEqual(self.gateway.action_tools(), tools)
+        for index, (name, item) in enumerate(tools.items()):
+            self.assertNotIn('error', await self.call(index, name))
+            self.assertEqual(self.executed[-1], item.id)
+
+    def test_all_64_actions_keep_unique_bounded_names_after_normalization(self):
+        for names in (['???'] * 64, ['同じ'] * 64, ['x' * 48 + str(n) for n in range(64)],
+                      ['entities_status'] * 64):
+            configured = [action('abcdef' + f'{index:026x}', name) for index, name in enumerate(names)]
+            self.gateway.policy = policy.Policy.from_dict({'actions': configured})
+            tools = self.gateway.tools()
+            self.assertEqual(len(tools), 65)
+            self.assertEqual(len({tool['name'] for tool in tools}), 65)
+            self.assertEqual({item.id for item in self.gateway.action_tools().values()},
+                             {item['id'] for item in configured})
+            for tool in tools:
+                self.assertRegex(tool['name'], r'^[a-z0-9_]{1,128}$')
+                self.assertEqual(tool['inputSchema'], gateway.EMPTY_INPUT)
+
+    async def test_reserved_status_name_always_remains_read_only(self):
+        self.gateway.policy = policy.Policy.from_dict({'actions': [action('c' * 32, 'entities_status')]})
+        result = await self.call(1, 'entities_status')
+        self.assertNotIn('error', result)
+        self.assertEqual(self.executed, [])
+        name = next(iter(self.gateway.action_tools()))
+        self.assertNotEqual(name, 'entities_status')
+        await self.call(2, name)
+        self.assertEqual(self.executed, ['c' * 32])
+
+    async def test_retry_with_readable_and_legacy_alias_executes_once(self):
+        for request_id, first, second in (('legacy-first', 'action_' + 'a' * 32, 'turn_on_the_light'),
+                                          ('readable-first', 'turn_on_the_light', 'action_' + 'a' * 32)):
+            response = await self.call(request_id, first)
+            self.assertEqual(await self.call(request_id, second), response)
+            self.assertIn('error', await self.call(request_id, 'run_automation'))
+        self.assertEqual(self.executed, ['a' * 32, 'a' * 32])
+        first, second = await asyncio.gather(self.call('parallel-alias', 'turn_on_the_light'),
+                                            self.call('parallel-alias', 'action_' + 'a' * 32))
+        self.assertEqual(first, second)
+        self.assertEqual(len(self.executed), 3)
+
+    async def test_readable_names_keep_authorization_and_fixed_arguments(self):
+        self.assertIn('error', await self.call(1, 'turn_on_the_light', {'entity_id': 'light.other'}))
+        self.allowed = False
+        for name in ('turn_on_the_light', 'action_' + 'a' * 32):
+            self.assertIn('error', await self.call(2, name))
+        self.assertEqual(self.executed, [])
+
     async def test_light_already_on_does_not_block_direct_or_repeated_action(self):
         first, second = await self.call(1), await self.call(2)
         self.assertFalse(first['result']['isError'])

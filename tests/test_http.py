@@ -225,6 +225,27 @@ class MCPSessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.executed, ['a'*32, 'b'*32, 'a'*32])
         self.assertFalse(self.gateway.replies)
 
+    async def test_readable_alias_keeps_retry_identity_and_private_diagnostics(self):
+        name = 'PRIVATE GARAGE ACTION'
+        self.gateway.policy = policy.Policy.from_dict({'actions': [
+            {'id': 'a'*32, 'name': name, 'description': '', 'sequence': [{'variables': {'test': True}}]}]})
+        session = await self.initialize()
+        with self.assertLogs(diagnostics._LOGGER, level='INFO') as captured:
+            first = await self.view.post(self.request({'jsonrpc': '2.0', 'id': 2, 'method': 'tools/call',
+                'params': {'name': 'private_garage_action'}}, session=session))
+            second = await self.call(session=session)
+            rejected = await self.view.post(self.request({'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call',
+                'params': {'name': 'PRIVATE_UNKNOWN_TOOL'}}, session=session))
+        self.assertEqual(first.text, second.text)
+        self.assertNotIn('error', json.loads(first.text))
+        self.assertIn('error', json.loads(rejected.text))
+        self.assertEqual(self.executed, ['a'*32])
+        log = '\n'.join(captured.output)
+        self.assertIn('"tool":"configured_action"', log)
+        self.assertIn('"tool":"other"', log)
+        for private in (name, 'private_garage_action', 'action_'+'a'*32, 'PRIVATE_UNKNOWN_TOOL', session):
+            self.assertNotIn(private, log)
+
     async def test_unknown_and_foreign_sessions_fail_before_any_action(self):
         session = await self.initialize()
         with self.assertRaises(web.HTTPNotFound):

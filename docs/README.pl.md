@@ -21,6 +21,8 @@ Wybierz encje do odczytu. W **Konfiguruj → Akcje** dodaj nazwę, opis dla Grok
 
 Grok może wywołać tylko przygotowane narzędzie, bez podawania innego celu lub dodatkowych parametrów. Lista encji do odczytu ogranicza ujawniane dane; zakres skonfigurowanej akcji określa jej sekwencja.
 
+Od wersji `2026.10.5.2` narzędzia akcji mają czytelne nazwy: `Otwórz bramę` staje się na przykład `otworz_brame`. Identyczne i zastrzeżone nazwy otrzymują unikalny sufiks. Stare identyfikatory nadal działają; sama aktualizacja nie wymaga ponownego parowania. Klient może wyświetlać stare nazwy do odświeżenia listy narzędzi. Zmiana nazwy akcji nadal wymaga ponownego parowania.
+
 ## Połączenie z Grokiem
 
 **Konfiguruj → Kod parowania** pokazuje dokładny adres MCP i jednorazowy kod ważny przez dziesięć minut. Adres ma postać `https://twoja-instancja.ui.nabu.casa/api/grok_connector/mcp`. Utwórz własny konektor MCP w Groku i wpisz kod w jego oknie autoryzacji.
