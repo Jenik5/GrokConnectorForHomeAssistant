@@ -403,6 +403,81 @@ class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(next(iter(response.cookies.values()))["httponly"])
         self.assertEqual(next(iter(response.cookies.values()))["samesite"], "Lax")
 
+    async def test_custom_https_port_preserves_oauth_origin_and_resource_boundary(self):
+        base = "https://ha.example.org:8125"
+        self.authority = security.OAuthAuthority(base)
+        self.runtime.authority = self.authority
+        self.client = self.authority.register({"redirect_uris": [self.params["redirect_uri"]]})["client_id"]
+        self.params.update(client_id=self.client, resource=self.authority.resource)
+        self.assertEqual(self.authority.issuer, base + const.OAUTH_PATH)
+        self.assertEqual(self.authority.resource, base + const.MCP_PATH)
+        resource_meta = await namespace["ResourceMetadataView"](self.hass).get(Request(method="GET"))
+        resource_meta = json.loads(resource_meta.text)
+        self.assertEqual(resource_meta["resource"], self.authority.resource)
+        self.assertEqual(resource_meta["authorization_servers"], [self.authority.issuer])
+        server_meta = await namespace["ServerMetadataView"](self.hass).get(Request(method="GET"))
+        server_meta = json.loads(server_meta.text)
+        self.assertEqual(server_meta["issuer"], self.authority.issuer)
+        for key in ("authorization_endpoint", "token_endpoint", "registration_endpoint"):
+            self.assertTrue(server_meta[key].startswith(self.authority.issuer + "/"))
+        for wrong in ("https://ha.example.org", "https://ha.example.org:8126",
+                      "https://other.example.org:8125"):
+            response = await self.view.get(Request(method="GET", query={
+                **self.params, "resource": wrong + const.MCP_PATH}))
+            self.assertEqual(response.status, 400)
+        self.assertEqual(self.authority.pending, {})
+
+        form = await self.view.get(Request(method="GET", query=self.params))
+        cookie = next(iter(form.cookies.values()))
+        self.assertTrue(cookie["secure"])
+        self.assertTrue(cookie["httponly"])
+        self.assertEqual(cookie["samesite"], "Lax")
+        self.assertEqual(form.headers["Content-Security-Policy"],
+            "default-src 'none'; form-action 'self' https://grok.com; base-uri 'none'; frame-ancestors 'none'")
+        transaction, pair = cookie.value, self.authority.pair()
+        form_data = {"transaction": transaction, "pairing_secret": pair}
+        cookies = {page_module.transaction_cookie_name(transaction): transaction}
+        for wrong in ("https://ha.example.org", "https://ha.example.org:8126",
+                      "https://ha.example.org:8125.evil.org", "null"):
+            with self.subTest(origin=wrong), self.assertRaises(web.HTTPForbidden):
+                await self.view.post(Request(form=form_data, cookies=cookies, headers={"Origin": wrong}))
+        self.assertIn(transaction, self.authority.pending)
+        approval = await self.view.post(Request(form=form_data, cookies=cookies, headers={"Origin": base}))
+        self.assertEqual(approval.status, 303)
+        code = dict(parse_qsl(urlsplit(approval.headers["Location"]).query))["code"]
+        token_form = {"grant_type": "authorization_code", "code": code, "client_id": self.client,
+            "redirect_uri": self.params["redirect_uri"], "resource": self.authority.resource,
+            "code_verifier": self.verifier}
+        bad = await self.token_view.post(Request(form={**token_form,
+            "resource": "https://ha.example.org:8126" + const.MCP_PATH}))
+        self.assertEqual(bad.status, 400)
+        tokens = await self.token_view.post(Request(form=token_form))
+        self.assertEqual(tokens.status, 200)
+        tokens = json.loads(tokens.text)
+        header = "Bearer " + tokens["access_token"]
+        self.assertIsNotNone(self.authority.authenticate(header))
+        changed = security.OAuthAuthority("https://ha.example.org:8126", self.authority.snapshot())
+        self.assertIsNone(changed.authenticate(header))
+        mcp = namespace["MCPView"](self.hass)
+        self.assertIsNotNone(mcp.authorize(Request(headers={"Authorization": header, "Origin": base})))
+        with self.assertRaises(web.HTTPForbidden):
+            mcp.authorize(Request(headers={"Authorization": header, "Origin": "https://ha.example.org:8126"}))
+        rotated = await self.token_view.post(Request(form={"grant_type": "refresh_token",
+            "refresh_token": tokens["refresh_token"], "client_id": self.client,
+            "resource": self.authority.resource}))
+        self.assertEqual(rotated.status, 200)
+        self.assertIsNone(self.authority.authenticate(header))
+
+    async def test_existing_nabu_grants_survive_default_port_canonicalization(self):
+        transaction = await self.form()
+        _, code, _ = self.authority.approve(transaction, self.authority.pair())
+        tokens = self.authority.token({"grant_type": "authorization_code", "code": code,
+            "client_id": self.client, "redirect_uri": self.params["redirect_uri"],
+            "resource": self.authority.resource, "code_verifier": self.verifier})
+        restored = security.OAuthAuthority(self.authority.base_url + ":443/", self.authority.snapshot())
+        self.assertEqual(restored.base_url, self.authority.base_url)
+        self.assertIsNotNone(restored.authenticate("Bearer " + tokens["access_token"]))
+
     def test_callback_cannot_inject_a_csp_directive_or_allow_other_domains(self):
         headers = namespace["form_headers_for_callback"]
         for callback in ("https://evil.example/callback", "http://grok.com/callback",

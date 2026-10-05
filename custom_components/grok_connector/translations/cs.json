@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "invalid_url": "Zadejte HTTPS adresu s názvem hostitele a volitelným portem (např. https://example.org:8125), bez cesty a parametrů.",
+      "invalid_url": "Zadejte samotnou HTTPS adresu s názvem hostitele a volitelným portem, bez přihlašovacích údajů, cesty, parametrů a fragmentu.",
       "invalid_selection": "Vyberte nejvýše 64 entit.",
       "invalid_action": "Zadejte název, volitelný popis a platnou neprázdnou sekvenci akcí Home Assistantu."
     },
@@ -66,7 +66,7 @@
       }
     },
     "error": {
-      "invalid_url": "Zadejte HTTPS adresu s názvem hostitele a volitelným portem (např. https://example.org:8125), bez cesty a parametrů.",
+      "invalid_url": "Zadejte samotnou HTTPS adresu s názvem hostitele a volitelným portem, bez přihlašovacích údajů, cesty, parametrů a fragmentu.",
       "invalid_selection": "Vyberte nejvýše 64 entit.",
       "invalid_action": "Zadejte název, volitelný popis a platnou neprázdnou sekvenci akcí Home Assistantu."
     },

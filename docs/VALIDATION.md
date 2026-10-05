@@ -173,3 +173,10 @@ See [the acceptance procedure](RELEASING.md) for deliberate follow-up tests.
   the confirmed light-on/light-off retest and the separate Tesla acceptance limit.
 - Publication uses a stable GitHub release rather than a prerelease. A live HA
   installation of this stable tag is a separate acceptance step.
+
+
+## Custom public HTTPS origins — 2026-10-05 / 2026.10.5.1
+
+The custom-origin contribution and maintainer hardening passed 80 local Python tests, 5 JavaScript tests and package checks. New regressions cover ambiguous URLs, browser IPv4 representations, custom-port discovery metadata, exact Origin/resource boundaries, PKCE consent/exchange, refresh rotation and existing Nabu Casa grant compatibility. See the [security assessment](SECURITY-ASSESSMENT-2026-10-05.md).
+
+These checks use the shipped code with framework adapters. No live HA deployment, proxy/TLS audit, physical action or Tesla test was performed for this release preparation. The contributor reported successful custom-domain pairing; that is separate from maintainer-verified acceptance.

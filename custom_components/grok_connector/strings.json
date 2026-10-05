@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "invalid_url": "Enter only an HTTPS origin with a hostname and optional port (for example https://example.org:8125), without a path or query.",
+      "invalid_url": "Enter only an HTTPS origin with a hostname and optional port, without credentials, a path, query or fragment.",
       "invalid_selection": "Choose at most 64 entities.",
       "invalid_action": "Enter a name, an optional description and a valid nonempty Home Assistant action sequence."
     },
@@ -66,7 +66,7 @@
       }
     },
     "error": {
-      "invalid_url": "Enter only an HTTPS origin with a hostname and optional port (for example https://example.org:8125), without a path or query.",
+      "invalid_url": "Enter only an HTTPS origin with a hostname and optional port, without credentials, a path, query or fragment.",
       "invalid_selection": "Choose at most 64 entities.",
       "invalid_action": "Enter a name, an optional description and a valid nonempty Home Assistant action sequence."
     },

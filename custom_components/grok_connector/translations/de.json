@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit Hostname und optionalem Port ein (z. B. https://example.org:8125), ohne Pfad oder Parameter.",
+      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit Hostname und optionalem Port ein, ohne Zugangsdaten, Pfad, Parameter oder Fragment.",
       "invalid_selection": "Wählen Sie höchstens 64 Entitäten aus.",
       "invalid_action": "Geben Sie einen Namen, eine optionale Beschreibung und eine gültige, nicht leere Home-Assistant-Aktionssequenz ein."
     },
@@ -66,7 +66,7 @@
       }
     },
     "error": {
-      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit Hostname und optionalem Port ein (z. B. https://example.org:8125), ohne Pfad oder Parameter.",
+      "invalid_url": "Geben Sie nur eine HTTPS-Adresse mit Hostname und optionalem Port ein, ohne Zugangsdaten, Pfad, Parameter oder Fragment.",
       "invalid_selection": "Wählen Sie höchstens 64 Entitäten aus.",
       "invalid_action": "Geben Sie einen Namen, eine optionale Beschreibung und eine gültige, nicht leere Home-Assistant-Aktionssequenz ein."
     },

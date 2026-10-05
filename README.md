@@ -26,7 +26,7 @@ Select any entity for reading. Expose commands as named action sequences using H
 
 ## Requirements and current status
 
-- Home Assistant **2026.9.4 or newer**, HACS and enabled Nabu Casa remote access.
+- Home Assistant **2026.9.4 or newer**, HACS and public HTTPS access to HA. Use Nabu Casa remote access or your own DNS hostname with a valid TLS certificate; a nonstandard HTTPS port is supported.
 - A Grok client/account that offers custom remote MCP connectors with OAuth. Availability in Grok's Tesla interface is a separate client capability; this integration cannot enable it.
 - The beta series passed automated checks, GitHub CI, live HACS installation, native HA configuration/action editing and OAuth/MCP acceptance over Nabu Casa. Grok web in Chrome successfully paired and read selected states; the user confirmed light-on and light-off commands after the b7 fix. The first stable release packages that implementation with the requested date-based version. The Tesla client and other device sequences need their own acceptance testing. See [validation evidence](docs/VALIDATION.md).
 
@@ -37,10 +37,10 @@ This is an independent integration, not the official Home Assistant MCP Server o
 Install the published release through HACS:
 
 1. In HACS, open **Custom repositories** and add `https://github.com/Jenik5/GrokConnectorForHomeAssistant` as an **Integration**.
-2. Download **2026.10.4.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
+2. Download **2026.10.5.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
 3. Restart Home Assistant to load the newly installed Python integration.
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
-5. Enter your Nabu Casa remote-access HTTPS origin, for example `https://your-instance.ui.nabu.casa`, and choose the MCP language.
+5. Enter your public HTTPS origin, for example `https://your-instance.ui.nabu.casa` or `https://ha.example.org:8125`, and choose the MCP language. Enter only the origin, without credentials, a path, query or fragment.
 6. Select entities whose states Grok may read. Any entity domain is allowed; the list can be empty for an actions-only connector.
 7. Open **Configure → Actions** to see configured commands. Each row shows its name and description, with edit and remove icons. Use **Add action** below the list to add a command; submit the list to save your changes. Successful options saves close the dialog automatically; validation problems remain visible.
 
@@ -107,6 +107,14 @@ The connector supports up to 64 reading entities and 64 named actions. Each sequ
 4. Ask Grok to read a selected entity first. Then test one deliberately chosen action.
 
 A separate HA user or HA long-lived access token is not needed: this server issues its own restricted credentials. Keep the pairing code private. Creating a new code invalidates the previous unused code.
+
+### Using your own public address
+
+Version **2026.10.5.1** adds custom HTTPS origins beyond Nabu Casa; the older `2026.10.4.1` release remains Nabu Casa-only. The MCP URL is your configured origin followed by `/api/grok_connector/mcp`, for example `https://ha.example.org:8125/api/grok_connector/mcp`.
+
+Use a hostname you control, publicly reachable by the Grok client, with a certificate valid for that hostname. HTTPS is required on the public connection; the backend may use HTTP behind a trusted TLS-terminating reverse proxy. Preserve the connector's MCP, OAuth and `/.well-known/` paths, request bodies, query strings, cookies, `Authorization`, `Origin` and `MCP-Session-Id` headers. An interactive proxy login in front of these endpoints is not supported by this integration. Configure HA's `use_x_forwarded_for` and narrowly scoped `trusted_proxies` only as required by [HA's reverse proxy documentation](https://www.home-assistant.io/integrations/http/#reverse-proxies).
+
+The integration checks URL syntax, not DNS resolution, certificate validity or public reachability. IP literals, localhost/single-label names, credentials and paths are rejected. A terminal slash and explicit port 443 are normalized; other ports remain part of the OAuth issuer, resource and allowed Origin. Use trusted applications on the same hostname, since browser cookies are scoped to a hostname rather than a port. Changing the configured origin invalidates the resource binding of existing grants and requires new pairing. Existing Nabu Casa configurations retain the same canonical origin and credentials. See the [security assessment](docs/SECURITY-ASSESSMENT-2026-10-05.md).
 
 Changing the reading list or any action, including its name/description or sequence, **revokes existing connector access**. Create a new pairing code and reconnect Grok. Changing only the language or an action icon preserves access. **Configure → Revoke Grok access** invalidates access/refresh tokens and pending authorization; approved OAuth client metadata remains available for reauthorization.
 

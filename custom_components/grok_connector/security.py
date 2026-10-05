@@ -27,20 +27,31 @@ def digest(value):
 
 
 def public_base(value):
-    # Any HTTPS origin with a DNS hostname and an optional port; IP literals are rejected.
+    """Canonical HTTPS origin selected by the HA administrator, never a fetch target."""
+    # urlsplit silently strips some control characters. Reject them before parsing.
+    if (not isinstance(value, str) or len(value) > 2048
+            or any(ord(c) < 33 or ord(c) == 127 for c in value)
+            or "?" in value or "#" in value):
+        raise ValueError("An HTTPS origin with a DNS hostname is required")
     parsed = urlsplit(value)
+    host = parsed.hostname or ""
+    last_label = host.rsplit(".", 1)[-1]
     if (parsed.scheme != "https" or not parsed.hostname
             or not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+",
-                                parsed.hostname)
-            or len(parsed.hostname) > 253 or re.fullmatch(r"[0-9.]+", parsed.hostname)
-            or parsed.username or parsed.password
-            or parsed.path not in ("", "/") or parsed.query or parsed.fragment):
+                                host)
+            or len(host) > 253
+            # Browsers interpret hosts ending in a number as IPv4, including hex/octal.
+            or re.fullmatch(r"[0-9]+|0x[0-9a-f]*", last_label)
+            or parsed.username is not None or parsed.password is not None
+            or parsed.netloc.endswith(":") or parsed.path not in ("", "/")):
         raise ValueError("An HTTPS origin with a DNS hostname is required")
     try:
         port = parsed.port
     except ValueError:
         raise ValueError("Invalid port") from None
-    return "https://" + parsed.hostname + (f":{port}" if port not in (None, 443) else "")
+    if port is not None and not 1 <= port <= 65535:
+        raise ValueError("Invalid port")
+    return "https://" + host + (f":{port}" if port not in (None, 443) else "")
 
 
 def allowed_callback(value):

@@ -6,9 +6,11 @@ Prvé stabilné vydanie má verziu `2026.10.4.1` a vychádza z otestovanej bety 
 
 ## Nastavenie cez HACS
 
-Potrebuješ HA 2026.9.4+, HACS a zapnutý vzdialený prístup Nabu Casa. V HACS pridaj `https://github.com/Jenik5/GrokConnectorForHomeAssistant` ako vlastný repozitár typu **Integrácia**, stiahni verziu a reštartuj HA. Pridaj **Grok Connector** v **Nastavenia → Zariadenia a služby**.
+Potrebuješ HA 2026.9.4+, HACS a verejný HTTPS prístup cez Nabu Casa alebo vlastnú doménu s platným TLS certifikátom. V HACS pridaj `https://github.com/Jenik5/GrokConnectorForHomeAssistant` ako vlastný repozitár typu **Integrácia**, stiahni verziu a reštartuj HA. Pridaj **Grok Connector** v **Nastavenia → Zariadenia a služby**.
 
-Zadaj HTTPS adresu Nabu Casa bez cesty, vyber jazyk nástrojov MCP a entity na čítanie. V **Konfigurovať → Akcie** pridaj názov, opis pre Groka a sekvenciu v editore HA. Zaradenie entity do zoznamu na čítanie samo osebe neumožňuje jej ovládanie.
+Zadaj verejnú HTTPS adresu bez cesty, napr. `https://tvoja-instancia.ui.nabu.casa` alebo `https://ha.example.org:8125`, a vyber jazyk nástrojov MCP. Podpora vlastných domén je dostupná od verzie `2026.10.5.1`; staršie vydanie `2026.10.4.1` zostáva obmedzené na Nabu Casa. Adresa musí byť dostupná Groku a mať platný certifikát. Port je súčasťou oprávnenia; zmena adresy vyžaduje nové párovanie. [Vlastná adresa a reverzná proxy](../README.md#using-your-own-public-address).
+
+Vyber entity na čítanie. V **Konfigurovať → Akcie** pridaj názov, opis pre Groka a sekvenciu v editore HA. Zaradenie entity do zoznamu na čítanie samo osebe neumožňuje jej ovládanie.
 
 ## Príklady akcií
 

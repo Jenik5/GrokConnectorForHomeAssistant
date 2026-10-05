@@ -58,6 +58,25 @@ class AuthTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertEqual(security.public_base(value), expected)
 
+    def test_origin_rejects_parser_normalization_and_ambiguous_authorities(self):
+        for value in ("\nhttps://ha.example.org", " https://ha.example.org", "\x00https://ha.example.org",
+                      "https://ha.exam\tple.org", "https://ha.example.org\r\n",
+                      "https://@ha.example.org", "https://:@ha.example.org",
+                      "https://ha.example.org:", "https://ha.example.org:0",
+                      "https://ha.example.org?", "https://ha.example.org#",
+                      "https://0x7f.0.0.1", "https://example.0x7f",
+                      "https://ha.example.org\\evil", "https://ha.example.org:65536",
+                      "https://[::1]", "https://ha.example.org.evil/path",
+                      "https://" + "a" * 64 + ".example.org", None, b"https://ha.example.org"):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                security.public_base(value)
+        for value, expected in (("https://HA.Example.ORG:443/", "https://ha.example.org"),
+                                ("https://ha.example.org:8125/", "https://ha.example.org:8125"),
+                                ("https://ha.example.org:65535", "https://ha.example.org:65535"),
+                                ("https://ha.xn--bcher-kva.de", "https://ha.xn--bcher-kva.de")):
+            with self.subTest(value=value):
+                self.assertEqual(security.public_base(value), expected)
+
     def test_redirect_allowlist_and_exact_match(self):
         for uri in ("https://grok.com.evil.example/cb", "https://evil-grok.com/cb",
                     "http://grok.com/cb", "https://grok.com/cb#fragment",
