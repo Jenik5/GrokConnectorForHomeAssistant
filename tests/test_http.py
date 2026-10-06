@@ -528,6 +528,131 @@ class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(rotated.status, 200)
         self.assertIsNone(self.authority.authenticate(header))
 
+    async def test_expired_bearer_challenge_identifies_invalid_token(self):
+        now = 1000
+        self.authority.clock = lambda: now
+        transaction = await self.form()
+        _, code, _ = self.authority.approve(transaction, self.authority.pair())
+        tokens = self.authority.token({"grant_type": "authorization_code", "code": code,
+            "client_id": self.client, "redirect_uri": self.params["redirect_uri"],
+            "resource": self.authority.resource, "code_verifier": self.verifier})
+        now += 600
+        mcp = namespace["MCPView"](self.hass)
+        with self.assertRaises(web.HTTPUnauthorized) as caught:
+            mcp.authorize(Request(headers={"Authorization": "Bearer " + tokens["access_token"]}))
+        self.assertIn('error="invalid_token"', caught.exception.headers["WWW-Authenticate"])
+        self.assertIn('resource_metadata="' + self.authority.base_url + const.RESOURCE_METADATA_PATH + '"',
+                      caught.exception.headers["WWW-Authenticate"])
+        with self.assertRaises(web.HTTPUnauthorized) as caught:
+            mcp.authorize(Request())
+        self.assertNotIn('error=', caught.exception.headers["WWW-Authenticate"])
+
+    async def test_mcp_session_survives_repeated_timed_http_refresh(self):
+        now = 1000
+        self.authority.clock = lambda: now
+        transaction = await self.form()
+        _, code, _ = self.authority.approve(transaction, self.authority.pair())
+        response = await self.token_view.post(Request(form={"grant_type": "authorization_code", "code": code,
+            "client_id": self.client, "redirect_uri": self.params["redirect_uri"],
+            "resource": self.authority.resource, "code_verifier": self.verifier}))
+        self.assertEqual(response.status, 200)
+        tokens = json.loads(response.text)
+        principal = self.authority.authenticate("Bearer " + tokens["access_token"])
+        self.runtime.policy = policy.Policy.from_dict({"read_entities": ["light.test"], "actions": []})
+        self.runtime.gateway = gateway.Gateway(lambda entity: "off", None, self.runtime.policy, catalogs,
+            authorized=lambda p: p in self.authority.grants and
+                self.authority.grants[p]["access_expires"] > now and
+                self.authority.grants[p]["refresh_expires"] > now, clock=lambda: now)
+        self.hass.async_create_task = lambda task, name: asyncio.create_task(task)
+        mcp = namespace["MCPView"](self.hass)
+        def request(message, session=None):
+            headers = {"Authorization": "Bearer " + tokens["access_token"], "Accept": "application/json"}
+            if session:
+                headers["MCP-Session-Id"] = session
+            return Request(body=json.dumps(message).encode(), headers=headers)
+        initialized = await mcp.post(request({"jsonrpc": "2.0", "method": "initialize", "id": 1}))
+        session = initialized.headers["MCP-Session-Id"]
+        for cycle in range(4):
+            now += 601
+            old_access = tokens["access_token"]
+            with self.assertRaises(web.HTTPUnauthorized):
+                await mcp.post(request({"jsonrpc": "2.0", "method": "tools/list", "id": 2}, session))
+            form = {"grant_type": "refresh_token", "client_id": self.client,
+                    "refresh_token": tokens["refresh_token"]}
+            if cycle % 2 == 0:
+                form["resource"] = self.authority.resource
+            rotated = await self.token_view.post(Request(form=form))
+            self.assertEqual(rotated.status, 200)
+            tokens = json.loads(rotated.text)
+            self.assertIsNone(self.authority.authenticate("Bearer " + old_access))
+            self.assertEqual(self.authority.authenticate("Bearer " + tokens["access_token"]), principal)
+            result = await mcp.post(request({"jsonrpc": "2.0", "method": "tools/call", "id": cycle + 3,
+                "params": {"name": "entities_status", "arguments": {}}}, session))
+            payload = json.loads(result.text)
+            self.assertNotIn("error", payload)
+            states = json.loads(payload["result"]["content"][0]["text"])["entities"]
+            self.assertEqual(states[0]["entity_id"], "light.test")
+            self.assertEqual(states[0]["state"], "off")
+        self.assertEqual(self.save_count, 5)
+
+    async def test_refresh_diagnostics_explain_rejections_without_credentials(self):
+        transaction = await self.form()
+        _, code, _ = self.authority.approve(transaction, self.authority.pair())
+        tokens = self.authority.token({"grant_type": "authorization_code", "code": code,
+            "client_id": self.client, "redirect_uri": self.params["redirect_uri"],
+            "resource": self.authority.resource, "code_verifier": self.verifier})
+        params = {"grant_type": "refresh_token", "refresh_token": tokens["refresh_token"],
+                  "client_id": self.client}
+        with self.assertLogs(diagnostics._LOGGER, level="INFO") as captured:
+            wrong_client = await self.token_view.post(Request(form={**params, "client_id": "unknown"}))
+            self.assertEqual(wrong_client.status, 400)
+            renewed = await self.token_view.post(Request(form=params))
+            self.assertEqual(renewed.status, 200)
+            replay = await self.token_view.post(Request(form=params))
+            self.assertEqual(replay.status, 400)
+        requests = [record for record in self.records(captured)
+                    if record["stage"] == "token" and record["outcome"] == "request"
+                    and record.get("grant_type") == "refresh_token"]
+        self.assertEqual(len(requests), 3)
+        self.assertFalse(requests[0]["refresh_client_matches"])
+        self.assertTrue(all(record["refresh_known"] and record["refresh_live"] and
+                            record["refresh_resource_matches"] for record in requests))
+        self.assertTrue(requests[1]["refresh_client_matches"])
+        self.assertFalse(requests[1]["resource_supplied"])
+        self.assertFalse(requests[1]["refresh_replayed"])
+        self.assertTrue(requests[2]["refresh_replayed"])
+        issued = next(record for record in self.records(captured) if record["outcome"] == "token_issued")
+        self.assertEqual(issued["grant_type"], "refresh_token")
+        combined = "\n".join(captured.output)
+        renewed = json.loads(renewed.text)
+        for credential in (code, self.client, self.verifier, *tokens.values(),
+                           renewed["access_token"], renewed["refresh_token"]):
+            if isinstance(credential, str) and len(credential) >= 20:
+                self.assertNotIn(credential, combined)
+                self.assertNotIn(security.digest(credential), combined)
+        self.assertEqual(self.authority.grants, {})
+        self.assertEqual(self.save_count, 3)
+
+    async def test_expired_refresh_has_safe_diagnostics_and_stays_rejected(self):
+        now = 1000
+        self.authority.clock = lambda: now
+        transaction = await self.form()
+        _, code, _ = self.authority.approve(transaction, self.authority.pair())
+        tokens = self.authority.token({"grant_type": "authorization_code", "code": code,
+            "client_id": self.client, "redirect_uri": self.params["redirect_uri"],
+            "resource": self.authority.resource, "code_verifier": self.verifier})
+        now += 30 * 86400
+        with self.assertLogs(diagnostics._LOGGER, level="INFO") as captured:
+            response = await self.token_view.post(Request(form={"grant_type": "refresh_token",
+                "client_id": self.client, "refresh_token": tokens["refresh_token"]}))
+        self.assertEqual(response.status, 400)
+        record = next(record for record in self.records(captured) if record["outcome"] == "token_rejected")
+        self.assertTrue(record["refresh_known"])
+        self.assertFalse(record["refresh_live"])
+        self.assertEqual(record["oauth_error"], "invalid_grant")
+        self.assertEqual(self.authority.grants, {})
+        self.assertEqual(self.save_count, 1)
+
     async def test_existing_nabu_grants_survive_default_port_canonicalization(self):
         transaction = await self.form()
         _, code, _ = self.authority.approve(transaction, self.authority.pair())

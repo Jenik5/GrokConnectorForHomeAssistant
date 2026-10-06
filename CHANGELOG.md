@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Accept refresh requests that omit `resource` only when the existing grant is bound to the unchanged connector resource and matching client ID.
+- Reject renewal of stored grants after an origin change, including requests explicitly naming the new origin.
+- Include `error="invalid_token"` in rejected Bearer-token challenges while preserving initial OAuth discovery metadata.
+- Add private Boolean refresh diagnostics and timed renewal/security regressions. The actual client failure in issue #6 still needs logs or live confirmation.
+
 ## 2026.10.6.1 — 2026-10-06
 
 - Restyle the OAuth pairing page with the connector logo, a responsive card and automatic light/dark themes.

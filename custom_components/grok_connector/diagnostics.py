@@ -28,7 +28,8 @@ _FLAGS = {"origin_allowed", "host_matches", "cookie_header", "cookie_present", "
           "state_valid", "pkce_s256", "challenge_valid", "scope_matches", "response_type_code",
           "authorization_present", "bearer_valid", "code_present", "code_known", "code_live",
           "verifier_valid", "code_client_matches", "code_redirect_matches", "pkce_matches",
-          "refresh_present", "client_secret_supplied", "accepts_json", "protocol_supported",
+          "refresh_present", "refresh_known", "refresh_replayed", "refresh_client_matches",
+          "refresh_live", "refresh_resource_matches", "client_secret_supplied", "accepts_json", "protocol_supported",
           "session_present", "session_valid"}
 _COUNTS = {"status", "pending_count", "clients_count", "grant_count", "failed_pairings",
            "cookie_name_count", "redirect_count"}
