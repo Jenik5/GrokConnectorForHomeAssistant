@@ -186,7 +186,10 @@ class OAuthAuthority:
 
     def token(self, params):
         self.prune()
-        if params.get("resource") != self.resource:
+        # Initial exchange remains explicit. A refresh may omit the indicator,
+        # but it can only renew the audience already bound to the saved grant.
+        if (("resource" in params and params["resource"] != self.resource)
+                or (params.get("grant_type") != "refresh_token" and params.get("resource") != self.resource)):
             raise OAuthError("invalid_target")
         if params.get("grant_type") == "authorization_code":
             try:
@@ -226,6 +229,8 @@ class OAuthAuthority:
                 raise OAuthError("invalid_grant")
             if params.get("client_id") != grant["client_id"]:
                 raise OAuthError("invalid_grant")
+            if grant.get("resource") != self.resource:
+                raise OAuthError("invalid_target")
             grant["used_refresh"] = [*grant["used_refresh"][-31:], refresh_hash]
         else:
             raise OAuthError("unsupported_grant_type")

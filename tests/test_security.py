@@ -154,6 +154,73 @@ class AuthTests(unittest.TestCase):
             self.auth.token(refresh)
         self.assertIsNone(self.auth.authenticate("Bearer " + new_tokens["access_token"]))
 
+    def test_refresh_without_resource_after_expiry_and_restart(self):
+        tokens, client, _ = self.exchange()
+        principal = self.auth.authenticate("Bearer " + tokens["access_token"])
+        self.now += 601
+        self.auth = security.OAuthAuthority(BASE, self.auth.snapshot(), clock=lambda: self.now)
+        self.assertIsNone(self.auth.authenticate("Bearer " + tokens["access_token"]))
+        refreshed = self.auth.token({"grant_type": "refresh_token", "client_id": client,
+                                     "refresh_token": tokens["refresh_token"]})
+        self.assertEqual(refreshed["expires_in"], 600)
+        self.assertEqual(self.auth.authenticate("Bearer " + refreshed["access_token"]), principal)
+        self.assertEqual(self.auth.grants[principal]["resource"], self.auth.resource)
+        self.assertNotIn(refreshed["refresh_token"], json.dumps(self.auth.snapshot()))
+
+    def test_refresh_resource_binding_cannot_migrate_to_changed_origin(self):
+        tokens, client, _ = self.exchange()
+        saved = self.auth.snapshot()
+        for include_resource in (False, True):
+            changed = security.OAuthAuthority("https://other-house.ui.nabu.casa", saved, clock=lambda: self.now)
+            params = {"grant_type": "refresh_token", "client_id": client,
+                      "refresh_token": tokens["refresh_token"]}
+            if include_resource:
+                params["resource"] = changed.resource
+            with self.subTest(include_resource=include_resource):
+                with self.assertRaises(security.OAuthError) as caught:
+                    changed.token(params)
+                self.assertEqual(caught.exception.error, "invalid_target")
+                self.assertEqual(changed.snapshot(), saved)
+
+    def test_refresh_explicit_invalid_resource_leaves_grant_usable(self):
+        tokens, client, _ = self.exchange()
+        saved = self.auth.snapshot()
+        params = {"grant_type": "refresh_token", "client_id": client,
+                  "refresh_token": tokens["refresh_token"]}
+        for resource in ("", None, BASE + "/api/mcp", "https://other-house.ui.nabu.casa" + const.MCP_PATH):
+            with self.subTest(resource=resource), self.assertRaises(security.OAuthError) as caught:
+                self.auth.token({**params, "resource": resource})
+            self.assertEqual(caught.exception.error, "invalid_target")
+            self.assertEqual(self.auth.snapshot(), saved)
+        self.assertIsNotNone(self.auth.authenticate("Bearer " + self.auth.token(params)["access_token"]))
+
+    def test_refresh_omitted_resource_still_requires_valid_client_and_token(self):
+        tokens, client, _ = self.exchange()
+        saved = self.auth.snapshot()
+        params = {"grant_type": "refresh_token", "client_id": client,
+                  "refresh_token": tokens["refresh_token"]}
+        for bad in ({**params, "client_id": "other"}, {k: v for k, v in params.items() if k != "client_id"},
+                    {**params, "refresh_token": "unknown"}):
+            with self.subTest(params_keys=sorted(bad)), self.assertRaises(security.OAuthError) as caught:
+                self.auth.token(bad)
+            self.assertEqual(caught.exception.error, "invalid_grant")
+            self.assertEqual(self.auth.snapshot(), saved)
+        self.now += 30 * 86400
+        with self.assertRaises(security.OAuthError) as caught:
+            self.auth.token(params)
+        self.assertEqual(caught.exception.error, "invalid_grant")
+        self.assertEqual(self.auth.grants, {})
+
+    def test_refresh_without_resource_rotates_and_replay_revokes_family(self):
+        tokens, client, _ = self.exchange()
+        params = {"grant_type": "refresh_token", "client_id": client,
+                  "refresh_token": tokens["refresh_token"]}
+        refreshed = self.auth.token(params)
+        with self.assertRaises(security.OAuthError) as caught:
+            self.auth.token(params)
+        self.assertEqual(caught.exception.error, "invalid_grant")
+        self.assertIsNone(self.auth.authenticate("Bearer " + refreshed["access_token"]))
+
     def test_refresh_client_binding_and_full_revoke(self):
         tokens, client, _ = self.exchange()
         params = {"grant_type": "refresh_token", "refresh_token": tokens["refresh_token"],

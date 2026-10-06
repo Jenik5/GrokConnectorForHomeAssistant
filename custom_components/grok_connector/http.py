@@ -169,14 +169,20 @@ class MCPView(GatewayView):
     name = DOMAIN + ":mcp"
     url = MCP_PATH
 
+    def unauthorized(self, request):
+        challenge = 'Bearer resource_metadata="' + self.runtime.authority.base_url + RESOURCE_METADATA_PATH + '"'
+        if request.headers.get("Authorization", "").startswith("Bearer "):
+            # RFC 6750 distinguishes an invalid/expired token from initial discovery.
+            challenge += ', error="invalid_token"'
+        return web.HTTPUnauthorized(headers={**NO_CACHE, "WWW-Authenticate": challenge})
+
     def authorize(self, request):
         self.check_origin(request, mcp=True)
         principal = self.runtime.authority.authenticate(request.headers.get("Authorization"))
         if principal is None:
             self.diagnostic(request, "mcp", "bearer_rejected", authorization_present=
                             bool(request.headers.get("Authorization")), bearer_valid=False, status=401)
-            raise web.HTTPUnauthorized(headers={**NO_CACHE, "WWW-Authenticate":
-                'Bearer resource_metadata="' + self.runtime.authority.base_url + RESOURCE_METADATA_PATH + '"'})
+            raise self.unauthorized(request)
         # Credentials in the URL are never accepted, including alongside a valid header.
         if any(key in request.query for key in ("access_token", "token", "authSig")):
             raise web.HTTPBadRequest(text="Credentials must be in the Authorization header")
@@ -219,7 +225,7 @@ class MCPView(GatewayView):
             # Each initialization establishes its own request-ID namespace. Keep
             # stateless clients compatible when they omit the optional header.
             if not self.runtime.gateway.authorized(principal):
-                raise web.HTTPUnauthorized(headers=NO_CACHE)
+                raise self.unauthorized(request)
             session = self.runtime.gateway.open_session(principal)
             headers["MCP-Session-Id"] = session
             self.diagnostic(request, "mcp", "session_created", session_present=True, session_valid=True)
@@ -404,8 +410,21 @@ class TokenView(GatewayView):
                   "refresh_present": bool(data.get("refresh_token")), "client_secret_supplied": "client_secret" in data,
                   "client_auth": "basic" if request.headers.get("Authorization", "").startswith("Basic ") else
                                  "other" if request.headers.get("Authorization") else "none"}
-        self.diagnostic(request, "token", "request", **fields)
         async with self.runtime.token_lock:
+            if data.get("grant_type") == "refresh_token":
+                try:
+                    refresh_hash = digest(data.get("refresh_token", ""))
+                except UnicodeError:
+                    refresh_hash = ""
+                grant = next((grant for grant in authority.grants.values() if
+                    secrets.compare_digest(refresh_hash, grant["refresh_hash"])
+                    or refresh_hash in grant["used_refresh"]), {})
+                fields.update(refresh_known=bool(grant),
+                    refresh_replayed=bool(grant) and refresh_hash in grant["used_refresh"],
+                    refresh_client_matches=bool(grant) and data.get("client_id") == grant["client_id"],
+                    refresh_live=bool(grant) and grant["refresh_expires"] > authority.clock(),
+                    refresh_resource_matches=bool(grant) and grant.get("resource") == authority.resource)
+            self.diagnostic(request, "token", "request", **fields)
             try:
                 result = self.runtime.authority.token(data)
             except OAuthError as err:
@@ -414,7 +433,7 @@ class TokenView(GatewayView):
                 await self.runtime.save()
                 return web.json_response({"error": err.error}, status=400, headers=NO_CACHE)
             await self.runtime.save()
-        self.diagnostic(request, "token", "token_issued", flow_id=fields["flow_id"], status=200,
+        self.diagnostic(request, "token", "token_issued", flow_id=fields["flow_id"], grant_type=fields["grant_type"], status=200,
                         grant_count=len(authority.grants))
         return web.json_response(result, headers=NO_CACHE)
 
