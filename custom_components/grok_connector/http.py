@@ -16,7 +16,7 @@ from .const import DOMAIN, MCP_PATH, OAUTH_PATH, RESOURCE_METADATA_PATH, SERVER_
 from .gateway import PROTOCOLS
 from .diagnostics import category, emit
 from .security import OAuthError, allowed_callback, digest
-from .oauth_page import render_authorization, transaction_cookie_name
+from .oauth_page import STYLE_SOURCE, render_authorization, transaction_cookie_name
 from .i18n import browser_language, text
 
 NO_CACHE = {"Cache-Control": "no-store", "Pragma": "no-cache", "X-Content-Type-Options": "nosniff"}
@@ -41,7 +41,7 @@ def form_headers_for_callback(callback):
         raise OAuthError("invalid_client")
     origin = "https://" + host + (":443" if parsed.port == 443 else "")
     return {**FORM_HEADERS, "Content-Security-Policy":
-            "default-src 'none'; form-action 'self' " + origin +
+            "default-src 'none'; style-src " + STYLE_SOURCE + "; form-action 'self' " + origin +
             "; base-uri 'none'; frame-ancestors 'none'"}
 
 

@@ -37,7 +37,7 @@ This is an independent integration, not the official Home Assistant MCP Server o
 Install the published release through HACS:
 
 1. In HACS, open **Custom repositories** and add `https://github.com/Jenik5/GrokConnectorForHomeAssistant` as an **Integration**.
-2. Download **2026.10.5.2** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
+2. Download **2026.10.6.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
 3. Restart Home Assistant to load the newly installed Python integration.
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
 5. Enter your public HTTPS origin, for example `https://your-instance.ui.nabu.casa` or `https://ha.example.org:8125`, and choose the MCP language. Enter only the origin, without credentials, a path, query or fragment.
@@ -146,3 +146,7 @@ python tools/check_package.py
 Tests use simulated states/actions and adapters for HA/aiohttp. They never connect to a house or control devices. GitHub workflows additionally run hassfest and HACS validation after publication. [Release procedure](docs/RELEASING.md) · [MIT license](LICENSE).
 
 Home Assistant and Grok names/marks belong to their respective owners. No endorsement or affiliation is implied.
+
+## Pairing page appearance
+
+From **2026.10.6.1**, the OAuth pairing page displays the connector logo and follows the browser's light/dark preference in a responsive layout. The pairing process and all five translations are unchanged. Only the fixed stylesheet is allowed by its CSP hash; no scripts or external assets are introduced. See the [focused security review](docs/SECURITY-ASSESSMENT-2026-10-06.md).

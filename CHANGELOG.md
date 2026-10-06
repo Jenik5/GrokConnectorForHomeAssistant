@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026.10.6.1 — 2026-10-06
+
+- Restyle the OAuth pairing page with the connector logo, a responsive card and automatic light/dark themes.
+- Permit only the exact static stylesheet using a SHA-256 CSP hash; scripts and external assets remain blocked.
+- Preserve all five languages, HTML escaping, count-only anonymous disclosure and the existing pairing flow.
+- Add regressions that independently hash the served stylesheet in every language and check the inline logo for active content or external references.
+
+Updating preserves configured permissions and OAuth grants. This release passed 91 Python tests, 5 JavaScript tests and package checks. See the [focused security review](docs/SECURITY-ASSESSMENT-2026-10-06.md); no live HA deployment or Grok/Tesla acceptance test was performed by the maintainer for this release.
+
 ## 2026.10.5.2 — 2026-10-05
 
 - Expose action tools with readable ASCII names derived from their configured names, such as `otevrit_branu`, while retaining their original titles and descriptions.
