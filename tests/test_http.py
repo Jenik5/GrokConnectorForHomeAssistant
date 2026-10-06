@@ -19,6 +19,7 @@ import secrets
 import sys
 import types
 import unittest
+import xml.etree.ElementTree as ET
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parents[1] / "custom_components/grok_connector"
@@ -427,6 +428,39 @@ class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(next(iter(response.cookies.values()))["secure"])
         self.assertTrue(next(iter(response.cookies.values()))["httponly"])
         self.assertEqual(next(iter(response.cookies.values()))["samesite"], "Lax")
+
+    async def test_stylesheet_hash_matches_served_page_in_every_language(self):
+        for language in catalogs:
+            with self.subTest(language=language):
+                response = await self.view.get(Request(method="GET", query=self.params,
+                    headers={"Accept-Language": language}))
+                styles = re.findall(r"<style>(.*?)</style>", response.text, re.S)
+                self.assertEqual(len(styles), 1)
+                # Hash the served text independently, not the module's CSP constant.
+                source = "'sha256-" + base64.b64encode(hashlib.sha256(styles[0].encode("utf-8")).digest()).decode() + "'"
+                directives = dict(part.strip().split(" ", 1) for part in
+                                  response.headers["Content-Security-Policy"].split(";"))
+                self.assertEqual(directives, {"default-src": "'none'", "style-src": source,
+                    "form-action": "'self' https://grok.com", "base-uri": "'none'", "frame-ancestors": "'none'"})
+                self.assertNotRegex(styles[0], r"(?i)@import|url\s*\(")
+                self.assertEqual(response.headers["Cache-Control"], "no-store")
+                self.assertEqual(response.headers["Referrer-Policy"], "same-origin")
+                self.assertIn('<html lang="' + language + '">', response.text)
+
+    async def test_inline_logo_is_passive_local_geometry(self):
+        response = await self.view.get(Request(method="GET", query=self.params))
+        logos = re.findall(r"<svg\b.*?</svg>", response.text, re.S)
+        self.assertEqual(len(logos), 1)
+        logo = ET.fromstring(logos[0])
+        namespace = "{http://www.w3.org/2000/svg}"
+        attributes = {"width", "height", "viewBox", "d", "fill", "stroke", "stroke-width",
+                      "stroke-linecap", "stroke-linejoin", "transform"}
+        for element in logo.iter():
+            self.assertIn(element.tag, {namespace + name for name in ("svg", "g", "path")})
+            self.assertLessEqual(set(element.attrib), attributes)
+            for value in element.attrib.values():
+                self.assertNotRegex(value, r"(?i)url\s*\(|javascript:|https?:|data:")
+        self.assertNotRegex(response.text, r"(?i)<(?:script|img|iframe|object|link)\b|\bon\w+\s*=|\sstyle\s*=")
 
     async def test_custom_https_port_preserves_oauth_origin_and_resource_boundary(self):
         base = "https://ha.example.org:8125"
