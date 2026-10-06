@@ -85,6 +85,7 @@ namespace = {"asyncio": asyncio, "base64": base64, "wraps": wraps, "hashlib": ha
              "web": web, "HomeAssistantView": object, "OAuthError": security.OAuthError,
              "allowed_callback": security.allowed_callback,
              "render_authorization":page_module.render_authorization,
+             "STYLE_SOURCE":page_module.STYLE_SOURCE,
              "transaction_cookie_name":page_module.transaction_cookie_name,
              "browser_language":i18n.browser_language,"text":i18n.text,
              "digest": security.digest, "emit": diagnostics.emit, "category": diagnostics.category,
@@ -417,7 +418,10 @@ class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
     async def test_form_permits_only_registered_callback_origin_and_keeps_other_protections(self):
         response = await self.view.get(Request(method="GET", query=self.params))
         csp = response.headers["Content-Security-Policy"]
-        self.assertEqual(csp, "default-src 'none'; form-action 'self' https://grok.com; base-uri 'none'; frame-ancestors 'none'")
+        expected_csp = ("default-src 'none'; style-src " + page_module.STYLE_SOURCE +
+                        "; form-action 'self' https://grok.com; base-uri 'none'; frame-ancestors 'none'")
+        self.assertEqual(csp, expected_csp)
+        self.assertNotIn("unsafe-inline", csp)
         self.assertNotIn("*", csp)
         self.assertNotIn("https://x.ai", csp)
         self.assertTrue(next(iter(response.cookies.values()))["secure"])
@@ -454,7 +458,8 @@ class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(cookie["httponly"])
         self.assertEqual(cookie["samesite"], "Lax")
         self.assertEqual(form.headers["Content-Security-Policy"],
-            "default-src 'none'; form-action 'self' https://grok.com; base-uri 'none'; frame-ancestors 'none'")
+            "default-src 'none'; style-src " + page_module.STYLE_SOURCE +
+            "; form-action 'self' https://grok.com; base-uri 'none'; frame-ancestors 'none'")
         transaction, pair = cookie.value, self.authority.pair()
         form_data = {"transaction": transaction, "pairing_secret": pair}
         cookies = {page_module.transaction_cookie_name(transaction): transaction}
