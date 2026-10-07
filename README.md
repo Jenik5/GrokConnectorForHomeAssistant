@@ -5,6 +5,7 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5)](https://www.hacs.xyz/docs/faq/custom_repositories/)
 [![Home Assistant 2026.9.4 or newer](https://img.shields.io/badge/Home%20Assistant-2026.9.4%2B-41BDF5?logo=homeassistant&logoColor=white)](#requirements-and-current-status)
 [![MIT License](https://img.shields.io/github/license/Jenik5/GrokConnectorForHomeAssistant)](LICENSE)
+[![M8ven Score](https://m8ven.ai/badge/mcp/jenik5-grokconnectorforhomeassistant-1z0r6r)](https://m8ven.ai/mcp/jenik5-grokconnectorforhomeassistant-1z0r6r?s=readme)
 
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
