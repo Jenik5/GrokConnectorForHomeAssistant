@@ -93,6 +93,9 @@ class Runtime:
         settings = entry.options or entry.data
         policy = Policy.from_dict(settings)
         language = choose_language(settings.get('language',self.hass.config.language),self.catalogs)
+        # Administrators may opt in to keeping existing grants across policy
+        # changes; by default any change revokes access and requires pairing.
+        preserve_access = settings.get('preserve_access') is True
         if policy != self.policy:
             scripts = await self.make_scripts(policy)
             # Consent cannot start or finish against the old policy during the
@@ -101,7 +104,8 @@ class Runtime:
             adopted = False
             try:
                 async with self.token_lock:
-                    self.authority.revoke_access()
+                    if not preserve_access:
+                        self.authority.revoke_access()
                     await self.save()
                 await asyncio.gather(*(script.async_unload() for script in self.scripts.values()))
                 async with self.gateway.lock:
@@ -109,7 +113,8 @@ class Runtime:
                     self.scripts = scripts
                     adopted = True
                     self.gateway.clear()
-                    emit('admin','revoked',grant_count=0)
+                    if not preserve_access:
+                        emit('admin','revoked',grant_count=0)
             finally:
                 if not adopted:
                     await asyncio.gather(*(script.async_unload() for script in scripts.values()))

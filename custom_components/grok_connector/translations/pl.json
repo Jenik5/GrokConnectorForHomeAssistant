@@ -34,6 +34,7 @@
           "entities": "Wybrane encje",
           "actions": "Akcje",
           "language": "Język narzędzi MCP",
+          "access": "Zachowaj dostęp po zmianach",
           "pair": "Kod parowania",
           "revoke": "Cofnij dostęp Groka"
         }
@@ -54,6 +55,13 @@
         "title": "Język narzędzi MCP",
         "data": {
           "language": "Język narzędzi MCP"
+        }
+      },
+      "access": {
+        "title": "Zachowaj dostęp Groka po zmianach",
+        "description": "Gdy włączone, zmiana wybranych encji lub akcji nie cofa dostępu Groka: Grok otrzyma nowe listy w następnej sesji MCP, bez nowego kodu parowania. Gdy wyłączone (domyślnie), każda taka zmiana cofa dostęp i Groka trzeba sparować ponownie. Te opcje może zmieniać tylko administrator Home Assistant.",
+        "data": {
+          "preserve_access": "Zachowaj dostęp Groka przy zmianie encji lub akcji"
         }
       },
       "pair": {
