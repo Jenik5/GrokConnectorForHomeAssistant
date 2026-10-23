@@ -1,0 +1,16 @@
+{
+  "language_name": "Español",
+  "page_title": "Conectar Grok a Home Assistant",
+  "callback": "Dirección de retorno:",
+  "pair_help": "En Home Assistant, abre Ajustes → Dispositivos y servicios → Grok Connector → Configurar → Código de vinculación. Introduce aquí ese código de un solo uso. Caduca a los 10 minutos.",
+  "pair_label": "Código de vinculación",
+  "community": "Conector comunitario independiente.",
+  "invalid_request": "La solicitud de conexión no es válida. Inicia una nueva conexión desde Grok.",
+  "invalid_pairing": "El código no es válido, ha caducado o ya se ha usado. Genera uno nuevo en Home Assistant.",
+  "invalid_transaction": "La transacción de autorización no es válida. Cierra esta ventana e inicia una nueva conexión desde Grok.",
+  "tool_status": "Lee el estado actual de las entidades seleccionadas expresamente. No controla dispositivos.",
+  "permissions": "El acceso se limita a {read_count} entidades seleccionadas para lectura y {control_count} acciones con nombre.",
+  "approve": "Permitir las entidades y las acciones seleccionadas",
+  "tool_action": "Ejecuta la acción {name}. {description}",
+  "instructions": "Ejecuta acciones solo cuando el usuario lo pida explícitamente. Ejecuta la acción configurada sin inventar condiciones adicionales. No des por hecho que su efecto físico se ha producido. Nunca reintentes automáticamente una ejecución incierta. Lee entities_status si es relevante."
+}

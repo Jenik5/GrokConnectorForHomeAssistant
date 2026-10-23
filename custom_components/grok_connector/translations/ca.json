@@ -1,0 +1,108 @@
+{
+  "title": "Grok Connector",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connecta Grok",
+        "description": "Fes servir l'adreça HTTPS pública del teu Home Assistant (accés remot de Nabu Casa o el teu propi domini, opcionalment amb port). Aquest connector té permisos i credencials independents.",
+        "data": {
+          "public_url": "Adreça HTTPS pública",
+          "language": "Idioma de les eines MCP"
+        }
+      },
+      "entities": {
+        "title": "Entitats disponibles per llegir",
+        "data": {
+          "read_entities": "Entitats disponibles per llegir"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Introdueix només un origen HTTPS amb nom d'amfitrió i port opcional, sense credencials, camí, consulta ni fragment.",
+      "invalid_selection": "Tria com a màxim 64 entitats.",
+      "invalid_action": "Introdueix un nom, una descripció opcional i una seqüència d'accions de Home Assistant vàlida i no buida."
+    },
+    "abort": {
+      "already_configured": "El connector ja està configurat."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Grok Connector",
+        "menu_options": {
+          "entities": "Entitats seleccionades",
+          "actions": "Accions",
+          "language": "Idioma de les eines MCP",
+          "access": "Mantén l'accés després dels canvis",
+          "pair": "Codi de vinculació",
+          "revoke": "Revoca l'accés de Grok"
+        }
+      },
+      "entities": {
+        "title": "Entitats disponibles per llegir",
+        "data": {
+          "read_entities": "Entitats disponibles per llegir"
+        }
+      },
+      "actions": {
+        "title": "Accions disponibles per a Grok",
+        "data": {
+          "actions": "Accions disponibles per a Grok"
+        }
+      },
+      "language": {
+        "title": "Idioma de les eines MCP",
+        "data": {
+          "language": "Idioma de les eines MCP"
+        }
+      },
+      "access": {
+        "title": "Mantén l'accés de Grok després dels canvis",
+        "description": "Si està activat, canviar les entitats seleccionades o les accions no revoca l'accés de Grok: Grok rep les llistes noves a la següent sessió MCP, sense cap codi de vinculació nou. Si està desactivat (opció per defecte), qualsevol d'aquests canvis revoca l'accés i cal tornar a vincular Grok. Per canviar aquestes opcions ja cal ser administrador de Home Assistant. Les vinculacions existents també autoritzen les entitats i les accions que s'afegeixin.",
+        "data": {
+          "preserve_access": "Mantén l'accés de Grok quan canviïn les entitats o les accions"
+        }
+      },
+      "pair": {
+        "title": "Codi de vinculació",
+        "description": "URL MCP del teu connector personalitzat de Grok:\n\n{mcp_url}\n\nCodi de vinculació d'un sol ús:\n\n**{pairing_secret}**\n\nÉs vàlid durant 10 minuts. Introdueix-lo a la finestra d'autorització que obre Grok. Si en crees un altre, l'anterior sense fer servir deixa de ser vàlid."
+      },
+      "revoke": {
+        "title": "Revoca l'accés de Grok",
+        "description": "Confirma-ho per invalidar tots els testimonis d'accés, els testimonis de renovació i les vinculacions pendents d'aquest connector. Per tornar a connectar caldrà un codi de vinculació nou."
+      }
+    },
+    "error": {
+      "invalid_url": "Introdueix només un origen HTTPS amb nom d'amfitrió i port opcional, sense credencials, camí, consulta ni fragment.",
+      "invalid_selection": "Tria com a màxim 64 entitats.",
+      "invalid_action": "Introdueix un nom, una descripció opcional i una seqüència d'accions de Home Assistant vàlida i no buida."
+    },
+    "abort": {
+      "not_loaded": "El connector no s'està executant. Activa'l i torna-ho a provar.",
+      "no_actions": "No s'ha configurat cap acció.",
+      "too_many_actions": "Es poden exposar com a màxim 64 accions."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Nom de l'acció"
+        },
+        "description": {
+          "name": "Descripció per a Grok"
+        },
+        "sequence": {
+          "name": "Seqüència d'accions"
+        },
+        "icon": {
+          "name": "Icona"
+        }
+      },
+      "options": {
+        "add": "Afegeix una acció"
+      }
+    }
+  }
+}

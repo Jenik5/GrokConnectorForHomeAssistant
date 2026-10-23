@@ -24,8 +24,8 @@ class LocalizationTests(unittest.TestCase):
     def setUp(self):
         self.catalogs = i18n.load_catalogs()
 
-    def test_all_five_languages_have_the_same_keys_and_placeholders(self):
-        self.assertEqual(set(self.catalogs), {'en', 'cs', 'de', 'pl', 'sk'})
+    def test_all_languages_have_the_same_keys_and_placeholders(self):
+        self.assertEqual(set(self.catalogs), {'en', 'ca', 'cs', 'de', 'es', 'pl', 'sk'})
         english = flattened(json.loads((ROOT / 'strings.json').read_text(encoding='utf-8')))
         for language in self.catalogs:
             with self.subTest(language=language):
