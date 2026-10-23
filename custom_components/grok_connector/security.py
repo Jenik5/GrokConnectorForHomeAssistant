@@ -111,6 +111,10 @@ class OAuthAuthority:
     def revoke_access(self):
         """Invalidate access/pending consent, preserving approved client metadata."""
         self.grants.clear()
+        self.cancel_authorization()
+
+    def cancel_authorization(self):
+        """Discard unfinished consent and pairing without changing issued grants."""
         self.codes.clear()
         self.pending.clear()
         self.pair_hash = None

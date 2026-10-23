@@ -34,6 +34,7 @@
           "entities": "Selected entities",
           "actions": "Actions",
           "language": "Language of MCP tools",
+          "access": "Keep access after changes",
           "pair": "Pairing code",
           "revoke": "Revoke Grok access"
         }
@@ -54,6 +55,13 @@
         "title": "Language of MCP tools",
         "data": {
           "language": "Language of MCP tools"
+        }
+      },
+      "access": {
+        "title": "Keep Grok access after changes",
+        "description": "When enabled, changing the selected entities or the actions does not revoke Grok access: Grok receives the new lists in its next MCP session, without a new pairing code. When disabled (the default), any such change revokes access and Grok must be paired again. Changing these options already requires a Home Assistant administrator. Existing pairings also authorize newly added entities and actions.",
+        "data": {
+          "preserve_access": "Keep Grok access when entities or actions change"
         }
       },
       "pair": {

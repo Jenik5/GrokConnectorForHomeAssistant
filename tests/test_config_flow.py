@@ -44,7 +44,7 @@ class Selector:
 
 
 selectors = types.SimpleNamespace(**{name: Selector for name in
-    ['EntitySelector', 'ActionSelector', 'SelectSelector', 'TextSelector', 'ObjectSelector', 'IconSelector']},
+    ['EntitySelector', 'ActionSelector', 'SelectSelector', 'TextSelector', 'ObjectSelector', 'IconSelector', 'BooleanSelector']},
     **{name: lambda **kwargs: kwargs for name in ['EntitySelectorConfig', 'SelectSelectorConfig', 'ObjectSelectorConfig', 'IconSelectorConfig']})
 source = ROOT / 'config_flow.py'
 tree = ast.parse(source.read_text(encoding='utf-8'))
@@ -136,6 +136,28 @@ class OptionsTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result['errors'], {'base': 'invalid_action'})
         result = await self.flow.async_step_actions({'actions': []})
         self.assertEqual(result['data']['actions'], [])
+
+    async def test_access_option_defaults_off_and_persists_with_the_policy(self):
+        menu = await self.flow.async_step_init()
+        self.assertIn('access', menu['menu_options'])
+        form = await self.flow.async_step_access()
+        self.assertEqual((form['type'], form['step_id'], list(form['data_schema'])), ('form', 'access', ['preserve_access']))
+        self.assertNotIn('preserve_access', self.flow.config_entry.data)
+        result = await self.flow.async_step_access({'preserve_access': True})
+        self.assertEqual(result['type'], 'create_entry')
+        self.assertIs(result['data']['preserve_access'], True)
+        self.assertEqual((result['data']['actions'], result['data']['read_entities']), ([action()], []))
+        result = await self.flow.async_step_access({'preserve_access': 'yes'})
+        self.assertIs(result['data']['preserve_access'], False)
+
+    async def test_entity_and_action_edits_keep_the_access_choice(self):
+        self.flow.config_entry.options = {**self.flow.config_entry.data, 'preserve_access': True}
+        await self.flow.async_step_init()
+        result = await self.flow.async_step_entities({'read_entities': ['sensor.example']})
+        self.assertIs(result['data']['preserve_access'], True)
+        await self.flow.async_step_init()
+        result = await self.flow.async_step_actions({'actions': [action()]})
+        self.assertIs(result['data']['preserve_access'], True)
 
     def test_additional_languages_do_not_require_a_python_selector_change(self):
         catalogs = {**i18n.load_catalogs(), 'fr': {'language_name': 'Français'}}

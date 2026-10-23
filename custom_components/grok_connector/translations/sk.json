@@ -34,6 +34,7 @@
           "entities": "Vybrané entity",
           "actions": "Akcie",
           "language": "Jazyk nástrojov MCP",
+          "access": "Zachovať prístup po zmenách",
           "pair": "Párovací kód",
           "revoke": "Zrušiť prístup Groka"
         }
@@ -54,6 +55,13 @@
         "title": "Jazyk nástrojov MCP",
         "data": {
           "language": "Jazyk nástrojov MCP"
+        }
+      },
+      "access": {
+        "title": "Zachovať prístup Groka po zmenách",
+        "description": "Ak je zapnuté, zmena vybraných entít alebo akcií nezruší prístup Groka: nové zoznamy Grok dostane v nasledujúcej relácii MCP bez nového párovacieho kódu. Ak je vypnuté (predvolené), každá takáto zmena prístup zruší a Groka treba znova spárovať. Tieto možnosti môže meniť iba správca Home Assistantu. Pôvodné spárovanie platí aj pre novo pridané entity a akcie.",
+        "data": {
+          "preserve_access": "Zachovať prístup Groka pri zmene entít alebo akcií"
         }
       },
       "pair": {

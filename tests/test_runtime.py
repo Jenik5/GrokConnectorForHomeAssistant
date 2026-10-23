@@ -110,6 +110,32 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.saved[-1]['grants'], {})
         self.assertEqual(self.runtime.gateway.sessions, {})
 
+    async def test_policy_change_preserves_access_when_enabled(self):
+        old_script = self.runtime.scripts['a' * 32]
+        self.entry.options = {**self.entry.data, 'preserve_access': True, 'read_entities': ['sensor.example'],
+            'actions': [action('b' * 32, 'Run script', [{'action': 'script.turn_on', 'target': {'entity_id': 'script.example'}}])]}
+        await self.runtime.apply_options(self.entry)
+        self.assertTrue(self.runtime.principal_active(self.principal))
+        self.assertTrue(old_script.unloaded)
+        self.assertEqual(set(self.runtime.scripts), {'b' * 32})
+        self.assertEqual(self.runtime.policy.readable, ('sensor.example',))
+        self.assertNotEqual(self.saved[-1]['grants'], {})
+        # Sessions still restart so Grok lists the new tools on its next initialize.
+        self.assertEqual(self.runtime.gateway.sessions, {})
+        self.assertIn('Run script', {tool.get('title') for tool in self.runtime.gateway.tools()})
+        refreshed = self.runtime.authority.token({'grant_type': 'refresh_token', 'client_id': self.client,
+            'refresh_token': self.tokens['refresh_token'], 'resource': self.runtime.authority.resource})
+        self.assertIsNotNone(self.runtime.authority.authenticate('Bearer ' + refreshed['access_token']))
+
+    async def test_enabling_the_option_alone_neither_revokes_nor_reloads_actions(self):
+        scripts = self.runtime.scripts
+        self.entry.options = {**self.entry.data, 'preserve_access': True}
+        await self.runtime.apply_options(self.entry)
+        self.assertTrue(self.runtime.principal_active(self.principal))
+        self.assertIs(self.runtime.scripts, scripts)
+        self.assertTrue(self.runtime.gateway.session_active(self.session, self.principal))
+        self.assertEqual(self.saved, [])
+
     async def test_revoke_stops_actions_and_invalidates_pairing_and_pending_codes(self):
         self.runtime.pair()
         await self.runtime.revoke()

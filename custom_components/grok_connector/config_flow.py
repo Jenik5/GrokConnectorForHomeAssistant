@@ -88,7 +88,7 @@ class GrokOptionsFlow(EntitySteps,config_entries.OptionsFlow):
         if DOMAIN not in self.hass.data:
             return self.async_abort(reason='not_loaded')
         self._draft = copy.deepcopy(dict(self.config_entry.options or self.config_entry.data))
-        return self.async_show_menu(step_id='init',menu_options=['entities','actions','language','pair','revoke'])
+        return self.async_show_menu(step_id='init',menu_options=['entities','actions','language','access','pair','revoke'])
     async def async_step_actions(self,user_input=None):
         errors = {}
         shown = self._draft.get('actions',[])
@@ -135,6 +135,13 @@ class GrokOptionsFlow(EntitySteps,config_entries.OptionsFlow):
             return self.async_create_entry(title='',data=copy.deepcopy(self._draft))
         return self.async_show_form(step_id='language',data_schema=vol.Schema({
             vol.Required('language',default=self._draft.get('language','en')):language_selector(runtime.catalogs),
+        }))
+    async def async_step_access(self,user_input=None):
+        if user_input is not None:
+            self._draft['preserve_access'] = user_input.get('preserve_access') is True
+            return self.async_create_entry(title='',data=copy.deepcopy(self._draft))
+        return self.async_show_form(step_id='access',data_schema=vol.Schema({
+            vol.Required('preserve_access',default=self._draft.get('preserve_access') is True):selector.BooleanSelector(),
         }))
     async def async_step_pair(self,user_input=None):
         runtime = self.hass.data.get(DOMAIN)

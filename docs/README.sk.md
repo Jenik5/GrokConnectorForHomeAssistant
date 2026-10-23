@@ -27,7 +27,7 @@ Od verzie `2026.10.5.2` majú nástroje akcií čitateľné názvy: napríklad `
 
 **Konfigurovať → Párovací kód** ukáže presnú adresu MCP a jednorazový kód platný desať minút. Adresa má tvar `https://tvoja-instancia.ui.nabu.casa/api/grok_connector/mcp`. V Groku vytvor vlastný konektor MCP a kód zadaj v jeho autorizačnom okne.
 
-Ďalší používateľ HA ani dlhodobý token HA nie sú potrební. Konektor vydáva vlastné prihlasovacie údaje. Zmena entít či akcií zruší doterajší prístup a vyžaduje nové párovanie. Zmena samotného jazyka prístup zachová. **Zrušiť prístup Groka** zneplatní tokeny aj rozpracovanú autorizáciu.
+Ďalší používateľ HA ani dlhodobý token HA nie sú potrební. Konektor vydáva vlastné prihlasovacie údaje. Predvolene zmena entít či akcií zruší doterajší prístup a vyžaduje nové párovanie. Voľba **Konfigurovať → Zachovať prístup po zmenách** ponechá pôvodné spárovanie platné aj pre novo pridané entity a akcie; odobraté položky prestanú byť dostupné. Klient otvorí novú reláciu MCP bez nového párovania. Zmena samotného jazyka prístup zachová. **Zrušiť prístup Groka** zneplatní tokeny aj rozpracovanú autorizáciu.
 
 Najskôr over čítanie stavu a porovnaj ho s HA. Potom zámerne otestuj jednu jednoduchú akciu. Návrat sekvencie nepotvrdzuje fyzický výsledok. Dostupnosť v Tesle závisí aj od schopností jej klienta Groka. Iná integrácia MCP môže zostať nainštalovaná súčasne.
 

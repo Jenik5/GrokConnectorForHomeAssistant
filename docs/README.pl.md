@@ -21,13 +21,13 @@ Wybierz encje do odczytu. W **Konfiguruj → Akcje** dodaj nazwę, opis dla Grok
 
 Grok może wywołać tylko przygotowane narzędzie, bez podawania innego celu lub dodatkowych parametrów. Lista encji do odczytu ogranicza ujawniane dane; zakres skonfigurowanej akcji określa jej sekwencja.
 
-Od wersji `2026.10.5.2` narzędzia akcji mają czytelne nazwy: `Otwórz bramę` staje się na przykład `otworz_brame`. Identyczne i zastrzeżone nazwy otrzymują unikalny sufiks. Stare identyfikatory nadal działają; sama aktualizacja nie wymaga ponownego parowania. Klient może wyświetlać stare nazwy do odświeżenia listy narzędzi. Zmiana nazwy akcji nadal wymaga ponownego parowania.
+Od wersji `2026.10.5.2` narzędzia akcji mają czytelne nazwy: `Otwórz bramę` staje się na przykład `otworz_brame`. Identyczne i zastrzeżone nazwy otrzymują unikalny sufiks. Stare identyfikatory nadal działają; sama aktualizacja nie wymaga ponownego parowania. Klient może wyświetlać stare nazwy do odświeżenia listy narzędzi. Zmiana nazwy akcji domyślnie wymaga ponownego parowania, chyba że włączono opcję zachowania dostępu.
 
 ## Połączenie z Grokiem
 
 **Konfiguruj → Kod parowania** pokazuje dokładny adres MCP i jednorazowy kod ważny przez dziesięć minut. Adres ma postać `https://twoja-instancja.ui.nabu.casa/api/grok_connector/mcp`. Utwórz własny konektor MCP w Groku i wpisz kod w jego oknie autoryzacji.
 
-Nie potrzebujesz dodatkowego użytkownika HA ani długoterminowego tokenu HA. Konektor wydaje własne poświadczenia. Zmiany encji lub akcji cofają dotychczasowy dostęp i wymagają ponownego parowania. Sama zmiana języka zachowuje dostęp. **Cofnij dostęp Groka** unieważnia tokeny i oczekującą autoryzację.
+Nie potrzebujesz dodatkowego użytkownika HA ani długoterminowego tokenu HA. Konektor wydaje własne poświadczenia. Domyślnie zmiany encji lub akcji cofają dotychczasowy dostęp i wymagają ponownego parowania. Opcja **Konfiguruj → Zachowaj dostęp po zmianach** zachowuje dotychczasowe parowanie także dla nowo dodanych encji i akcji; usunięte elementy przestają być dostępne. Klient otwiera nową sesję MCP bez ponownego parowania. Sama zmiana języka zachowuje dostęp. **Cofnij dostęp Groka** unieważnia tokeny i oczekującą autoryzację.
 
 Najpierw odczytaj stan i porównaj go z HA. Następnie świadomie sprawdź jedną prostą akcję. Zakończenie sekwencji nie potwierdza fizycznego efektu. Dostępność w Tesli zależy również od możliwości jej klienta Groka. Inna integracja MCP może pozostać zainstalowana równolegle.
 
