@@ -21,13 +21,13 @@ Wähle die lesbaren Entitäten. Unter **Konfigurieren → Aktionen** kannst du e
 
 Grok darf nur die vorbereiteten Werkzeuge ohne zusätzliche Ziele oder Parameter aufrufen. Die lesbare Entitätenliste begrenzt die Datenweitergabe, nicht die Reichweite einer von dir konfigurierten Aktionsfolge.
 
-Ab Version `2026.10.5.2` erhalten Aktionswerkzeuge lesbare Namen: `Garagentor öffnen` wird beispielsweise zu `garagentor_offnen`. Gleiche und reservierte Namen werden durch einen eindeutigen Zusatz unterschieden. Alte Kennungen bleiben gültig; das Update allein erfordert keine neue Kopplung. Ein Client kann alte Namen anzeigen, bis seine Werkzeugliste aktualisiert wird. Das Umbenennen einer Aktion erfordert weiterhin neue Kopplung.
+Ab Version `2026.10.5.2` erhalten Aktionswerkzeuge lesbare Namen: `Garagentor öffnen` wird beispielsweise zu `garagentor_offnen`. Gleiche und reservierte Namen werden durch einen eindeutigen Zusatz unterschieden. Alte Kennungen bleiben gültig; das Update allein erfordert keine neue Kopplung. Ein Client kann alte Namen anzeigen, bis seine Werkzeugliste aktualisiert wird. Das Umbenennen einer Aktion erfordert standardmäßig eine neue Kopplung, sofern die Option zum Behalten des Zugriffs nicht aktiviert ist.
 
 ## Grok verbinden
 
 **Konfigurieren → Kopplungscode** zeigt die genaue MCP-Adresse und einen einmaligen Code, gültig für zehn Minuten. Die Adresse lautet `https://deine-instanz.ui.nabu.casa/api/grok_connector/mcp`. Erstelle in Grok einen benutzerdefinierten MCP-Connector und gib den Code in dessen Autorisierungsfenster ein.
 
-Ein zusätzlicher HA-Benutzer oder langfristiger HA-Token ist nicht erforderlich. Dieser Connector erstellt eigene Zugangsdaten. Änderungen an Entitäten oder Aktionen widerrufen vorhandenen Zugriff; danach erneut koppeln. Eine reine Sprachänderung erhält den Zugriff. **Grok-Zugriff widerrufen** entzieht Tokens und ausstehende Autorisierung.
+Ein zusätzlicher HA-Benutzer oder langfristiger HA-Token ist nicht erforderlich. Dieser Connector erstellt eigene Zugangsdaten. Standardmäßig widerrufen Änderungen an Entitäten oder Aktionen den vorhandenen Zugriff und erfordern eine neue Kopplung. **Konfigurieren → Zugriff nach Änderungen behalten** erhält bestehende Kopplungen auch für neu hinzugefügte Entitäten und Aktionen; entfernte Einträge sind nicht mehr verfügbar. Der Client öffnet eine neue MCP-Sitzung ohne erneute Kopplung. Eine reine Sprachänderung erhält den Zugriff. **Grok-Zugriff widerrufen** entzieht Tokens und ausstehende Autorisierung.
 
 Prüfe zuerst einen Zustand und vergleiche ihn mit HA. Teste danach bewusst eine einfache Aktion. Das Ende der Aktionsfolge bestätigt keine physische Wirkung. Unterstützung im Tesla-Client hängt von dessen Grok-Funktionen ab. Eine vorhandene MCP-Integration kann parallel installiert bleiben.
 

@@ -27,7 +27,7 @@ Od verze `2026.10.5.2` mají nástroje akcí čitelné názvy: například `Otev
 
 V **Konfigurovat → Párovací kód** se zobrazí přesná adresa a jednorázový kód platný 10 minut. Adresa má tvar `https://tvoje-instance.ui.nabu.casa/api/grok_connector/mcp`. V Groku vytvoř vlastní MCP konektor a kód zadej v jeho přihlašovacím okně.
 
-Další uživatel HA ani dlouhodobý HA token nejsou potřeba: konektor má vlastní přihlašovací údaje. Po změně entit či akcí se dosavadní přístup zruší a musíš Groka znovu spárovat. Změna jazyka přístup zachová. Tlačítko **Zrušit přístup Groka** ruší tokeny i rozpracované párování.
+Další uživatel HA ani dlouhodobý HA token nejsou potřeba: konektor má vlastní přihlašovací údaje. Ve výchozím nastavení změna entit či akcí zruší dosavadní přístup a Groka je nutné znovu spárovat. Volba **Konfigurovat → Zachovat přístup po změnách** ponechá původní spárování platné i pro nově přidané entity a akce; odebrané položky přestanou být dostupné. Klient otevře novou relaci MCP bez nového párování. Změna jazyka přístup zachová. Tlačítko **Zrušit přístup Groka** ruší tokeny i rozpracované párování.
 
 Nejdřív ověř dotaz na stav a porovnej ho s HA. Pak záměrně vyzkoušej jednu jednoduchou akci. Návrat sekvence sám nepotvrzuje fyzický výsledek. Dostupnost konektorů v Tesle musí podporovat také tamní aplikace Groka.
 

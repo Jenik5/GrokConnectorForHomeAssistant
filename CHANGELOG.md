@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add an opt-in **Keep access after changes** option (Configure menu, all five languages). When enabled, changing the selected entities or actions keeps existing OAuth grants; active MCP sessions still restart so Grok reloads its tool list. The default is unchanged: any such change revokes access.
+- Invalidate unfinished authorizations, unredeemed authorization codes and unused pairing codes on policy changes, including when already-issued grants are preserved.
 - Accept refresh requests that omit `resource` only when the existing grant is bound to the unchanged connector resource and matching client ID.
 - Reject renewal of stored grants after an origin change, including requests explicitly naming the new origin.
 - Include `error="invalid_token"` in rejected Bearer-token challenges while preserving initial OAuth discovery metadata.

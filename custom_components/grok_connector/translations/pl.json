@@ -59,7 +59,7 @@
       },
       "access": {
         "title": "Zachowaj dostęp Groka po zmianach",
-        "description": "Gdy włączone, zmiana wybranych encji lub akcji nie cofa dostępu Groka: Grok otrzyma nowe listy w następnej sesji MCP, bez nowego kodu parowania. Gdy wyłączone (domyślnie), każda taka zmiana cofa dostęp i Groka trzeba sparować ponownie. Te opcje może zmieniać tylko administrator Home Assistant.",
+        "description": "Gdy włączone, zmiana wybranych encji lub akcji nie cofa dostępu Groka: Grok otrzyma nowe listy w następnej sesji MCP, bez nowego kodu parowania. Gdy wyłączone (domyślnie), każda taka zmiana cofa dostęp i Groka trzeba sparować ponownie. Te opcje może zmieniać tylko administrator Home Assistant. Dotychczasowe parowanie obejmuje także nowo dodane encje i akcje.",
         "data": {
           "preserve_access": "Zachowaj dostęp Groka przy zmianie encji lub akcji"
         }

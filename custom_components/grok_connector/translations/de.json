@@ -59,7 +59,7 @@
       },
       "access": {
         "title": "Grok-Zugriff nach Änderungen behalten",
-        "description": "Wenn aktiviert, widerruft eine Änderung der ausgewählten Entitäten oder Aktionen den Grok-Zugriff nicht: Grok erhält die neuen Listen in seiner nächsten MCP-Sitzung, ohne neuen Kopplungscode. Wenn deaktiviert (Standard), widerruft jede solche Änderung den Zugriff und Grok muss neu gekoppelt werden. Diese Optionen kann nur ein Home-Assistant-Administrator ändern.",
+        "description": "Wenn aktiviert, widerruft eine Änderung der ausgewählten Entitäten oder Aktionen den Grok-Zugriff nicht: Grok erhält die neuen Listen in seiner nächsten MCP-Sitzung, ohne neuen Kopplungscode. Wenn deaktiviert (Standard), widerruft jede solche Änderung den Zugriff und Grok muss neu gekoppelt werden. Diese Optionen kann nur ein Home-Assistant-Administrator ändern. Bestehende Kopplungen gelten auch für neu hinzugefügte Entitäten und Aktionen.",
         "data": {
           "preserve_access": "Grok-Zugriff bei Änderung von Entitäten oder Aktionen behalten"
         }

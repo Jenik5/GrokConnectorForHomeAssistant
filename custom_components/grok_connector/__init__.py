@@ -104,7 +104,11 @@ class Runtime:
             adopted = False
             try:
                 async with self.token_lock:
-                    if not preserve_access:
+                    if preserve_access:
+                        # A pending consent/code described the old permissions.
+                        # Only already-issued grants inherit the updated policy.
+                        self.authority.cancel_authorization()
+                    else:
                         self.authority.revoke_access()
                     await self.save()
                 await asyncio.gather(*(script.async_unload() for script in self.scripts.values()))
