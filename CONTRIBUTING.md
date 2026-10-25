@@ -9,7 +9,7 @@ Run `python -m unittest discover -s tests -v` and `python tools/check_package.py
 1. Copy `custom_components/grok_connector/translations/en.json` and `locales/en.json` to the new language code.
 2. Translate values and set the locale's `language_name` to its native name. Preserve keys and `{placeholders}` exactly.
 3. Keep `strings.json` identical to the canonical English translation.
-4. Run the localization checks. The MCP language selector discovers the new locale automatically.
+4. Update the supported language set in `tests/test_localization.py` and run the localization checks. The MCP language selector discovers the new locale automatically.
 
 ## Changes to permissions or credentials
 

@@ -22,7 +22,7 @@ Run this after HACS installation, with the existing connector still configured:
 6. Add an automation-trigger action with `skip_condition: false`, reconnect after the resulting revocation, and verify HA respects the automation's own conditions. Also test starting an existing script.
 7. Change the reading list or action. Verify old access/refresh tokens fail and a fresh pairing succeeds. Verify a language-only change preserves access.
 8. Explicitly revoke access and verify the new connector refuses further commands while the original connector still works.
-9. Check all five HA user languages and browser consent languages. Test a failed authorization and confirm the integration's log fields remain free of credentials/household identifiers.
+9. Check all supported HA user languages and browser consent languages. Test a failed authorization and confirm the integration's log fields remain free of credentials/household identifiers.
 10. Record HA/HACS versions, installed release, browser/client and outcomes in `VALIDATION.md`. Record Tesla testing separately; PC client success does not demonstrate Tesla client support.
 
 Select test actions and entity IDs deliberately. This procedure should not run a real household command automatically as part of CI or package verification.

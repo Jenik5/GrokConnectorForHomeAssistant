@@ -160,6 +160,6 @@ class OptionsTests(unittest.IsolatedAsyncioTestCase):
         self.assertIs(result['data']['preserve_access'], True)
 
     def test_additional_languages_do_not_require_a_python_selector_change(self):
-        catalogs = {**i18n.load_catalogs(), 'fr': {'language_name': 'Français'}}
+        catalogs = {**i18n.load_catalogs(), 'pt': {'language_name': 'Português'}}
         selector = namespace['language_selector'](catalogs)
-        self.assertIn({'value': 'fr', 'label': 'Français'}, selector.config['options'])
+        self.assertIn({'value': 'pt', 'label': 'Português'}, selector.config['options'])

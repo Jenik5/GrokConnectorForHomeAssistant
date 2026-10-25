@@ -123,7 +123,7 @@ Changing the reading list or any action, including its name/description or seque
 
 ## Languages
 
-HA configuration screens, the authorization page and MCP descriptions are available in English, Catalan, Czech, German, Polish, Slovak and Spanish. HA screens follow the HA user's language; the public authorization page follows the browser; the selected MCP language controls descriptions shown to Grok.
+HA configuration screens, the authorization page and MCP descriptions are available in English, Catalan, Czech, French, German, Italian, Polish, Slovak and Spanish. HA screens follow the HA user's language; the public authorization page follows the browser; the selected MCP language controls descriptions shown to Grok.
 
 To add a language, add `translations/<language>.json` and `locales/<language>.json` under `custom_components/grok_connector`, using the English files as templates. Include `language_name` in the locale, preserve placeholders, and run the tests. The language picker discovers locale files automatically. See [contributing](CONTRIBUTING.md).
 

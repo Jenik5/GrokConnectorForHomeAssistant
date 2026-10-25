@@ -25,7 +25,7 @@ class LocalizationTests(unittest.TestCase):
         self.catalogs = i18n.load_catalogs()
 
     def test_all_languages_have_the_same_keys_and_placeholders(self):
-        self.assertEqual(set(self.catalogs), {'en', 'ca', 'cs', 'de', 'es', 'pl', 'sk'})
+        self.assertEqual(set(self.catalogs), {'en', 'ca', 'cs', 'de', 'es', 'fr', 'it', 'pl', 'sk'})
         english = flattened(json.loads((ROOT / 'strings.json').read_text(encoding='utf-8')))
         for language in self.catalogs:
             with self.subTest(language=language):
@@ -40,14 +40,17 @@ class LocalizationTests(unittest.TestCase):
                          json.loads((ROOT / 'translations/en.json').read_text(encoding='utf-8')))
 
     def test_regional_fallback_and_browser_language_preferences(self):
-        self.assertEqual(i18n.choose_language('cs-CZ', self.catalogs), 'cs')
-        self.assertEqual(i18n.choose_language('fr', self.catalogs), 'en')
+        for region, language in [('cs-CZ', 'cs'), ('ca-ES', 'ca'), ('es-ES', 'es'), ('fr-FR', 'fr'), ('it-IT', 'it')]:
+            with self.subTest(region=region):
+                self.assertEqual(i18n.choose_language(region, self.catalogs), language)
+                self.assertEqual(i18n.browser_language(region + ';q=1,en;q=0.5', self.catalogs), language)
+        self.assertEqual(i18n.choose_language('pt', self.catalogs), 'en')
         self.assertEqual(i18n.browser_language('de;q=0,pl-PL;q=0.8,cs;q=0.9', self.catalogs), 'cs')
         self.assertEqual(i18n.browser_language('de;q=bad,sk;q=0.5', self.catalogs), 'sk')
-        self.assertEqual(i18n.text(self.catalogs, 'fr', 'tool_status'), self.catalogs['en']['tool_status'])
-        extended = {**self.catalogs, 'fr': {'language_name': 'Français'}}
-        self.assertEqual(i18n.choose_language('fr-FR', extended), 'fr')
-        self.assertEqual(i18n.text(extended, 'fr', 'tool_status'), self.catalogs['en']['tool_status'])
+        self.assertEqual(i18n.text(self.catalogs, 'pt', 'tool_status'), self.catalogs['en']['tool_status'])
+        extended = {**self.catalogs, 'pt': {'language_name': 'Português'}}
+        self.assertEqual(i18n.choose_language('pt-PT', extended), 'pt')
+        self.assertEqual(i18n.text(extended, 'pt', 'tool_status'), self.catalogs['en']['tool_status'])
 
     def test_public_page_escapes_values_and_discloses_counts_only(self):
         runtime = types.SimpleNamespace(catalogs=self.catalogs, language='cs',
