@@ -1,0 +1,16 @@
+{
+  "language_name": "Français",
+  "page_title": "Connecter Grok à Home Assistant",
+  "callback": "Adresse de retour :",
+  "pair_help": "Dans Home Assistant, ouvrez Paramètres → Appareils et services → Grok Connector → Configurer → Code d’association. Saisissez ici ce code à usage unique. Il expire au bout de 10 minutes.",
+  "pair_label": "Code d’association",
+  "community": "Connecteur communautaire indépendant.",
+  "invalid_request": "La demande de connexion n’est pas valide. Lancez une nouvelle connexion depuis Grok.",
+  "invalid_pairing": "Le code est invalide, a expiré ou a déjà été utilisé. Générez un nouveau code dans Home Assistant.",
+  "invalid_transaction": "La transaction d’autorisation n’est pas valide. Fermez cette fenêtre et lancez une nouvelle connexion depuis Grok.",
+  "tool_status": "Lit l’état actuel des entités explicitement sélectionnées. Ne contrôle aucun appareil.",
+  "permissions": "L’accès est limité à {read_count} entités sélectionnées en lecture et à {control_count} actions nommées.",
+  "approve": "Autoriser les entités et les actions sélectionnées",
+  "tool_action": "Exécutez l’action {name}. {description}",
+  "instructions": "N’exécutez des actions que sur demande explicite de l’utilisateur. Exécutez l’action configurée sans inventer de conditions supplémentaires. Ne supposez pas que son effet physique a réussi. Ne relancez jamais automatiquement une exécution dont le résultat est incertain. Consultez entities_status si nécessaire."
+}

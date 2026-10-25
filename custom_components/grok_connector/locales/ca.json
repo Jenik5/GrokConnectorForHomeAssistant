@@ -1,0 +1,16 @@
+{
+  "language_name": "Català",
+  "page_title": "Connecta Grok a Home Assistant",
+  "callback": "Adreça de retorn:",
+  "pair_help": "A Home Assistant, obre Configuració → Dispositius i serveis → Grok Connector → Configura → Codi de vinculació. Introdueix aquí aquest codi d'un sol ús. Caduca al cap de 10 minuts.",
+  "pair_label": "Codi de vinculació",
+  "community": "Connector comunitari independent.",
+  "invalid_request": "La sol·licitud de connexió no és vàlida. Inicia una connexió nova des de Grok.",
+  "invalid_pairing": "El codi no és vàlid, ha caducat o ja s'ha fet servir. Genera'n un de nou a Home Assistant.",
+  "invalid_transaction": "La transacció d'autorització no és vàlida. Tanca aquesta finestra i inicia una connexió nova des de Grok.",
+  "tool_status": "Llegeix l'estat actual de les entitats seleccionades expressament. No controla cap dispositiu.",
+  "permissions": "L'accés es limita a {read_count} entitats seleccionades per llegir i {control_count} accions amb nom.",
+  "approve": "Permet les entitats i les accions seleccionades",
+  "tool_action": "Executa l'acció {name}. {description}",
+  "instructions": "Executa accions només quan l'usuari ho demani explícitament. Executa l'acció configurada sense inventar condicions addicionals. No donis per fet que el seu efecte físic s'ha produït. No tornis a provar mai automàticament una execució incerta. Llegeix entities_status si cal."
+}

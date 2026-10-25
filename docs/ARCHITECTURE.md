@@ -54,7 +54,7 @@ IDs remain outside editable form fields and are retained by HA object dialogs. T
 
 The Grok options dialogs use a common filled row appearance, close icons for removing selections and matching Add buttons with a plus icon. Entities retain HA's native entity picker and its registry-derived icon/context. Actions retain native object dialogs and gain an optional native icon selector; absent icons default to `mdi:play`. Native list operations and values are not replaced.
 
-Entity/action descriptions are removed from native translations and their field titles become the large dialog heading in all five languages. The scoped module hides the redundant list label and handles cached translation headings without changing form data.
+Entity/action descriptions are removed from native translations and their field titles become the large dialog heading in all supported languages. The scoped module hides the redundant list label and handles cached translation headings without changing form data.
 
 Only confirmed `create_entry` results from Grok options flows automatically invoke HA's public `step-flow-create-entry.finish()` method. This completes the existing native flow and callback without an extra success click. Initial configuration, errors, aborts, chained flows and other integrations keep HA's normal behavior. If the presentation module is absent or that native API changes, HA's default finish screen remains available.
 

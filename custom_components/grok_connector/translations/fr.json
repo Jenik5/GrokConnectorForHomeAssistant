@@ -1,0 +1,108 @@
+{
+  "title": "Grok Connector",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connecter Grok",
+        "description": "Utilisez l’adresse HTTPS publique de votre Home Assistant (accès à distance Nabu Casa ou votre propre domaine, avec un port facultatif). Ce connecteur dispose d’autorisations et d’identifiants indépendants.",
+        "data": {
+          "public_url": "Adresse HTTPS publique",
+          "language": "Langue des outils MCP"
+        }
+      },
+      "entities": {
+        "title": "Entités accessibles en lecture",
+        "data": {
+          "read_entities": "Entités accessibles en lecture"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Saisissez uniquement une origine HTTPS avec un nom d’hôte et un port facultatif, sans identifiants, chemin, paramètres de requête ni fragment.",
+      "invalid_selection": "Sélectionnez au maximum 64 entités.",
+      "invalid_action": "Saisissez un nom, une description facultative et une séquence d’actions Home Assistant valide et non vide."
+    },
+    "abort": {
+      "already_configured": "Le connecteur est déjà configuré."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Grok Connector",
+        "menu_options": {
+          "entities": "Entités sélectionnées",
+          "actions": "Actions",
+          "language": "Langue des outils MCP",
+          "access": "Conserver l’accès après les modifications",
+          "pair": "Code d’association",
+          "revoke": "Révoquer l’accès de Grok"
+        }
+      },
+      "entities": {
+        "title": "Entités accessibles en lecture",
+        "data": {
+          "read_entities": "Entités accessibles en lecture"
+        }
+      },
+      "actions": {
+        "title": "Actions accessibles à Grok",
+        "data": {
+          "actions": "Actions accessibles à Grok"
+        }
+      },
+      "language": {
+        "title": "Langue des outils MCP",
+        "data": {
+          "language": "Langue des outils MCP"
+        }
+      },
+      "access": {
+        "title": "Conserver l’accès de Grok après les modifications",
+        "description": "Lorsque cette option est activée, modifier les entités sélectionnées ou les actions ne révoque pas l’accès de Grok : Grok reçoit les nouvelles listes lors de sa prochaine session MCP, sans nouveau code d’association. Lorsqu’elle est désactivée (par défaut), toute modification de ce type révoque l’accès et Grok doit être associé à nouveau. Seul un administrateur de Home Assistant peut modifier ces options. Les associations existantes autorisent également les entités et les actions ajoutées par la suite.",
+        "data": {
+          "preserve_access": "Conserver l’accès de Grok lors des modifications des entités ou des actions"
+        }
+      },
+      "pair": {
+        "title": "Code d’association",
+        "description": "URL MCP de votre connecteur Grok personnalisé :\n\n{mcp_url}\n\nCode d’association à usage unique :\n\n**{pairing_secret}**\n\nValide pendant 10 minutes. Saisissez-le dans la fenêtre d’autorisation ouverte par Grok. La création d’un autre code invalide le précédent s’il n’a pas été utilisé."
+      },
+      "revoke": {
+        "title": "Révoquer l’accès de Grok",
+        "description": "Confirmez pour invalider tous les jetons d’accès, les jetons de renouvellement et les associations en attente de ce connecteur. Une nouvelle connexion nécessite un nouveau code d’association."
+      }
+    },
+    "error": {
+      "invalid_url": "Saisissez uniquement une origine HTTPS avec un nom d’hôte et un port facultatif, sans identifiants, chemin, paramètres de requête ni fragment.",
+      "invalid_selection": "Sélectionnez au maximum 64 entités.",
+      "invalid_action": "Saisissez un nom, une description facultative et une séquence d’actions Home Assistant valide et non vide."
+    },
+    "abort": {
+      "not_loaded": "Le connecteur n’est pas en cours d’exécution. Activez-le et réessayez.",
+      "no_actions": "Aucune action n’est configurée.",
+      "too_many_actions": "Vous pouvez exposer au maximum 64 actions."
+    }
+  },
+  "selector": {
+    "grok_actions": {
+      "fields": {
+        "name": {
+          "name": "Nom de l’action"
+        },
+        "description": {
+          "name": "Description pour Grok"
+        },
+        "sequence": {
+          "name": "Séquence d’actions"
+        },
+        "icon": {
+          "name": "Icône"
+        }
+      },
+      "options": {
+        "add": "Ajouter une action"
+      }
+    }
+  }
+}
