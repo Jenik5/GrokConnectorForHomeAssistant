@@ -196,3 +196,15 @@ PR [#5](https://github.com/Jenik5/GrokConnectorForHomeAssistant/pull/5) adds the
 The maintainer added two regressions: one independently hashes the served stylesheet and checks the exact CSP and privacy headers in all five languages; the other parses the inline SVG and permits only passive geometry, without scripts, event handlers, style attributes or external references. The full local suite passed **91 Python tests**, **5 JavaScript tests**, package checks and JavaScript syntax validation.
 
 Tests exercise shipped connector modules with framework adapters and simulated actions. No maintainer live HA update, browser rendering test, physical action or Grok/Tesla acceptance test was performed for this release. The contributor's reported headless Chrome rendering and live custom-origin test remain separate evidence. Updating alone keeps existing configuration and grants because neither their schemas nor the policy/origin handling changed.
+
+## OAuth renewal, access preservation and nine languages — 2026-10-25 / 2026.10.25.1
+
+This release includes PR [#7](https://github.com/Jenik5/GrokConnectorForHomeAssistant/pull/7), [#8](https://github.com/Jenik5/GrokConnectorForHomeAssistant/pull/8) and [#9](https://github.com/Jenik5/GrokConnectorForHomeAssistant/pull/9). The complete suite passes 111 Python tests and 5 JavaScript tests, plus package and JavaScript syntax checks. GitHub release publication is gated on a successful `Validate` run for the exact release commit, covering Python 3.13/3.14, HACS and hassfest.
+
+OAuth cases exercise renewal after expiry, omitted versus mismatched resources, saved-origin binding, client identity, rotation/replay revocation and bounded credential-free diagnostics. The timed HTTP test renews four times over 40 simulated minutes. It reproduces server behavior; the specific failure reported in issue #6 still needs the reporter's logs or live confirmation.
+
+Access-preservation cases verify that the original access token reads a newly added entity and executes a newly added action without another pairing, then refreshes successfully. Removed permissions, old MCP sessions and retry caches no longer apply. Unfinished consent, unredeemed authorization codes and unused pairing codes are invalidated on policy changes. The option defaults to off; explicit revoke and malformed/non-Boolean settings retain the restrictive behavior.
+
+All nine languages (English, Catalan, Czech, French, German, Italian, Polish, Slovak and Spanish) have complete HA and public/MCP translation pairs: 42 HA messages and 14 public/MCP messages per language. Checks cover keys, placeholders, nonempty values, duplicate keys, regional language selection, unsupported-language fallback, dynamic selection and safe authorization-page rendering.
+
+Tests use shipped modules with HA/aiohttp adapters and simulated actions. This release does not add maintainer live HA, native-editor/browser, physical-device or Grok/Tesla acceptance evidence. Updating with the same origin and policy preserves existing configuration and OAuth grants; publishing the release does not upgrade a live HA instance.

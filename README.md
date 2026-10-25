@@ -9,6 +9,8 @@
 
 ![Connector icon](custom_components/grok_connector/brand/icon.png)
 
+The latest stable release is **2026.10.25.1**: OAuth refresh interoperability fixes, optional preservation of pairing when permissions change, and nine complete interface/MCP languages. See the [release notes](https://github.com/Jenik5/GrokConnectorForHomeAssistant/releases/tag/2026.10.25.1).
+
 A community MCP server for Grok, with independent OAuth credentials and an explicit choice of Home Assistant entities and actions. The first stable release is **2026.10.4.1**, based on the tested 0.1.0b7 connector. It includes the fix for request-ID collisions between separate Grok MCP sessions, such as turning a light on and then off. Action icons refresh immediately after saving
 the action editor. Both configuration lists use a scroll container from the start,
 limited to 400 px or 45% of the viewport height; scrollbars appear only when needed.
@@ -38,7 +40,7 @@ This is an independent integration, not the official Home Assistant MCP Server o
 Install the published release through HACS:
 
 1. In HACS, open **Custom repositories** and add `https://github.com/Jenik5/GrokConnectorForHomeAssistant` as an **Integration**.
-2. Download **2026.10.6.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
+2. Download **2026.10.25.1** or a later stable release. Stable releases do not require beta versions to be enabled in HACS.
 3. Restart Home Assistant to load the newly installed Python integration.
 4. Open **Settings → Devices & services → Add integration → Grok Connector**.
 5. Enter your public HTTPS origin, for example `https://your-instance.ui.nabu.casa` or `https://ha.example.org:8125`, and choose the MCP language. Enter only the origin, without credentials, a path, query or fragment.

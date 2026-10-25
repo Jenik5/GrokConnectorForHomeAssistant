@@ -20,7 +20,7 @@ Run this after HACS installation, with the existing connector still configured:
 4. Ask for state first. Compare it with HA. Ask for an unselected state and confirm the server's tool result does not disclose it.
 5. Deliberately run the chosen simple action once, then repeat with a new request. Verify both operations are handled and a light already on does not cause a connector policy rejection.
 6. Add an automation-trigger action with `skip_condition: false`, reconnect after the resulting revocation, and verify HA respects the automation's own conditions. Also test starting an existing script.
-7. Change the reading list or action. Verify old access/refresh tokens fail and a fresh pairing succeeds. Verify a language-only change preserves access.
+7. With **Keep access after changes** disabled (the default), change the reading list or action. Verify old access/refresh tokens fail and a fresh pairing succeeds. Repeat with preservation enabled: initialize a new MCP session using the original credentials, read an added entity and execute an added action; verify removed items are unavailable. Unfinished authorizations must be invalidated in either mode. Verify a language-only change preserves access.
 8. Explicitly revoke access and verify the new connector refuses further commands while the original connector still works.
 9. Check all supported HA user languages and browser consent languages. Test a failed authorization and confirm the integration's log fields remain free of credentials/household identifiers.
 10. Record HA/HACS versions, installed release, browser/client and outcomes in `VALIDATION.md`. Record Tesla testing separately; PC client success does not demonstrate Tesla client support.

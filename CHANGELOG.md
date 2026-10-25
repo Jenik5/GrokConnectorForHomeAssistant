@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2026.10.25.1 — 2026-10-25
+
 - Add Catalan, French, Italian and Spanish translations of the HA configuration screens, the authorization page and the MCP descriptions.
 - Add an opt-in **Keep access after changes** option (Configure menu, all supported languages). When enabled, changing the selected entities or actions keeps existing OAuth grants; active MCP sessions still restart so Grok reloads its tool list. The default is unchanged: any such change revokes access.
 - Invalidate unfinished authorizations, unredeemed authorization codes and unused pairing codes on policy changes, including when already-issued grants are preserved.
@@ -9,6 +11,10 @@
 - Reject renewal of stored grants after an origin change, including requests explicitly naming the new origin.
 - Include `error="invalid_token"` in rejected Bearer-token challenges while preserving initial OAuth discovery metadata.
 - Add private Boolean refresh diagnostics and timed renewal/security regressions. The actual client failure in issue #6 still needs logs or live confirmation.
+
+Updating with the same configured origin and permissions preserves existing configuration and OAuth grants. **Keep access after changes** is off by default; enable it explicitly to let existing pairings inherit added entities/actions without re-pairing. Removed items become unavailable and clients must initialize a new MCP session after permission changes. Explicit revocation always invalidates access.
+
+Validation: 111 Python tests, 5 JavaScript tests, package and syntax checks passed, including nine complete translation pairs. Publication requires successful HACS/hassfest and test CI on the exact release commit. No live HA/Grok/Tesla acceptance test was performed for this release. The specific client failure in issue #6 remains unconfirmed pending reporter-side evidence.
 
 ## 2026.10.6.1 — 2026-10-06
 
