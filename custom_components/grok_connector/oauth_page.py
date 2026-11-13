@@ -9,8 +9,11 @@ from pathlib import Path
 from .const import OAUTH_PATH
 from .i18n import browser_language, text
 
-# Brand icon inlined: the page CSP forbids scripts and external images, inline SVG needs neither.
-LOGO = (Path(__file__).parent / 'brand/icon.svg').read_text(encoding='utf-8')
+def load_logo():
+    """Read the packaged SVG once, in the executor during integration setup."""
+    return (Path(__file__).parent / 'brand/icon.svg').read_text(encoding='utf-8')
+
+
 # Light by default, dark via the browser preference; HA blue is the accent colour.
 STYLE = '''
 :root{color-scheme:light dark;--bg:#f4f6f8;--card:#fff;--fg:#1c2733;--muted:#5f6b7a;--line:#dbe1e8;--accent:#03a9f4;--accent-fg:#fff;--soft:#e8f6fd}
@@ -40,7 +43,7 @@ def transaction_cookie_name(transaction):
     return 'grok_connector_transaction_' + hashlib.sha256(transaction.encode('ascii')).hexdigest()[:16]
 
 
-def render_authorization(runtime, request, callback, transaction):
+def render_authorization(runtime, request, callback, transaction, *, logo):
     language = browser_language(request.headers.get('Accept-Language'),runtime.catalogs,runtime.language)
     def t(key):
         return html.escape(text(runtime.catalogs,language,key))
@@ -50,7 +53,7 @@ def render_authorization(runtime, request, callback, transaction):
     page = f'''<!doctype html><html lang="{language}"><head><meta charset="utf-8">
 <meta name="referrer" content="same-origin"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark"><title>{t('page_title')}</title>
-<style>{STYLE}</style></head><body><main><div class="logo">{LOGO}</div><h1>{t('page_title')}</h1>
+<style>{STYLE}</style></head><body><main><div class="logo">{logo}</div><h1>{t('page_title')}</h1>
 <p class="badge">{html.escape(count)}</p>
 <p class="muted">{t('callback')}<strong>{html.escape(callback)}</strong></p>
 <p class="muted">{t('pair_help')}</p><form method="post" action="{OAUTH_PATH}/authorize">

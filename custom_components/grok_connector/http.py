@@ -308,6 +308,10 @@ class AuthorizeView(GatewayView):
     name = DOMAIN + ":authorize"
     url = OAUTH_PATH + "/authorize"
 
+    def __init__(self, hass, *, logo):
+        super().__init__(hass)
+        self.logo = logo
+
     @traced("authorize_get")
     async def get(self, request):
         self.rate("authorize", 60)
@@ -335,7 +339,7 @@ class AuthorizeView(GatewayView):
         self.diagnostic(request, "authorize_get", "form_created", flow_id=flow_id,
                         pending_count=len(authority.pending), cookie_present=transaction_cookie_name(transaction) in request.cookies,
                         status=200)
-        page = render_authorization(self.runtime, request, params["redirect_uri"], transaction)
+        page = render_authorization(self.runtime, request, params["redirect_uri"], transaction, logo=self.logo)
         response = web.Response(text=page, content_type="text/html", headers=form_headers)
         response.set_cookie(transaction_cookie_name(transaction), transaction, max_age=600,
                             path=OAUTH_PATH, secure=True, httponly=True, samesite="Lax")
@@ -438,6 +442,7 @@ class TokenView(GatewayView):
         return web.json_response(result, headers=NO_CACHE)
 
 
-def register_views(hass):
-    for view in (MCPView, ResourceMetadataView, ServerMetadataView, RegisterView, AuthorizeView, TokenView):
+def register_views(hass, *, logo):
+    for view in (MCPView, ResourceMetadataView, ServerMetadataView, RegisterView, TokenView):
         hass.http.register_view(view(hass))
+    hass.http.register_view(AuthorizeView(hass, logo=logo))

@@ -19,6 +19,7 @@ import secrets
 import sys
 import types
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ET
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -295,8 +296,12 @@ class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
                                              save=save, rate_allowed=lambda *args: True, catalogs=catalogs, language="en",
                                              policy=types.SimpleNamespace(readable=("light.test",),actions=("action",)))
         self.hass = types.SimpleNamespace(data={const.DOMAIN: self.runtime})
-        self.view = namespace["AuthorizeView"](self.hass)
-        self.token_view = namespace["TokenView"](self.hass)
+        self.logo = page_module.load_logo()
+        views = []
+        self.hass.http = types.SimpleNamespace(register_view=views.append)
+        namespace["register_views"](self.hass, logo=self.logo)
+        self.view = next(view for view in views if isinstance(view, namespace["AuthorizeView"]))
+        self.token_view = next(view for view in views if isinstance(view, namespace["TokenView"]))
         self.client = self.authority.register({"redirect_uris": ["https://grok.com/oauth/callback"]})["client_id"]
         self.verifier = secrets.token_urlsafe(48)
         self.challenge = base64.urlsafe_b64encode(hashlib.sha256(self.verifier.encode()).digest()).decode().rstrip("=")
@@ -448,9 +453,11 @@ class HTTPDiagnosticsTests(unittest.IsolatedAsyncioTestCase):
                 self.assertIn('<html lang="' + language + '">', response.text)
 
     async def test_inline_logo_is_passive_local_geometry(self):
-        response = await self.view.get(Request(method="GET", query=self.params))
+        with patch.object(Path, "read_text", side_effect=AssertionError("Disk read during rendering")):
+            response = await self.view.get(Request(method="GET", query=self.params))
         logos = re.findall(r"<svg\b.*?</svg>", response.text, re.S)
         self.assertEqual(len(logos), 1)
+        self.assertEqual(logos[0], self.logo.strip())
         logo = ET.fromstring(logos[0])
         namespace = "{http://www.w3.org/2000/svg}"
         attributes = {"width", "height", "viewBox", "d", "fill", "stroke", "stroke-width",

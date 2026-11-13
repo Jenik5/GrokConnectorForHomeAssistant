@@ -153,8 +153,10 @@ class Runtime:
 async def async_setup(hass, config):
     from .http import register_views
     from .frontend import async_register_editor
+    from .oauth_page import load_logo
+    logo = await hass.async_add_executor_job(load_logo)
     await async_register_editor(hass)
-    register_views(hass)
+    register_views(hass, logo=logo)
     return True
 
 

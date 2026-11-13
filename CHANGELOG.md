@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 2026.11.13.1 — 2026-11-13
+
+- Fix [issue #10](https://github.com/Jenik5/GrokConnectorForHomeAssistant/issues/10): load the packaged pairing-page SVG once in Home Assistant's executor during startup instead of reading it on the event loop at import time.
+- Render the same inline SVG from memory, with the existing pairing flow and Content Security Policy unchanged.
+
 ## 2026.10.25.1 — 2026-10-25
 
 - Add Catalan, French, Italian and Spanish translations of the HA configuration screens, the authorization page and the MCP descriptions.

@@ -1,8 +1,10 @@
 """Translation parity, extensibility and anonymous OAuth page rendering."""
 import json
+from pathlib import Path
 from string import Formatter
 import types
 import unittest
+from unittest.mock import patch
 from test_gateway import ROOT, i18n, package
 import importlib
 
@@ -23,6 +25,13 @@ def placeholders(value):
 class LocalizationTests(unittest.TestCase):
     def setUp(self):
         self.catalogs = i18n.load_catalogs()
+
+    def test_importing_oauth_page_does_not_read_the_logo(self):
+        spec = importlib.util.spec_from_file_location(
+            package.__name__ + '.oauth_page_import_test', ROOT / 'oauth_page.py')
+        module = importlib.util.module_from_spec(spec)
+        with patch.object(Path, 'read_text', side_effect=AssertionError('Disk read during OAuth page import')):
+            spec.loader.exec_module(module)
 
     def test_all_languages_have_the_same_keys_and_placeholders(self):
         self.assertEqual(set(self.catalogs), {'en', 'ca', 'cs', 'de', 'es', 'fr', 'it', 'pl', 'sk'})
@@ -57,7 +66,7 @@ class LocalizationTests(unittest.TestCase):
             policy=types.SimpleNamespace(readable=['sensor.private_house'], actions=['private-action']))
         rendered = page.render_authorization(runtime,
             types.SimpleNamespace(headers={'Accept-Language': 'de-DE'}),
-            'https://grok.com/callback?value=<script>', '<private-transaction>')
+            'https://grok.com/callback?value=<script>', '<private-transaction>', logo=page.load_logo())
         self.assertNotIn('sensor.private_house', rendered)
         self.assertNotIn('private-action', rendered)
         self.assertNotIn('<script>', rendered)

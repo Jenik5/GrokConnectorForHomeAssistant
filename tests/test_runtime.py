@@ -4,8 +4,12 @@ import asyncio
 import base64
 import copy
 import hashlib
+from pathlib import Path
+import sys
+import threading
 import types
 import unittest
+from unittest.mock import patch
 from test_gateway import ROOT, action, gateway, i18n, package, policy
 import importlib
 
@@ -45,6 +49,39 @@ namespace = {'asyncio': asyncio, 'copy': copy, 'time': __import__('time'), 'Cont
     'Policy': policy.Policy, 'Gateway': gateway.Gateway, 'OAuthAuthority': security.OAuthAuthority,
     'choose_language': i18n.choose_language, 'load_catalogs': i18n.load_catalogs, 'emit': lambda *a, **kw: None}
 exec(compile(tree, str(source), 'exec'), namespace)
+
+
+class SetupTests(unittest.IsolatedAsyncioTestCase):
+    async def test_logo_is_read_once_off_the_event_loop_before_registering_views(self):
+        expected_path = ROOT / 'brand/icon.svg'
+        expected_logo = expected_path.read_text(encoding='utf-8')
+        loop_thread = threading.get_ident()
+        reads = []
+        registrations = []
+        original_read_text = Path.read_text
+
+        def read_text(path, *args, **kwargs):
+            reads.append((path, threading.get_ident()))
+            return original_read_text(path, *args, **kwargs)
+
+        async def register_editor(hass):
+            registrations.append(('editor', hass))
+
+        def register_views(hass, *, logo):
+            registrations.append(('views', hass, logo))
+
+        hass = types.SimpleNamespace(async_add_executor_job=asyncio.to_thread)
+        modules = {
+            package.__name__ + '.http': types.SimpleNamespace(register_views=register_views),
+            package.__name__ + '.frontend': types.SimpleNamespace(async_register_editor=register_editor),
+        }
+        with (patch.dict(sys.modules, modules),
+              patch.dict(namespace, {'__package__': package.__name__}),
+              patch.object(Path, 'read_text', read_text)):
+            self.assertTrue(await namespace['async_setup'](hass, {}))
+        self.assertEqual([path for path, _ in reads], [expected_path])
+        self.assertNotEqual(reads[0][1], loop_thread)
+        self.assertEqual(registrations, [('editor', hass), ('views', hass, expected_logo)])
 
 
 class RuntimeTests(unittest.IsolatedAsyncioTestCase):
