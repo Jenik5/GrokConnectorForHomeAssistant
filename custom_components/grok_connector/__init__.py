@@ -13,6 +13,7 @@ from .diagnostics import emit
 from .gateway import Gateway
 from .i18n import choose_language, load_catalogs
 from .policy import Policy
+from .responses import script_response
 from .security import OAuthAuthority
 
 
@@ -37,7 +38,9 @@ class Runtime:
             return state.attributes.get(attribute) if state else None
 
         async def run_action(action_id):
-            await self.scripts[action_id].async_run(context=Context())
+            script = self.scripts[action_id]
+            result = await script.async_run(context=Context())
+            return script_response(result, script.sequence)
 
         self.gateway = Gateway(read_state,run_action,self.policy,catalogs,self.language,
             name_reader=lambda entity:read_attribute(entity,'friendly_name') or entity,

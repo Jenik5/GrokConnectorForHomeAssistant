@@ -15,6 +15,7 @@ import importlib
 
 security = importlib.import_module(package.__name__ + '.security')
 const = importlib.import_module(package.__name__ + '.const')
+responses = importlib.import_module(package.__name__ + '.responses')
 
 
 class FakeScript:
@@ -24,6 +25,7 @@ class FakeScript:
 
     async def async_run(self, *, context):
         self.hass.executed.append(copy.deepcopy(self.sequence))
+        return getattr(self.hass, 'script_result', None)
 
     async def async_stop(self):
         self.stopped += 1
@@ -47,6 +49,7 @@ namespace = {'asyncio': asyncio, 'copy': copy, 'time': __import__('time'), 'Cont
     'cv': types.SimpleNamespace(SCRIPT_SCHEMA=copy.deepcopy), 'Script': FakeScript,
     'async_validate_actions_config': validate, 'DOMAIN': const.DOMAIN, 'VERSION': const.VERSION,
     'Policy': policy.Policy, 'Gateway': gateway.Gateway, 'OAuthAuthority': security.OAuthAuthority,
+    'script_response': responses.script_response,
     'choose_language': i18n.choose_language, 'load_catalogs': i18n.load_catalogs, 'emit': lambda *a, **kw: None}
 exec(compile(tree, str(source), 'exec'), namespace)
 
@@ -114,6 +117,28 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         await self.runtime.gateway.rpc({'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call',
             'params': {'name': 'action_' + 'a' * 32}}, self.principal)
         self.assertEqual(self.hass.executed, [action()['sequence']])
+
+    async def test_script_stop_response_reaches_mcp_without_internal_variables(self):
+        payload = {'success': False, 'code': 1, 'message': 'Condition was not met.'}
+        self.hass.script_result = types.SimpleNamespace(service_response=payload,
+            variables={'PRIVATE_INTERNAL_VALUE': 'not exported'})
+        result = await self.runtime.gateway.rpc({'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call',
+            'params': {'name': 'action_' + 'a' * 32}}, self.principal, session=self.session)
+        self.assertEqual(result['result']['structuredContent'], payload)
+        self.assertNotIn('PRIVATE_INTERNAL_VALUE', str(result))
+        self.assertFalse(result['result']['isError'])
+
+    async def test_configured_service_response_reaches_mcp(self):
+        script = self.runtime.scripts['a' * 32]
+        script.sequence = [{'action': 'script.example', 'response_variable': 'script_result'}]
+        payload = {'success': True, 'code': 0, 'message': 'Completed.'}
+        self.hass.script_result = types.SimpleNamespace(service_response=None,
+            variables={'script_result': payload, 'unrelated': 'PRIVATE_INTERNAL_VALUE'})
+        result = await self.runtime.gateway.rpc({'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call',
+            'params': {'name': 'action_' + 'a' * 32}}, self.principal, session=self.session)
+        self.assertEqual(result['result']['structuredContent'], payload)
+        self.assertNotIn('PRIVATE_INTERNAL_VALUE', str(result))
+        self.assertEqual(len(self.hass.executed), 1)
 
     async def test_language_change_preserves_access_and_action_objects(self):
         scripts = self.runtime.scripts

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Return configured Home Assistant action/script response data to Grok ([issue #12](https://github.com/Jenik5/GrokConnectorForHomeAssistant/issues/12)). Prefer an explicit script `stop` response; otherwise return visible variables explicitly named by service-call `response_variable` fields.
+- Preserve the existing completion response for actions without response data. Multiple response variables retain their names instead of silently selecting the first.
+- Return JSON objects as MCP structured content and JSON text, with a 64 KiB strict-JSON output limit. Invalid output produces a private, cached error without automatically rerunning the action. Other script variables and traces are not exported.
+
 ## 2026.11.13.1 — 2026-11-13
 
 - Fix [issue #10](https://github.com/Jenik5/GrokConnectorForHomeAssistant/issues/10): load the packaged pairing-page SVG once in Home Assistant's executor during startup instead of reading it on the event loop at import time.

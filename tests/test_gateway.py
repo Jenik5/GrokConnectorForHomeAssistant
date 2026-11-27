@@ -297,6 +297,69 @@ class GatewayTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(self.gateway.session_active(sessions[-1], 'grant'))
         self.assertEqual(len(self.gateway.replies), 1)
 
+    async def test_action_responses_preserve_success_failure_and_empty_json_values(self):
+        payloads = [{'success': True, 'code': 0, 'message': 'Completed.'},
+                    {'success': False, 'code': 1, 'message': 'Condition was not met.'},
+                    {}, [], False, 0, '']
+        for identifier, payload in enumerate(payloads):
+            async def execute(action_id):
+                self.executed.append(action_id)
+                return payload
+            self.gateway.action_runner = execute
+            result = (await self.call(identifier))['result']
+            self.assertEqual(json.loads(result['content'][0]['text']), payload)
+            self.assertFalse(result['isError'])
+            if isinstance(payload, dict):
+                self.assertEqual(result['structuredContent'], payload)
+            else:
+                self.assertNotIn('structuredContent', result)
+        self.assertEqual(len(self.executed), len(payloads))
+
+    async def test_no_response_keeps_the_existing_completion_message(self):
+        self.assertEqual((await self.call())['result'], {
+            'content': [{'type': 'text', 'text': json.dumps({
+                'result': 'action_sequence_finished', 'physical_effect_confirmed': False})}], 'isError': False})
+
+    async def test_response_retry_uses_an_immutable_cached_snapshot_and_action_alias(self):
+        payload = {'success': True, 'nested': {'code': 0}}
+        async def execute(action_id):
+            self.executed.append(action_id)
+            return payload
+        self.gateway.action_runner = execute
+        first = await self.call('reply')
+        expected = json.loads(json.dumps(first))
+        payload['nested']['code'] = 42
+        first['result']['structuredContent']['nested']['code'] = 99
+        self.assertEqual(await self.call('reply', 'turn_on_the_light'), expected)
+        self.assertEqual(self.executed, ['a' * 32])
+
+    async def test_invalid_response_is_private_and_cached_without_reexecuting(self):
+        invalid = [{'private': object()}, {'private': float('nan')}, {'private': float('inf')},
+                   {'private': 'PRIVATE' * gateway.MAX_ACTION_RESPONSE_BYTES}, {'private': chr(0xd800)}]
+        circular = {}
+        circular['private'] = circular
+        invalid.append(circular)
+        for identifier, payload in enumerate(invalid):
+            async def execute(action_id):
+                self.executed.append(action_id)
+                return payload
+            self.gateway.action_runner = execute
+            first = await self.call(identifier)
+            self.assertTrue(first['result']['isError'])
+            details = json.loads(first['result']['content'][0]['text'])
+            self.assertEqual(details['error'], 'action_response_unavailable')
+            self.assertEqual(details['result'], 'action_sequence_finished')
+            self.assertNotIn('private', json.dumps(first))
+            self.assertEqual(await self.call(identifier), first)
+        self.assertEqual(len(self.executed), len(invalid))
+
+    async def test_response_limit_counts_utf8_bytes(self):
+        payload = 'ě' * (gateway.MAX_ACTION_RESPONSE_BYTES // 2)
+        async def execute(action_id):
+            return payload
+        self.gateway.action_runner = execute
+        self.assertTrue((await self.call('too-big'))['result']['isError'])
+
     async def test_uncertain_execution_never_retries_or_exposes_exception_data(self):
         async def failing(identifier):
             self.executed.append(identifier)

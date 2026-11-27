@@ -13,6 +13,7 @@ PROTOCOLS = ('2024-11-05','2025-03-26','2025-06-18','2025-11-25')
 EMPTY_INPUT = {'type':'object','properties':{},'additionalProperties':False}
 SESSION_LIFETIME = 1800
 MAX_SESSIONS = 128
+MAX_ACTION_RESPONSE_BYTES = 65536
 
 def tool_slug(name):
     ascii_name = unicodedata.normalize('NFKD',name).encode('ascii','ignore').decode()
@@ -20,6 +21,17 @@ def tool_slug(name):
 
 def content(data,error=False):
     return {'content':[{'type':'text','text':json.dumps(data,ensure_ascii=False)}],'isError':error}
+
+def action_content(data):
+    """Bound strict JSON output and snapshot it before storing a retry reply."""
+    encoded = json.dumps(data, ensure_ascii=False, allow_nan=False)
+    if len(encoded.encode('utf-8')) > MAX_ACTION_RESPONSE_BYTES:
+        raise ValueError('Action response exceeds the output limit')
+    result = {'content': [{'type': 'text', 'text': encoded}], 'isError': False}
+    if isinstance(data, dict):
+        result['structuredContent'] = json.loads(encoded)
+    return result
+
 
 class Gateway:
     def __init__(self,state_reader,action_runner,policy,catalogs,language='en',
@@ -161,12 +173,20 @@ class Gateway:
                         result = copy.deepcopy(cached)
                     else:
                         try:
-                            await self.action_runner(action_id)
+                            response = await self.action_runner(action_id)
                         except Exception:
                             result = content({'error':'action_execution_uncertain',
                                 'instruction':'Do not retry automatically. Check the state and HA trace.'},True)
                         else:
-                            result = content({'result':'action_sequence_finished','physical_effect_confirmed':False})
+                            if response is None:
+                                result = content({'result':'action_sequence_finished','physical_effect_confirmed':False})
+                            else:
+                                try:
+                                    result = action_content(response)
+                                except (TypeError, ValueError, RecursionError, UnicodeError):
+                                    result = content({'error':'action_response_unavailable',
+                                        'result':'action_sequence_finished','physical_effect_confirmed':False,
+                                        'instruction':'Do not retry automatically. Check the HA trace.'},True)
                         if session is not None and session in self.sessions:
                             if len(self.replies) >= 256:
                                 self.replies.pop(next(iter(self.replies)))
