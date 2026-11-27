@@ -208,3 +208,27 @@ Access-preservation cases verify that the original access token reads a newly ad
 All nine languages (English, Catalan, Czech, French, German, Italian, Polish, Slovak and Spanish) have complete HA and public/MCP translation pairs: 42 HA messages and 14 public/MCP messages per language. Checks cover keys, placeholders, nonempty values, duplicate keys, regional language selection, unsupported-language fallback, dynamic selection and safe authorization-page rendering.
 
 Tests use shipped modules with HA/aiohttp adapters and simulated actions. This release does not add maintainer live HA, native-editor/browser, physical-device or Grok/Tesla acceptance evidence. Updating with the same origin and policy preserves existing configuration and OAuth grants; publishing the release does not upgrade a live HA instance.
+
+
+## Script response data (issue #12, 2026-11-27)
+
+The runtime now retains the Home Assistant script result. Selection prefers an
+explicit `service_response`, then visible variables named by configured service
+`response_variable` fields; other variables, service data dictionaries and traces
+are not exported. Multiple outputs keep their names. Actions without output retain
+the original completion reply, and application-defined success/failure fields are
+returned unchanged.
+
+Regressions exercise runtime-to-MCP forwarding, final variable scope, disabled and
+missing outputs, multiple results, empty/false values, JSON text/structured-content
+agreement, unchanged generic replies, immutable session retries and HTTP response
+serialization. The HTTP diagnostic capture verifies response contents are not
+logged. Invalid/circular/non-finite/non-JSON/oversized output returns a private
+cached error after execution rather than causing an automatic second run.
+
+The HA `ScriptRunResult` API and service/stop response handling were checked against
+the version-pinned Home Assistant 2026.9.4 and 2026.11.3 sources. Local tests use
+the existing HA/aiohttp adapters; no live Home Assistant, Grok, Tesla or physical
+device acceptance run has been performed for this feature.
+
+Validation: **127 Python tests**, **5 JavaScript tests**, package checks and JavaScript syntax validation passed locally.

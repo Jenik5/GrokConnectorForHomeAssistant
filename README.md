@@ -99,6 +99,15 @@ Put longer workflows and their conditions in existing scripts or automations. Th
 
 The connector supports up to 64 reading entities and 64 named actions. Each sequence is limited to 100 top-level steps and 64 KiB of JSON configuration.
 
+## Script response data
+
+Configured actions can return Home Assistant script/service response data to Grok.
+For example, `action: script.example` with `response_variable: script_result`
+returns that script's response object, including fields such as `success`, `code`
+and `message`. Actions without response data keep their existing completion reply.
+See [script response examples and selection rules](docs/ACTION-RESPONSES.md), including
+explicit `stop` responses, multiple outputs and Home Assistant variable scopes.
+
 ## Pair Grok
 
 1. Open **Configure → Pairing code** in this integration. HA displays the exact MCP URL and a one-time code valid for ten minutes.

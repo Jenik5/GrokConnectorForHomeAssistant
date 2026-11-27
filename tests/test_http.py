@@ -195,6 +195,25 @@ class MCPSessionTests(unittest.IsolatedAsyncioTestCase):
         return await self.view.post(self.request({'jsonrpc': '2.0', 'id': 2, 'method': 'tools/call',
             'params': {'name': 'action_'+name*32}}, session=session))
 
+    async def test_script_response_crosses_http_and_retries_without_logging_payload(self):
+        payload = {'success': False, 'code': 1, 'message': 'PRIVATE_SCRIPT_RESPONSE'}
+        async def run(identifier):
+            self.executed.append(identifier)
+            return payload
+        self.gateway.action_runner = run
+        session = await self.initialize()
+        with self.assertLogs(diagnostics._LOGGER, level='INFO') as captured:
+            first = await self.call(session=session)
+            retry = await self.call(session=session)
+        self.assertEqual(first.status, 200)
+        self.assertEqual(first.text, retry.text)
+        result = json.loads(first.text)['result']
+        self.assertEqual(result['structuredContent'], payload)
+        self.assertEqual(json.loads(result['content'][0]['text']), payload)
+        self.assertFalse(result['isError'])
+        self.assertEqual(self.executed, ['a' * 32])
+        self.assertNotIn('PRIVATE_SCRIPT_RESPONSE', '\n'.join(captured.output))
+
     async def test_new_initialization_does_not_collide_with_previous_action_id(self):
         first = await self.initialize()
         await self.call(session=first)
